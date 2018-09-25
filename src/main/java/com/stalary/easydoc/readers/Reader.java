@@ -1,6 +1,7 @@
 package com.stalary.easydoc.readers;
 
 import com.alibaba.fastjson.JSONObject;
+import com.stalary.easydoc.data.View;
 
 /**
  * @author Stalary
@@ -14,13 +15,13 @@ public interface Reader {
      * @param path 单文件路径
      * @return 返回读取出来的对象
      */
-    JSONObject singleReader(String path);
+    View singleReader(String path);
 
     /**
      * 多文件读取
      * @param folder 文件夹路径
      * @return 返回读取出来的对象
      */
-    JSONObject multiReader(String folder);
+    View multiReader(String folder);
 
 }

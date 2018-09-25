@@ -5,7 +5,9 @@
  */
 package com.stalary.easydoc;
 
-import com.alibaba.fastjson.JSONObject;
+import com.stalary.easydoc.data.View;
+import com.stalary.easydoc.readers.ReaderImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,8 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/easy-doc")
 public class ResourceController {
 
+    @Autowired
+    ReaderImpl reader;
+
     @GetMapping("/resource")
-    public ResponseEntity<JSONObject> getResource() throws Exception {
-        return new ResponseEntity<>(ReaderImpl.read(), HttpStatus.OK);
+    public ResponseEntity<View> getResource() throws Exception {
+        return new ResponseEntity<>(reader.read(), HttpStatus.OK);
     }
 }
