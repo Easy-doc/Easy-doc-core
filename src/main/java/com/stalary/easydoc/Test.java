@@ -11,10 +11,7 @@ import org.dom4j.Element;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +22,7 @@ import java.util.regex.Pattern;
  */
 public class Test {
 
+    @SuppressWarnings("unchecked")
     public static void main(String[] args) throws Exception {
         // 获取当前路径
         String curPath = System.getProperty("user.dir");
@@ -40,18 +38,20 @@ public class Test {
         String string="代码1/**注释1*/代码2/**注释2*/代码3";
         Pattern pattern=Pattern.compile(regex);
         Matcher matcher=pattern.matcher(sb);
+        List<Map<String, String>> list = new ArrayList<>();
         while(matcher.find()){
+            Map<String, String> map = new HashMap<>();
             String temp = matcher.group().replace("/*", "<doc>").replace("*/", "</doc>").replace("*", "");
-            System.out.println(temp);
             Document document = DocumentHelper.parseText(temp);
             Element root = document.getRootElement();
             // iterate through child elements of root
             for (Iterator<Element> it = root.elementIterator(); it.hasNext();) {
                 Element element = it.next();
-                System.out.println(element.getName());
-                System.out.println(element.getData());
+                map.put(element.getName(), element.getText());
             }
+            list.add(map);
         }
+        System.out.println(list);
     }
 
 }
