@@ -34,7 +34,7 @@ public class View {
      * @param view
      */
     public void addView(View view) {
-        this.getControllerList().addAll(view.getControllerList());
+        this.getControllerList().addAll(this.getModelList().size(), view.getControllerList());
         this.getModelList().addAll(view.getModelList());
     }
 }

@@ -7,7 +7,7 @@ package com.stalary.easydoc;
 
 import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.data.JsonResult;
-import com.stalary.easydoc.readers.ReaderImpl;
+import com.stalary.easydoc.readers.Reader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResourceController {
 
     @Autowired
-    ReaderImpl reader;
+    Reader reader;
 
     @GetMapping("/resource")
     public JSONObject getResource() {
