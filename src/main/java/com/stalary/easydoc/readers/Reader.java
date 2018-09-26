@@ -1,7 +1,8 @@
 package com.stalary.easydoc.readers;
 
-import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.data.View;
+
+import java.io.File;
 
 /**
  * @author Stalary
@@ -12,10 +13,10 @@ public interface Reader {
 
     /**
      * 单文件读取
-     * @param path 单文件路径
+     * @param file 文件
      * @return 返回读取出来的对象
      */
-    View singleReader(String path);
+    View singleReader(File file);
 
     /**
      * 多文件读取

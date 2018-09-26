@@ -27,5 +27,14 @@ public class View {
     private List<Controller> controllerList = new ArrayList<>();
 
     /** 所有返回对象 **/
-    private List<Object> modelList = new ArrayList<>();
+    private List<Model> modelList = new ArrayList<>();
+
+    /**
+     * 添加view
+     * @param view
+     */
+    public void addView(View view) {
+        this.getControllerList().addAll(view.getControllerList());
+        this.getModelList().addAll(view.getModelList());
+    }
 }

@@ -5,19 +5,19 @@
  */
 package com.stalary.easydoc.readers;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.stalary.easydoc.data.Controller;
-import com.stalary.easydoc.data.Method;
-import com.stalary.easydoc.data.View;
+import com.stalary.easydoc.data.*;
+import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,57 +28,145 @@ import java.util.regex.Pattern;
  * @since 2018/09/25
  */
 @Component
-public class ReaderImpl {
+@Slf4j
+public class ReaderImpl implements Reader {
+
+    /** 获取当前路径 **/
+    private final String curPath = System.getProperty("user.dir");
+
+    /**
+     * 单文件读取
+     *
+     * @param file 单文件路径
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public View singleReader(File file) {
+        try {
+            View view = new View();
+            Controller controller = new Controller();
+            Model model = new Model();
+            FileReader fileReader = new FileReader(file);
+            BufferedReader reader = new BufferedReader(fileReader);
+            StringBuilder sb = new StringBuilder();
+            String s = reader.readLine();
+            while (s != null) {
+                sb.append(s);
+                s = reader.readLine();
+            }
+            // 匹配出注释代码块
+            String regex = "\\/\\*([^\\*^\\/]*|[\\*^\\/*]*|[^\\**\\/]*)*\\*\\/";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(sb);
+            while (matcher.find()) {
+                Map<String, String> map = new HashMap<>();
+                Map<String, String> paramMap = new HashMap<>();
+                Map<String, String> fieldMap = new HashMap<>();
+                Map<Integer, String> returnMap = new HashMap<>();
+                Map<String, String> bodyMap = new HashMap<>();
+                String temp = matcher.group().replace("/*", "<doc>").replace("*/", "</doc>").replace("*", "");
+                if (!temp.contains(Constant.CONTROLLER) && !temp.contains(Constant.METHOD) && !temp.contains(Constant.MODEL)) {
+                    continue;
+                }
+                Document document = DocumentHelper.parseText(temp);
+                Element root = document.getRootElement();
+                // 遍历xml
+                for (Iterator<Element> it = root.elementIterator(); it.hasNext(); ) {
+                    Element element = it.next();
+                    if (element.getName().equals(Constant.FIELDS)) {
+                        for (Iterator<Element> i = element.elementIterator(); i.hasNext();) {
+                            Element cur = i.next();
+                            fieldMap.put(cur.getName(), cur.getText());
+                        }
+                    } else if (element.getName().equals(Constant.PARAMS)) {
+                        for (Iterator<Element> i = element.elementIterator(); i.hasNext();) {
+                            Element cur = i.next();
+                            paramMap.put(cur.getName(), cur.getText());
+                        }
+                    } else if (element.getName().equals(Constant.RETURN)) {
+                        for (Iterator<Element> i = element.elementIterator(); i.hasNext();) {
+                            Element cur = i.next();
+                            returnMap.put(Integer.valueOf(cur.getName().substring(4)), cur.getText());
+                        }
+                    } else if (element.getName().equals(Constant.BODY)) {
+                        for (Iterator<Element> i = element.elementIterator(); i.hasNext();) {
+                            Element cur = i.next();
+                            bodyMap.put(cur.getName(), cur.getText());
+                        }
+                    } else {
+                        map.put(element.getName(), element.getText());
+                    }
+                }
+                // 首先先存储controller
+                if (map.containsKey(Constant.CONTROLLER)) {
+                    readController(controller, map, view);
+                } else if (map.containsKey(Constant.METHOD)) {
+                    readMethod(controller, map, paramMap, returnMap, bodyMap);
+                } else if (map.containsKey(Constant.MODEL)) {
+                    readModel(model, map, fieldMap, view);
+                }
+            }
+            return view;
+        } catch (Exception e) {
+            log.warn("singleReader error!", e);
+        }
+        return null;
+    }
+
+    private void readController(Controller controller, Map<String, String> map, View view) {
+        controller = controller.toBuilder()
+                .author(map.getOrDefault(Constant.AUTHOR, ""))
+                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+                .name(map.getOrDefault(Constant.CONTROLLER, ""))
+                .build();
+        view.getControllerList().add(controller);
+    }
+
+    private void readMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<Integer, String> returnMap, Map<String, String> bodyMap) {
+        // 其次遍历存储method
+        Method method = new Method().toBuilder()
+                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+                .name(map.getOrDefault(Constant.METHOD, ""))
+                .path(map.getOrDefault(Constant.PATH, ""))
+                .body(bodyMap)
+                .paramMap(paramMap)
+                .returnMap(returnMap)
+                .build();
+        controller.getMethodList().add(method);
+    }
 
     @SuppressWarnings("unchecked")
-    public View read() throws Exception {
+    private void readModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
+        model = model.toBuilder()
+                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+                .fieldMap(fieldMap)
+                .name(map.getOrDefault(Constant.MODEL, ""))
+                .build();
+        view.getModelList().add(model);
+    }
+
+
+    /**
+     * 多文件读取
+     *
+     * @param folder 文件夹路径
+     * @return
+     */
+    @Override
+    public View multiReader(String folder) {
         View view = new View();
-        Controller controller = new Controller();
-        // 获取当前路径
-        String curPath = System.getProperty("user.dir");
-        FileReader fileReader = new FileReader(curPath + "/src/test/java/com/stalary/easydoc/ReadTest.java");
-        BufferedReader reader = new BufferedReader(fileReader);
-        StringBuilder sb = new StringBuilder();
-        String s = reader.readLine();
-        while (s != null) {
-            sb.append(s);
-            s = reader.readLine();
-        }
-        // 匹配出注释代码块
-        String regex = "\\/\\*([^\\*^\\/]*|[\\*^\\/*]*|[^\\**\\/]*)*\\*\\/";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(sb);
-        while (matcher.find()) {
-            Map<String, String> map = new HashMap<>();
-            String temp = matcher.group().replace("/*", "<doc>").replace("*/", "</doc>").replace("*", "");
-            Document document = DocumentHelper.parseText(temp);
-            Element root = document.getRootElement();
-            // 遍历xml
-            for (Iterator<Element> it = root.elementIterator(); it.hasNext(); ) {
-                Element element = it.next();
-                map.put(element.getName(), element.getText());
-            }
-            // 首先先存储controller
-            if (map.containsKey("controller")) {
-                controller = controller.toBuilder()
-                        .author(map.getOrDefault("author", ""))
-                        .description(map.getOrDefault("description", ""))
-                        .name(map.getOrDefault("name", ""))
-                        .build();
-                view.getControllerList().add(controller);
-            } else if (map.containsKey("method")) {
-                // 其次遍历存储method
-                Method method = new Method().toBuilder()
-                        .description(map.getOrDefault("description", ""))
-                        .name(map.getOrDefault("name", ""))
-                        .path(map.getOrDefault("path", ""))
-                        .body(JSONObject.parseObject(map.getOrDefault("body", null)))
-                        .paramMap(JSONObject.parseObject(map.getOrDefault("paramMap", null), new TypeReference<Map<String, String>>() {
-                        }))
-                        .returnMap(JSONObject.parseObject(map.getOrDefault("paramMap", null), new TypeReference<Map<Integer, String>>() {
-                        }))
-                        .build();
-                controller.getMethodList().add(method);
+        File file = new File(curPath + folder);
+        if (file.exists()) {
+            if (file.isFile()) {
+                view = singleReader(file);
+            } else if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                if (files != null) {
+                    for (File singleFile : files) {
+                        view.addView(singleReader(singleFile));
+                    }
+                }
             }
         }
         return view;

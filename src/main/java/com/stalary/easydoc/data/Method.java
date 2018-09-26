@@ -5,7 +5,6 @@
  */
 package com.stalary.easydoc.data;
 
-import com.alibaba.fastjson.JSONObject;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -42,7 +41,7 @@ public class Method {
     private Map<String, String> paramMap = new HashMap<>();
 
     /** post方法中的body **/
-    private JSONObject body;
+    private Map<String, String> body;
 
     /** 返回map，key代表code，value代表返回的描述 **/
     private Map<Integer, String> returnMap = new HashMap<>();
