@@ -71,34 +71,40 @@ public class Reader {
                 }
                 Document document = DocumentHelper.parseText(temp);
                 Element root = document.getRootElement();
-                // 遍历xml
+                // 遍历xml，存储各属性
                 for (Iterator<Element> it = root.elementIterator(); it.hasNext(); ) {
                     Element element = it.next();
-                    if (element.getName().equals(Constant.FIELDS)) {
-                        for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
-                            Element cur = i.next();
-                            fieldMap.put(cur.getName(), cur.getText());
-                        }
-                    } else if (element.getName().equals(Constant.PARAMS)) {
-                        for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
-                            Element cur = i.next();
-                            paramMap.put(cur.getName(), cur.getText());
-                        }
-                    } else if (element.getName().equals(Constant.RETURN)) {
-                        for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
-                            Element cur = i.next();
-                            returnMap.put(Integer.valueOf(cur.getName().substring(4)), cur.getText());
-                        }
-                    } else if (element.getName().equals(Constant.BODY)) {
-                        for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
-                            Element cur = i.next();
-                            bodyMap.put(cur.getName(), cur.getText());
-                        }
-                    } else {
-                        map.put(element.getName(), element.getText());
+                    switch (element.getName()) {
+                        case Constant.FIELDS:
+                            for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
+                                Element cur = i.next();
+                                fieldMap.put(cur.getName(), cur.getText());
+                            }
+                            break;
+                        case Constant.PARAMS:
+                            for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
+                                Element cur = i.next();
+                                paramMap.put(cur.getName(), cur.getText());
+                            }
+                            break;
+                        case Constant.RETURN:
+                            for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
+                                Element cur = i.next();
+                                returnMap.put(Integer.valueOf(cur.getName().substring(4)), cur.getText());
+                            }
+                            break;
+                        case Constant.BODY:
+                            for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
+                                Element cur = i.next();
+                                bodyMap.put(cur.getName(), cur.getText());
+                            }
+                            break;
+                        default:
+                            map.put(element.getName(), element.getText());
+                            break;
                     }
                 }
-                // 首先先存储controller
+                // 填充controller，method，model
                 if (map.containsKey(Constant.CONTROLLER)) {
                     readController(controller, map, view);
                 } else if (map.containsKey(Constant.METHOD)) {
@@ -136,7 +142,6 @@ public class Reader {
         controller.getMethodList().add(method);
     }
 
-    @SuppressWarnings("unchecked")
     private void readModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
         model = model.toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
@@ -178,6 +183,7 @@ public class Reader {
         }
         sw.stop();
         System.out.println(sw.prettyPrint());
+        // 缓存
         viewCache = view;
         return view;
     }

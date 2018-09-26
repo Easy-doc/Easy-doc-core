@@ -1,5 +1,8 @@
 package com.stalary.easydoc;
 
+import com.alibaba.fastjson.JSONObject;
+import com.stalary.easydoc.data.JsonResult;
+
 /**
  * <controller>ReadTest1</controller>
  * <author>lirongqian</author>
@@ -17,5 +20,21 @@ public class ReadTest1 {
      */
     public void hello(String name) {
         System.out.println("hello " + name);
+    }
+
+    /**
+     * <method>user</method>
+     * <description>测试对象方法</description>
+     * <path>/user</path>
+     * <body>
+     *     <name>用户名</name>
+     *     <age>年龄</age>
+     * </body>
+     * <return>
+     *     <code0>user对象</code0>
+     * </return>
+     */
+    public JSONObject user(User user) {
+        return JsonResult.ok(user);
     }
 }
