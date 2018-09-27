@@ -5,6 +5,7 @@
  */
 package com.stalary.easydoc.readers;
 
+import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
@@ -16,14 +17,16 @@ import org.springframework.util.StopWatch;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * ReaderImpl
+ * Reader
  *
  * @author lirongqian
  * @since 2018/09/25
@@ -31,6 +34,21 @@ import java.util.regex.Pattern;
 @Component
 @Slf4j
 public class Reader {
+
+    private EasyDocProperties properties;
+
+    private ExecutorService exec = new ThreadPoolExecutor(
+            10,
+            50,
+            60, TimeUnit.SECONDS,
+            new ArrayBlockingQueue<>(100),
+            // 达到最大容量后，直接抛出异常(服务降级)
+            new ThreadPoolExecutor.AbortPolicy()
+    );
+
+    public Reader(EasyDocProperties properties) {
+        this.properties = properties;
+    }
 
     /** 获取当前路径 **/
     private final String curPath = System.getProperty("user.dir");
@@ -56,7 +74,7 @@ public class Reader {
                 s = reader.readLine();
             }
             // 匹配出注释代码块
-            String regex = "\\/\\*([^\\*^\\/]*|[\\*^\\/*]*|[^\\**\\/]*)*\\*\\/";
+            String regex = "(?<!:)\\/\\/.*|\\/\\*(\\s|.)*?\\*\\/";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(sb);
             while (matcher.find()) {
@@ -65,7 +83,15 @@ public class Reader {
                 Map<String, String> fieldMap = new HashMap<>();
                 Map<Integer, String> returnMap = new HashMap<>();
                 Map<String, String> bodyMap = new HashMap<>();
-                String temp = matcher.group().replace("/*", "<doc>").replace("*/", "</doc>").replace("*", "");
+                // 1. 去除所有单行注释
+                // 2. 匹配块级注释
+                // 3. 文档化块级注释
+                String temp = matcher
+                        .group()
+                        .replaceAll("\\/\\/[^\n]*", "")
+                        .replace("/*", "<doc>")
+                        .replace("*/", "</doc>")
+                        .replace("*", "");
                 if (!temp.contains(Constant.CONTROLLER) && !temp.contains(Constant.METHOD) && !temp.contains(Constant.MODEL)) {
                     continue;
                 }
@@ -106,11 +132,11 @@ public class Reader {
                 }
                 // 填充controller，method，model
                 if (map.containsKey(Constant.CONTROLLER)) {
-                    readController(controller, map, view);
+                    renderController(controller, map, view);
                 } else if (map.containsKey(Constant.METHOD)) {
-                    readMethod(controller, map, paramMap, returnMap, bodyMap);
+                    renderMethod(controller, map, paramMap, returnMap, bodyMap);
                 } else if (map.containsKey(Constant.MODEL)) {
-                    readModel(model, map, fieldMap, view);
+                    renderModel(model, map, fieldMap, view);
                 }
             }
             return view;
@@ -120,16 +146,17 @@ public class Reader {
         return null;
     }
 
-    private void readController(Controller controller, Map<String, String> map, View view) {
+    private void renderController(Controller controller, Map<String, String> map, View view) {
         controller = controller.toBuilder()
                 .author(map.getOrDefault(Constant.AUTHOR, ""))
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .name(map.getOrDefault(Constant.CONTROLLER, ""))
+                .path(map.getOrDefault(Constant.PATH, ""))
                 .build();
         view.getControllerList().add(controller);
     }
 
-    private void readMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<Integer, String> returnMap, Map<String, String> bodyMap) {
+    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<Integer, String> returnMap, Map<String, String> bodyMap) {
         // 其次遍历存储method
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
@@ -142,7 +169,7 @@ public class Reader {
         controller.getMethodList().add(method);
     }
 
-    private void readModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
+    private void renderModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
         model = model.toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .fieldMap(fieldMap)
@@ -158,33 +185,43 @@ public class Reader {
     /**
      * 多文件读取
      *
-     * @param folder 文件夹路径
      * @return 返回view，前端进行渲染
      */
-    public View multiReader(String folder) {
+    public View multiReader() {
         if (viewCache != null) {
             return viewCache;
         }
-        View view = new View();
+        View view = new View(properties);
         StopWatch sw = new StopWatch("test");
-        File file = new File(curPath + folder);
+        File file = new File(curPath + properties.getPath());
         sw.start("multi");
-        if (file.exists()) {
-            if (file.isFile()) {
-                view = singleReader(file);
-            } else if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File single : files) {
-                        view.addView(singleReader(single));
-                    }
-                }
-            }
+        getFile(file);
+        System.out.println(fileList);
+        for (File aFileList : fileList) {
+            view.addView(singleReader(aFileList));
         }
         sw.stop();
         System.out.println(sw.prettyPrint());
         // 缓存
         viewCache = view;
         return view;
+    }
+
+    private List<File> fileList = new ArrayList<>();
+
+    private void getFile(File file) {
+        if (file.exists()) {
+            if (file.isFile()) {
+                fileList.add(file);
+                return;
+            } else if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                if (files != null) {
+                    for (File single : files) {
+                        getFile(single);
+                    }
+                }
+            }
+        }
     }
 }

@@ -3,6 +3,7 @@
 
 # 注释书写规则
 > 使用javadoc和xml两种模式，可以在application.yml中进行选择
+> demo都在test中
 ## xml格式
 ### controller
 注释名 | 解释
@@ -10,6 +11,7 @@
 \<controller>\</controller> | controller名称
 \<author>\</author> | controller作者
 \<description>\</description> | controller的描述
+\<path>\</path> | controller路径
 ### method
 注释名 | 解释
 --- | ---

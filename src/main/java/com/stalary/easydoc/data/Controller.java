@@ -34,6 +34,9 @@ public class Controller {
     /** 接口介绍 **/
     private String description;
 
+    /** 接口路径 **/
+    private String path;
+
     /** 接口中的方法 **/
     private List<Method> methodList = new ArrayList<>();
 }

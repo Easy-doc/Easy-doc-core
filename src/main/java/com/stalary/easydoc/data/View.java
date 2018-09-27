@@ -5,9 +5,8 @@
  */
 package com.stalary.easydoc.data;
 
-import lombok.AllArgsConstructor;
+import com.stalary.easydoc.config.EasyDocProperties;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +18,16 @@ import java.util.List;
  * @since 2018/09/25
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class View {
+
+    /** 项目名称 **/
+    private String name;
+
+    /** 项目介绍 **/
+    private String description;
+
+    /** 联系人 **/
+    private String contact;
 
     /** 所有接口 **/
     private List<Controller> controllerList = new ArrayList<>();
@@ -36,5 +42,14 @@ public class View {
     public void addView(View view) {
         this.getControllerList().addAll(this.getModelList().size(), view.getControllerList());
         this.getModelList().addAll(view.getModelList());
+    }
+
+    public View(EasyDocProperties properties) {
+        this.name = properties.getName();
+        this.description = properties.getDescription();
+        this.contact = properties.getContact();
+    }
+
+    public View() {
     }
 }

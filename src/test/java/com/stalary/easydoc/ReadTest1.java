@@ -5,6 +5,7 @@ import com.stalary.easydoc.data.JsonResult;
 
 /**
  * <controller>ReadTest1</controller>
+ * <path>/test</path>
  * <author>lirongqian</author>
  * <description>测试类1</description>
  */

@@ -28,6 +28,6 @@ public class ResourceController {
 
     @GetMapping("/resource")
     public JSONObject getResource() {
-        return JsonResult.ok(reader.multiReader("/src/test/java/com/stalary/easydoc"));
+        return JsonResult.ok(reader.multiReader());
     }
 }
