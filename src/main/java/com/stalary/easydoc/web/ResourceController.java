@@ -3,11 +3,10 @@
  * <p>
  * Copyright 2018 Stalary.
  */
-package com.stalary.easydoc;
+package com.stalary.easydoc.web;
 
 import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.data.JsonResult;
-import com.stalary.easydoc.readers.Reader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,10 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResourceController {
 
     @Autowired
-    Reader reader;
+    private ResourceService resourceService;
 
     @GetMapping("/resource")
     public JSONObject getResource() {
-        return JsonResult.ok(reader.multiReader());
+        return JsonResult.ok(resourceService.read());
     }
 }

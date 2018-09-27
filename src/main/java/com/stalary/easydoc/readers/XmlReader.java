@@ -6,7 +6,10 @@
 package com.stalary.easydoc.readers;
 
 import com.stalary.easydoc.config.EasyDocProperties;
-import com.stalary.easydoc.data.*;
+import com.stalary.easydoc.data.Constant;
+import com.stalary.easydoc.data.Controller;
+import com.stalary.easydoc.data.Model;
+import com.stalary.easydoc.data.View;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -14,44 +17,26 @@ import org.dom4j.Element;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Reader
+ * BaseReader
  *
  * @author lirongqian
  * @since 2018/09/25
  */
 @Component
 @Slf4j
-public class Reader {
+public class XmlReader extends BaseReader {
 
     private EasyDocProperties properties;
 
-    private ExecutorService exec = new ThreadPoolExecutor(
-            10,
-            50,
-            60, TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(100),
-            // 达到最大容量后，直接抛出异常(服务降级)
-            new ThreadPoolExecutor.AbortPolicy()
-    );
-
-    public Reader(EasyDocProperties properties) {
+    public XmlReader(EasyDocProperties properties) {
         this.properties = properties;
     }
-
-    /** 获取当前路径 **/
-    private final String curPath = System.getProperty("user.dir");
 
     /**
      * 单文件读取
@@ -59,24 +44,18 @@ public class Reader {
      * @param file 单文件路径
      * @return 返回view，前端进行渲染
      */
+    @Override
     @SuppressWarnings("unchecked")
-    private View singleReader(File file) {
+    public View singleReader(File file) {
         try {
             View view = new View();
             Controller controller = new Controller();
             Model model = new Model();
-            FileReader fileReader = new FileReader(file);
-            BufferedReader reader = new BufferedReader(fileReader);
-            StringBuilder sb = new StringBuilder();
-            String s = reader.readLine();
-            while (s != null) {
-                sb.append(s);
-                s = reader.readLine();
-            }
+            String str = readFile(file);
             // 匹配出注释代码块
             String regex = "(?<!:)\\/\\/.*|\\/\\*(\\s|.)*?\\*\\/";
             Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(sb);
+            Matcher matcher = pattern.matcher(str);
             while (matcher.find()) {
                 Map<String, String> map = new HashMap<>();
                 Map<String, String> paramMap = new HashMap<>();
@@ -146,57 +125,22 @@ public class Reader {
         return null;
     }
 
-    private void renderController(Controller controller, Map<String, String> map, View view) {
-        controller = controller.toBuilder()
-                .author(map.getOrDefault(Constant.AUTHOR, ""))
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .name(map.getOrDefault(Constant.CONTROLLER, ""))
-                .path(map.getOrDefault(Constant.PATH, ""))
-                .build();
-        view.getControllerList().add(controller);
-    }
-
-    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<Integer, String> returnMap, Map<String, String> bodyMap) {
-        // 其次遍历存储method
-        Method method = new Method().toBuilder()
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .name(map.getOrDefault(Constant.METHOD, ""))
-                .path(map.getOrDefault(Constant.PATH, ""))
-                .body(bodyMap)
-                .paramMap(paramMap)
-                .returnMap(returnMap)
-                .build();
-        controller.getMethodList().add(method);
-    }
-
-    private void renderModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
-        model = model.toBuilder()
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .fieldMap(fieldMap)
-                .name(map.getOrDefault(Constant.MODEL, ""))
-                .build();
-        view.getModelList().add(model);
-    }
-
-
-    /** view缓存 **/
-    private View viewCache = null;
-
     /**
      * 多文件读取
      *
      * @return 返回view，前端进行渲染
      */
+    @Override
     public View multiReader() {
         if (viewCache != null) {
             return viewCache;
         }
         View view = new View(properties);
-        StopWatch sw = new StopWatch("test");
-        File file = new File(curPath + properties.getPath());
+        StopWatch sw = new StopWatch("xml");
+        File file = new File(CUR_PATH + properties.getPath());
         sw.start("multi");
-        getFile(file);
-        System.out.println(fileList);
+        List<File> fileList = new ArrayList<>();
+        getFile(file, fileList);
         for (File aFileList : fileList) {
             view.addView(singleReader(aFileList));
         }
@@ -207,21 +151,4 @@ public class Reader {
         return view;
     }
 
-    private List<File> fileList = new ArrayList<>();
-
-    private void getFile(File file) {
-        if (file.exists()) {
-            if (file.isFile()) {
-                fileList.add(file);
-                return;
-            } else if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File single : files) {
-                        getFile(single);
-                    }
-                }
-            }
-        }
-    }
 }

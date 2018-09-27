@@ -33,7 +33,7 @@ public class Constant {
 
     public static final String BODY = "body";
 
-    public static final String PARAM_MAP = "paramMap";
+    public static final String XML = "xml";
 
-    public static final String RETURN_MAP = "returnMap";
+    public static final String DOC = "doc";
 }
