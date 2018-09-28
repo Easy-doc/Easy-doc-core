@@ -7,3 +7,4 @@ com:
       name: test
       description: 测试项目
       contact: stalary@163.com
+      type: xml
