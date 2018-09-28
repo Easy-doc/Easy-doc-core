@@ -1,11 +1,14 @@
 package com.stalary.easydoc.readers;
 
+import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StopWatch;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -23,11 +26,36 @@ public abstract class BaseReader {
     /** 获取当前路径 **/
     final String CUR_PATH = System.getProperty("user.dir");
 
+    private EasyDocProperties properties;
+
+    public BaseReader(EasyDocProperties properties) {
+        this.properties = properties;
+    }
+
     /**
      * 批量读取文件
      * @return View
      */
-    abstract View multiReader();
+    public View multiReader() {
+        if (viewCache != null) {
+            return viewCache;
+        }
+        View view = new View(properties);
+        StopWatch sw = new StopWatch("easy-doc");
+        File file = new File(CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/"));
+        System.out.println(file.getPath());
+        sw.start("task");
+        List<File> fileList = new ArrayList<>();
+        getFile(file, fileList);
+        for (File aFileList : fileList) {
+            view.addView(singleReader(aFileList));
+        }
+        sw.stop();
+        System.out.println(sw.prettyPrint());
+        // 缓存
+        viewCache = view;
+        return view;
+    }
 
     abstract View singleReader(File file);
 
@@ -63,7 +91,7 @@ public abstract class BaseReader {
         return "";
     }
 
-    void renderController(Controller controller, Map<String, String> map, View view) {
+    private void renderController(Controller controller, Map<String, String> map, View view) {
         controller = controller.toBuilder()
                 .author(map.getOrDefault(Constant.AUTHOR, ""))
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
@@ -73,7 +101,7 @@ public abstract class BaseReader {
         view.getControllerList().add(controller);
     }
 
-    void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<Integer, String> returnMap, Map<String, String> bodyMap) {
+    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<String, String> returnMap, Map<String, String> bodyMap) {
         // 其次遍历存储method
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
@@ -86,12 +114,26 @@ public abstract class BaseReader {
         controller.getMethodList().add(method);
     }
 
-    void renderModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
+    private void renderModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
         model = model.toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .fieldMap(fieldMap)
                 .name(map.getOrDefault(Constant.MODEL, ""))
                 .build();
         view.getModelList().add(model);
+    }
+
+    void render(Controller controller, Map<String, String> map,
+                Map<String, String> paramMap, Map<String, String> fieldMap,
+                Map<String, String> returnMap, Map<String, String> bodyMap,
+                View view, Model model) {
+        // 填充controller，method，model
+        if (map.containsKey(Constant.CONTROLLER)) {
+            renderController(controller, map, view);
+        } else if (map.containsKey(Constant.METHOD)) {
+            renderMethod(controller, map, paramMap, returnMap, bodyMap);
+        } else if (map.containsKey(Constant.MODEL)) {
+            renderModel(model, map, fieldMap, view);
+        }
     }
 }

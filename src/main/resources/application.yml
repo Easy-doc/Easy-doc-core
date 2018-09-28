@@ -3,7 +3,7 @@ server:
 com:
   stalary:
     easydoc:
-      path: /src/test/java/com/stalary/easydoc
+      path: com.stalary.easydoc.test
       name: test
       description: 测试项目
       contact: stalary@163.com

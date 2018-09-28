@@ -14,11 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StopWatch;
 
 import java.io.File;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,8 +37,12 @@ public class XmlReader extends BaseReader {
     private EasyDocProperties properties;
 
     public XmlReader(EasyDocProperties properties) {
+        super(properties);
         this.properties = properties;
     }
+
+    @Autowired
+    ReflectReader reflectReader;
 
     /**
      * 单文件读取
@@ -60,7 +66,7 @@ public class XmlReader extends BaseReader {
                 Map<String, String> map = new HashMap<>();
                 Map<String, String> paramMap = new HashMap<>();
                 Map<String, String> fieldMap = new HashMap<>();
-                Map<Integer, String> returnMap = new HashMap<>();
+                Map<String, String> returnMap = new HashMap<>();
                 Map<String, String> bodyMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
@@ -80,13 +86,13 @@ public class XmlReader extends BaseReader {
                 for (Iterator<Element> it = root.elementIterator(); it.hasNext(); ) {
                     Element element = it.next();
                     switch (element.getName()) {
-                        case Constant.FIELDS:
+                        case Constant.FIELD:
                             for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
                                 Element cur = i.next();
                                 fieldMap.put(cur.getName(), cur.getText());
                             }
                             break;
-                        case Constant.PARAMS:
+                        case Constant.PARAM:
                             for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
                                 Element cur = i.next();
                                 paramMap.put(cur.getName(), cur.getText());
@@ -95,7 +101,7 @@ public class XmlReader extends BaseReader {
                         case Constant.RETURN:
                             for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
                                 Element cur = i.next();
-                                returnMap.put(Integer.valueOf(cur.getName().substring(4)), cur.getText());
+                                returnMap.put(cur.getName().substring(4), cur.getText());
                             }
                             break;
                         case Constant.BODY:
@@ -109,46 +115,13 @@ public class XmlReader extends BaseReader {
                             break;
                     }
                 }
-                // 填充controller，method，model
-                if (map.containsKey(Constant.CONTROLLER)) {
-                    renderController(controller, map, view);
-                } else if (map.containsKey(Constant.METHOD)) {
-                    renderMethod(controller, map, paramMap, returnMap, bodyMap);
-                } else if (map.containsKey(Constant.MODEL)) {
-                    renderModel(model, map, fieldMap, view);
-                }
+                render(controller, map, paramMap, fieldMap, returnMap, bodyMap, view, model);
             }
             return view;
         } catch (Exception e) {
             log.warn("singleReader error!", e);
         }
         return null;
-    }
-
-    /**
-     * 多文件读取
-     *
-     * @return 返回view，前端进行渲染
-     */
-    @Override
-    public View multiReader() {
-        if (viewCache != null) {
-            return viewCache;
-        }
-        View view = new View(properties);
-        StopWatch sw = new StopWatch("xml");
-        File file = new File(CUR_PATH + properties.getPath());
-        sw.start("multi");
-        List<File> fileList = new ArrayList<>();
-        getFile(file, fileList);
-        for (File aFileList : fileList) {
-            view.addView(singleReader(aFileList));
-        }
-        sw.stop();
-        System.out.println(sw.prettyPrint());
-        // 缓存
-        viewCache = view;
-        return view;
     }
 
 }

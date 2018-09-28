@@ -3,23 +3,26 @@
  * <p>
  * Copyright 2018 Stalary.
  */
-package com.stalary.easydoc;
+package com.stalary.easydoc.test;
 
 /**
  * User
- *
- * @author lirongqian
- * @since 2018/09/26
+ * @description 用户对象
+ * @field name 姓名
+ * @field age 年龄
  */
+
+import com.stalary.easydoc.annotation.Model;
 
 /**
  * <model>user</model>
  * <description>用户对象</description>
- * <fields>
+ * <field>
  *     <name>用户名</name>
  *     <age>年龄</age>
- * </fields>
+ * </field>
  */
+@Model
 public class User {
 
     private String name;

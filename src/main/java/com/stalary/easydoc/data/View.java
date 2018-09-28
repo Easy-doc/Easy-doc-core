@@ -30,26 +30,30 @@ public class View {
     private String contact;
 
     /** 所有接口 **/
-    private List<Controller> controllerList = new ArrayList<>();
+    private List<Controller> controllerList;
 
     /** 所有返回对象 **/
-    private List<Model> modelList = new ArrayList<>();
+    private List<Model> modelList;
 
     /**
      * 添加view
      * @param view
      */
     public void addView(View view) {
-        this.getControllerList().addAll(this.getModelList().size(), view.getControllerList());
+        this.getControllerList().addAll(this.getControllerList().size(), view.getControllerList());
         this.getModelList().addAll(view.getModelList());
     }
 
     public View(EasyDocProperties properties) {
+        this.controllerList = new ArrayList<>();
+        this.modelList = new ArrayList<>();
         this.name = properties.getName();
         this.description = properties.getDescription();
         this.contact = properties.getContact();
     }
 
     public View() {
+        this.controllerList = new ArrayList<>();
+        this.modelList = new ArrayList<>();
     }
 }

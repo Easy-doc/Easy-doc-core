@@ -1,4 +1,4 @@
-package com.stalary.easydoc;
+package com.stalary.easydoc.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.data.JsonResult;
@@ -14,9 +14,9 @@ public class ReadTest3 {
      * <method>test3</method>
      * <description>测试方法</description>
      * <path>/test3</path>
-     * <params>
+     * <param>
      *     <name>姓名</name>
-     * </params>
+     * </param>
      * <return>
      *     <code0>hello name</code0>
      * </return>

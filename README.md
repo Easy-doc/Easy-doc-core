@@ -20,13 +20,13 @@
 \<type>\</type> | 请求类型(get,post等)
 \<description>\</description> | 方法的描述
 \<body>\</body> | post方法的请求体
-\<params>\</params> | 请求参数
+\<param>\</param> | 请求参数
 \<return>\</return> | 接口返回描述(如<code0>成功</code0>)
 ### model
 注释名 | 解释
 --- | ---
 \<model>\</model> | model名称
-\<fields>\</fields> | model的属性
+\<field>\</field> | model的属性
 \<description>\</description> | model的描述
 
 

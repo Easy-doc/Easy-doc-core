@@ -1,4 +1,4 @@
-package com.stalary.easydoc;
+package com.stalary.easydoc.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.data.JsonResult;

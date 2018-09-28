@@ -17,9 +17,9 @@ public class Constant {
 
     public static final String METHOD = "method";
 
-    public static final String FIELDS = "fields";
+    public static final String FIELD = "field";
 
-    public static final String PARAMS = "params";
+    public static final String PARAM = "param";
 
     public static final String RETURN = "return";
 

@@ -44,5 +44,5 @@ public class Method {
     private Map<String, String> body;
 
     /** 返回map，key代表code，value代表返回的描述 **/
-    private Map<Integer, String> returnMap = new HashMap<>();
+    private Map<String, String> returnMap = new HashMap<>();
 }

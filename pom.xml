@@ -55,6 +55,11 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.49</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.8.1</version>
+        </dependency>
     </dependencies>
 
     <build>
