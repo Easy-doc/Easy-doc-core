@@ -28,7 +28,7 @@ public abstract class BaseReader {
     ReflectUtils reflectUtils;
 
     /** 获取当前路径 **/
-    final String CUR_PATH = System.getProperty("user.dir");
+    private final String CUR_PATH = System.getProperty("user.dir");
 
     private EasyDocProperties properties;
 
@@ -47,7 +47,7 @@ public abstract class BaseReader {
         View view = new View(properties);
         StopWatch sw = new StopWatch("easy-doc");
         File file = new File(CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/"));
-        sw.start("task");
+        sw.start("analysis");
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
         for (File aFileList : fileList) {
@@ -125,6 +125,17 @@ public abstract class BaseReader {
         view.getModelList().add(model);
     }
 
+    /**
+     * 渲染controller，method，model，部分字段通过反射进行读取
+     * @param controller controller
+     * @param map 所有数据
+     * @param paramMap 参数数据
+     * @param fieldMap 属性数据
+     * @param returnMap 返回参数数据
+     * @param bodyMap post传递的body数据
+     * @param view 前端展示对象
+     * @param model model对象
+     */
     void render(Controller controller, Map<String, String> map,
                 Map<String, String> paramMap, Map<String, String> fieldMap,
                 Map<String, String> returnMap, Map<String, String> bodyMap,
@@ -136,6 +147,7 @@ public abstract class BaseReader {
         } else if (map.containsKey(Constant.METHOD)) {
             map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
             map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
+            map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
             renderMethod(controller, map, paramMap, returnMap, bodyMap);
         } else if (map.containsKey(Constant.MODEL)) {
             renderModel(model, map, fieldMap, view);

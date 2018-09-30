@@ -85,29 +85,34 @@ public class DocReader extends BaseReader {
                         cur = t.substring(1);
                     } else {
                         if (StringUtils.isNotEmpty(cur)) {
-                            if (Constant.PARAM.equals(cur)) {
-                                if (i + 1 < split.length) {
-                                    paramMap.put(t, split[i + 1]);
-                                    i = i + 1;
-                                }
-                            } else if (Constant.RETURN.equals(cur)) {
-                                if (i + 1 < split.length) {
-                                    returnMap.put(t, split[i + 1]);
-                                    i = i + 1;
-                                }
-                            } else if (Constant.FIELD.equals(cur)) {
-                                if (i + 1 < split.length) {
-                                    fieldMap.put(t, split[i + 1]);
-                                    i = i + 1;
-                                }
-                            } else if (Constant.METHOD.equals(cur)) {
-                                if (i + 1 < split.length) {
-                                    map.put(t, split[i + 1]);
-                                    i = i + 1;
-                                }
-                                map.put(Constant.METHOD, t);
-                            } else {
-                                map.put(cur, t);
+                            switch (cur) {
+                                case Constant.PARAM:
+                                    if (i + 1 < split.length) {
+                                        paramMap.put(t, split[i + 1]);
+                                        i = i + 1;
+                                    }
+                                    break;
+                                case Constant.RETURN:
+                                    if (i + 1 < split.length) {
+                                        returnMap.put(t, split[i + 1]);
+                                        i = i + 1;
+                                    }
+                                    break;
+                                case Constant.FIELD:
+                                    if (i + 1 < split.length) {
+                                        fieldMap.put(t, split[i + 1]);
+                                        i = i + 1;
+                                    }
+                                    break;
+                                case Constant.METHOD:
+                                    if (i + 1 < split.length) {
+                                        map.put(t, split[i + 1]);
+                                        i = i + 1;
+                                    }
+                                    map.put(Constant.METHOD, t);
+                                    break;
+                                default:
+                                    map.put(cur, t);
                             }
                         }
                     }

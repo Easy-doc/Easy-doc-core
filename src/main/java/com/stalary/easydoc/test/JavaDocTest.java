@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 /**
  * JavaDocTest
- *
+ * @description 测试controller
  * @author lirongqian
  * @since 2018/09/27
  */
@@ -29,7 +29,7 @@ public class JavaDocTest {
 
     /**
      * @method user 用户测试
-     * @param user
+     * @param user 用户对象
      */
     @RequestMapping(value = "/user", method = RequestMethod.GET)
     public void user(
