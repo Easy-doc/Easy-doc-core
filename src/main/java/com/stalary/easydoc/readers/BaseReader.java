@@ -3,6 +3,7 @@ package com.stalary.easydoc.readers;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
 
 import java.io.BufferedReader;
@@ -22,6 +23,9 @@ public abstract class BaseReader {
 
     /** view缓存 **/
     View viewCache = null;
+
+    @Autowired
+    ReflectUtils reflectUtils;
 
     /** 获取当前路径 **/
     final String CUR_PATH = System.getProperty("user.dir");
@@ -43,7 +47,6 @@ public abstract class BaseReader {
         View view = new View(properties);
         StopWatch sw = new StopWatch("easy-doc");
         File file = new File(CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/"));
-        System.out.println(file.getPath());
         sw.start("task");
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
@@ -92,12 +95,10 @@ public abstract class BaseReader {
     }
 
     private void renderController(Controller controller, Map<String, String> map, View view) {
-        controller = controller.toBuilder()
-                .author(map.getOrDefault(Constant.AUTHOR, ""))
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .name(map.getOrDefault(Constant.CONTROLLER, ""))
-                .path(map.getOrDefault(Constant.PATH, ""))
-                .build();
+        controller.setAuthor(map.getOrDefault(Constant.AUTHOR, ""));
+        controller.setDescription(map.getOrDefault(Constant.DESCRIPTION, ""));
+        controller.setName(map.getOrDefault(Constant.CONTROLLER, ""));
+        controller.setPath(map.getOrDefault(Constant.PATH, ""));
         view.getControllerList().add(controller);
     }
 
@@ -107,6 +108,7 @@ public abstract class BaseReader {
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .name(map.getOrDefault(Constant.METHOD, ""))
                 .path(map.getOrDefault(Constant.PATH, ""))
+                .type(map.getOrDefault(Constant.TYPE, ""))
                 .body(bodyMap)
                 .paramMap(paramMap)
                 .returnMap(returnMap)
@@ -129,8 +131,11 @@ public abstract class BaseReader {
                 View view, Model model) {
         // 填充controller，method，model
         if (map.containsKey(Constant.CONTROLLER)) {
+            map.put(Constant.PATH, reflectUtils.getControllerPath(map.get(Constant.CONTROLLER)));
             renderController(controller, map, view);
         } else if (map.containsKey(Constant.METHOD)) {
+            map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
+            map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
             renderMethod(controller, map, paramMap, returnMap, bodyMap);
         } else if (map.containsKey(Constant.MODEL)) {
             renderModel(model, map, fieldMap, view);

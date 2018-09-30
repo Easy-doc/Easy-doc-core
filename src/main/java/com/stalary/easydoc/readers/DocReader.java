@@ -12,7 +12,6 @@ import com.stalary.easydoc.data.Model;
 import com.stalary.easydoc.data.View;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -38,29 +37,16 @@ public class DocReader extends BaseReader {
         this.properties = properties;
     }
 
-    @Autowired
-    ReflectReader reflectReader;
-
     @Override
     public View singleReader(File file) {
         try {
-            boolean isController = false;
-            boolean isModel = false;
             // 获取文件名称
             String fileName = file.getName();
             String name = fileName.substring(0, fileName.indexOf("."));
-            reflectReader.isController(name);
             View view = new View();
             Controller controller = new Controller();
             Model model = new Model();
             String str = readFile(file);
-            // 包括以下两个注解的为Controller
-            if (str.contains("@Controller") || str.contains("@RestController")) {
-                isController = true;
-            }
-            if (str.contains("@Model")) {
-                isModel = true;
-            }
             // 匹配出注释代码块
             String regex = "(?<!:)\\/\\/.*|\\/\\*(\\s|.)*?\\*\\/";
             Pattern pattern = Pattern.compile(regex);
@@ -86,10 +72,10 @@ public class DocReader extends BaseReader {
                 if (split.length <= 1) {
                     return new View();
                 }
-                if (name.equals(split[1]) && isController) {
+                if (name.equals(split[1]) && reflectUtils.isController(name)) {
                     map.put(Constant.CONTROLLER, split[1]);
                 }
-                if (name.equals(split[1]) && isModel) {
+                if (name.equals(split[1]) && reflectUtils.isModel(name)) {
                     map.put(Constant.MODEL, split[1]);
                 }
                 for (int i = 1; i < split.length; i++) {
@@ -114,6 +100,12 @@ public class DocReader extends BaseReader {
                                     fieldMap.put(t, split[i + 1]);
                                     i = i + 1;
                                 }
+                            } else if (Constant.METHOD.equals(cur)) {
+                                if (i + 1 < split.length) {
+                                    map.put(t, split[i + 1]);
+                                    i = i + 1;
+                                }
+                                map.put(Constant.METHOD, t);
                             } else {
                                 map.put(cur, t);
                             }

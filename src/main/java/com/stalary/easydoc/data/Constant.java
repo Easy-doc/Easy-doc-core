@@ -33,6 +33,8 @@ public class Constant {
 
     public static final String BODY = "body";
 
+    public static final String TYPE = "type";
+
     public static final String XML = "xml";
 
     public static final String DOC = "doc";

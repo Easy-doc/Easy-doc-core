@@ -42,7 +42,7 @@ public class XmlReader extends BaseReader {
     }
 
     @Autowired
-    ReflectReader reflectReader;
+    ReflectUtils reflectUtils;
 
     /**
      * 单文件读取
@@ -70,7 +70,7 @@ public class XmlReader extends BaseReader {
                 Map<String, String> bodyMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
-                // 3. 文档化块级注释
+                // 3. 文l档化块级注释
                 String temp = matcher
                         .group()
                         .replaceAll("\\/\\/[^\n]*", "")

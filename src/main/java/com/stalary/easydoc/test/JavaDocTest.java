@@ -5,7 +5,7 @@
  */
 package com.stalary.easydoc.test;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * JavaDocTest
@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2018/09/27
  */
 @RestController
+@RequestMapping("/doc")
 public class JavaDocTest {
 
     /**
@@ -21,6 +22,7 @@ public class JavaDocTest {
      * @param name 名称
      * @return hello
      */
+    @GetMapping(value = "/test")
     public String test(String name) {
         return "hello " + name;
     }
@@ -29,7 +31,9 @@ public class JavaDocTest {
      * @method user 用户测试
      * @param user
      */
-    public void user(User user) {
+    @RequestMapping(value = "/user", method = RequestMethod.GET)
+    public void user(
+            @RequestBody User user) {
         System.out.println(user);
     }
 }
