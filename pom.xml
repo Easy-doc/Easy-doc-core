@@ -5,9 +5,28 @@
 
     <groupId>com.stalary</groupId>
     <artifactId>easy-doc</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.1-SNAPSHOT</version>
     <packaging>jar</packaging>
-
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <scm>
+        <tag>master</tag>
+        <url>git@github.com:GallantExplorers/Easy-doc.git</url>
+        <connection>scm:git:git@github.com:GallantExplorers/Easy-doc.git</connection>
+        <developerConnection>scm:git:git@github.com:GallantExplorers/Easy-doc.git</developerConnection>
+    </scm>
+    <developers>
+        <developer>
+            <name>stalary</name>
+            <email>stalary@163.com</email>
+            <organization>stalary</organization>
+        </developer>
+    </developers>
     <name>easy-doc</name>
     <description>easy doc</description>
 
@@ -17,7 +36,6 @@
         <version>2.0.5.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -74,6 +92,15 @@
             </plugin>
         </plugins>
     </build>
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
+        </repository>
 
-
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
 </project>

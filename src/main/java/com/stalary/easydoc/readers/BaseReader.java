@@ -22,7 +22,7 @@ import java.util.Map;
 public abstract class BaseReader {
 
     /** view缓存 **/
-    View viewCache = null;
+    private View viewCache = null;
 
     @Autowired
     ReflectUtils reflectUtils;
@@ -62,7 +62,7 @@ public abstract class BaseReader {
 
     abstract View singleReader(File file);
 
-    void getFile(File file, List<File> fileList) {
+    private void getFile(File file, List<File> fileList) {
         if (file.exists()) {
             if (file.isFile()) {
                 fileList.add(file);

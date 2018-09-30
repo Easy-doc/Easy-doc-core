@@ -1,9 +1,45 @@
 # Easy-doc
-简单易用的java接口文档生成
+简单易用的java接口文档生成，目前仍在开发中，仅提供测试版本
+
+# 引入依赖方法
+使用maven引入
+```xml
+<repositories>
+	<repository>
+		<id>oss</id>
+		<name>oss</name>
+		<url>https://oss.sonatype.org/content/groups/public</url>
+	</repository>
+    <repository>
+        <id>aliyun-repository</id>
+        <name>aliyun repository</name>
+        <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+    </repository>
+</repositories>
+
+<dependency>
+    <groupId>com.stalary</groupId>
+    <artifactId>easy-doc</artifactId>
+    <version>1.1-SNAPSHOT</version>
+</dependency>
+```
+
+# 初始化配置
+```yml
+com:
+  stalary:
+    easydoc:
+      name: swagger demo # 项目名称
+      contact: stalary@613.com # 项目联系人
+      description: swagger测试项目 # 项目描述
+      type: doc # 解析方式(doc|xml)
+      path: com.stalary.swagger.controller # 解析的包路径
+```
 
 # 注释书写规则
 > 使用javadoc和xml两种模式，可以在application.yml中进行选择
-> demo都在test中
+
+> demo都在test包中
 ## xml格式
 ### controller
 注释名 | 解释
