@@ -13,6 +13,7 @@ package com.stalary.easydoc.test;
  */
 
 import com.stalary.easydoc.annotation.Model;
+import lombok.Data;
 
 /**
  * <model>user</model>
@@ -23,6 +24,7 @@ import com.stalary.easydoc.annotation.Model;
  * </field>
  */
 @Model
+@Data
 public class User {
 
     private String name;

@@ -48,4 +48,9 @@ public class BeansConfig {
     public ResourceController resourceController() {
         return new ResourceController();
     }
+
+    @Bean
+    public IpConfiguration ipConfiguration() {
+        return new IpConfiguration();
+    }
 }

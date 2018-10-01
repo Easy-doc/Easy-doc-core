@@ -38,4 +38,8 @@ public class Constant {
     public static final String XML = "xml";
 
     public static final String DOC = "doc";
+
+    public static final String SPLIT = ":";
+
+    public static final String HTTP = "http://";
 }
