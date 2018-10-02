@@ -15,6 +15,7 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +30,7 @@ import java.util.Map;
  * @since 2018/09/25
  */
 @RestController()
-@RequestMapping(value = "/easy-doc", produces = {"application/json;charset=UTF-8"})
+@RequestMapping(value = "/easy-doc")
 public class ResourceController {
 
     @Autowired
@@ -42,7 +43,7 @@ public class ResourceController {
 
     private String cookieCache;
 
-    @GetMapping("/resource")
+    @GetMapping(value = "/resource", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public JSONObject getResource() {
         return JsonResult.ok(resourceService.read());
     }

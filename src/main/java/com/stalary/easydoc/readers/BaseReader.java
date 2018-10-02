@@ -8,7 +8,9 @@ import org.springframework.util.StopWatch;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +81,7 @@ public abstract class BaseReader {
 
     String readFile(File file) {
         try {
-            FileReader fileReader = new FileReader(file);
+            InputStreamReader fileReader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();
             String s = reader.readLine();
