@@ -28,8 +28,8 @@ import java.util.Map;
  * @author lirongqian
  * @since 2018/09/25
  */
-@RestController
-@RequestMapping("/easy-doc")
+@RestController()
+@RequestMapping(value = "/easy-doc", produces = {"application/json;charset=UTF-8"})
 public class ResourceController {
 
     @Autowired
