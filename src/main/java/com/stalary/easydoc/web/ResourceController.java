@@ -92,6 +92,13 @@ public class ResourceController {
         return JsonResult.ok(user);
     }
 
+    @PostMapping("/ab")
+    public JSONObject abTest(
+            @RequestBody Map<String, String> params) {
+        // 对接ab测试
+        return JsonResult.ok();
+    }
+
     public String transRequest(String url) {
         return Constant.HTTP + Utils.getHostIp() + Constant.SPLIT + ipConfiguration.getPort() + url;
     }
