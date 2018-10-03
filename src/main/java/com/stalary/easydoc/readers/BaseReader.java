@@ -81,6 +81,7 @@ public abstract class BaseReader {
 
     String readFile(File file) {
         try {
+            // 此处设置编码，解决乱码问题
             InputStreamReader fileReader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
             BufferedReader reader = new BufferedReader(fileReader);
             StringBuilder sb = new StringBuilder();

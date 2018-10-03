@@ -53,4 +53,9 @@ public class BeansConfig {
     public IpConfiguration ipConfiguration() {
         return new IpConfiguration();
     }
+
+    @Bean
+    public TimeAdvice timeAdvice() {
+        return new TimeAdvice();
+    }
 }

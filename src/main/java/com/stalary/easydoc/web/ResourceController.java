@@ -9,7 +9,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.config.IpConfiguration;
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.JsonResult;
+import com.stalary.easydoc.data.TestResponse;
 import com.stalary.easydoc.test.User;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
@@ -22,6 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ResourceController
@@ -29,8 +35,9 @@ import java.util.Map;
  * @author lirongqian
  * @since 2018/09/25
  */
-@RestController()
+@RestController
 @RequestMapping(value = "/easy-doc")
+@Slf4j
 public class ResourceController {
 
     @Autowired
@@ -84,8 +91,8 @@ public class ResourceController {
         return JsonResult.ok();
     }
 
-    @PostMapping("/test")
-    public JSONObject test(
+    @PostMapping("/token")
+    public JSONObject token(
             HttpServletRequest request,
             User user) {
         String token = request.getHeader("token");
@@ -93,12 +100,69 @@ public class ResourceController {
         return JsonResult.ok(user);
     }
 
-    @PostMapping("/ab")
-    public JSONObject abTest(
+    /**
+     * post请求测试
+     *
+     * @param n      请求数量
+     * @param c      并发数量
+     * @param C      cookie
+     * @param url    请求地址
+     * @param params 参数
+     * @return
+     */
+    @PostMapping("/postTest")
+    public JSONObject postTest(
+            @RequestParam String url,
+            @RequestParam(required = false, defaultValue = "1") int n,
+            @RequestParam(required = false, defaultValue = "1") int c,
+            @RequestParam(required = false, defaultValue = "") String C,
             @RequestBody Map<String, String> params) {
-        // 对接ab测试
+
         return JsonResult.ok();
     }
+
+    ExecutorService exec;
+    @GetMapping("/getTest")
+    public JSONObject getTest(
+            @RequestParam String url,
+            @RequestParam(required = false, defaultValue = "1") int n,
+            @RequestParam(required = false, defaultValue = "1") int c,
+            @RequestParam(required = false, defaultValue = "") String C) throws InterruptedException {
+        // 替换为ab
+        CountDownLatch cd = new CountDownLatch(n);
+        long totalTimeStart = System.currentTimeMillis();
+        AtomicInteger min = new AtomicInteger(Integer.MAX_VALUE);
+        AtomicInteger max = new AtomicInteger(Integer.MIN_VALUE);
+        AtomicInteger sum = new AtomicInteger(0);
+        exec = Executors.newFixedThreadPool(c);
+        for (int i = 0; i < n; i++) {
+            exec.execute(() -> {
+                try {
+                    long start = System.currentTimeMillis();
+                    Request.Get(transRequest(url))
+                            .addHeader("cookie", C)
+                            .execute();
+                    int temp = (int) (System.currentTimeMillis() - start);
+                    // 计算请求耗时最长和最大
+                    min.set(Math.min(temp, min.get()));
+                    max.set(Math.max(temp, max.get()));
+                    sum.addAndGet(temp);
+                } catch (Exception e) {
+                    log.warn("getTest error", e);
+                } finally {
+                    cd.countDown();
+                }
+            });
+        }
+        cd.await();
+        // 计算总耗时
+        int totalTime = (int) (System.currentTimeMillis() - totalTimeStart);
+        int avgTime = sum.get() / n;
+        int qps = 1000 * n / totalTime;
+        exec.shutdownNow();
+        return JsonResult.ok(new TestResponse(max.get(), min.get(), totalTime, avgTime, qps));
+    }
+
 
     public String transRequest(String url) {
         return Constant.HTTP + Utils.getHostIp() + Constant.SPLIT + ipConfiguration.getPort() + url;
