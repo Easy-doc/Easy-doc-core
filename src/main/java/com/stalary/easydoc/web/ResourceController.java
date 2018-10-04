@@ -31,7 +31,7 @@ import java.util.UUID;
 
 /**
  * ResourceController
- *
+ * @description 资源获取controller
  * @author lirongqian
  * @since 2018/09/25
  */
@@ -55,6 +55,12 @@ public class ResourceController {
         return JsonResult.ok(resourceService.read());
     }
 
+    /**
+     * @method get get方法测试
+     * @param url 测试的url，包括参数
+     * @return data 返回值
+     * @throws Exception
+     */
     @GetMapping("/get")
     public JSONObject get(
             @RequestParam String url) throws Exception {
@@ -65,6 +71,13 @@ public class ResourceController {
         return JsonResult.ok(JSONObject.parseObject(response.returnContent().asString()).get("data"));
     }
 
+    /**
+     * @method post post方法测试
+     * @param url 测试的url，包括参数
+     * @param params body中参数
+     * @return data 返回值
+     * @throws Exception
+     */
     @PostMapping("/post")
     public JSONObject post(
             @RequestParam String url,
@@ -83,6 +96,11 @@ public class ResourceController {
         return JsonResult.ok(JSONObject.parseObject(response.returnContent().asString()).get("data"));
     }
 
+    /**
+     * @method addAuth 添加auth(cookie|token)
+     * @param params cookie|token(可以两者都传)
+     * @return JSONObject
+     */
     @PostMapping("/addAuth")
     public JSONObject addAuth(
             @RequestBody Map<String, String> params) {
@@ -91,25 +109,29 @@ public class ResourceController {
         return JsonResult.ok();
     }
 
+    /**
+     * @method token 测试post方法
+     * @param request HttpServletRequest
+     * @param user 用户对象
+     * @return user 用户对象
+     */
     @PostMapping("/token")
     public JSONObject token(
             HttpServletRequest request,
             @RequestBody User user) {
         String token = request.getHeader("token");
-//        System.out.println(user);
         System.out.println(request.getHeader("cookie"));
         return JsonResult.ok(user);
     }
 
     /**
-     * post请求测试
-     *
+     * @method postTest post请求压力测试
      * @param n      请求数量
      * @param c      并发数量
-     * @param cookie      cookie
+     * @param cookie    cookie
      * @param url    请求地址
      * @param params 参数
-     * @return
+     * @return TestResponse 时间统计对象
      */
     @PostMapping("/postTest")
     public JSONObject postTest(
@@ -121,6 +143,14 @@ public class ResourceController {
         return abTest(n, c, cookie, url, params);
     }
 
+    /**
+     * @method getTest get请求压力测试
+     * @param url   请求地址
+     * @param n     请求数量
+     * @param c     并发数量
+     * @param cookie    cookie
+     * @return TestResponse 时间统计对象
+     */
     @GetMapping("/getTest")
     public JSONObject getTest(
             @RequestParam String url,

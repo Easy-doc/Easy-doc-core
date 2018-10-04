@@ -3,8 +3,8 @@ server:
 com:
   stalary:
     easydoc:
-      path: com.stalary.easydoc.test
+      path: com.stalary.easydoc.web
       name: test
       description: 测试项目
       contact: stalary@163.com
-      type: xml
+      type: doc

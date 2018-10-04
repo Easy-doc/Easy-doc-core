@@ -45,7 +45,9 @@ public abstract class BaseReader {
         }
         View view = new View(properties);
         StopWatch sw = new StopWatch("easy-doc");
-        File file = new File(Constant.CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/"));
+        String fileName = Constant.CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/");
+        File file = new File(fileName);
+        System.out.println(fileName);
         sw.start("analysis");
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
