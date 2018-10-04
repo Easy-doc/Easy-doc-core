@@ -42,4 +42,7 @@ public class Constant {
     public static final String SPLIT = ":";
 
     public static final String HTTP = "http://";
+
+    /** 获取当前路径 **/
+    public static final String CUR_PATH = System.getProperty("user.dir");
 }

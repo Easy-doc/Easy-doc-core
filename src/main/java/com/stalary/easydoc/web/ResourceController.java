@@ -22,12 +22,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * ResourceController
@@ -94,9 +94,10 @@ public class ResourceController {
     @PostMapping("/token")
     public JSONObject token(
             HttpServletRequest request,
-            User user) {
+            @RequestBody User user) {
         String token = request.getHeader("token");
-        System.out.println(token);
+//        System.out.println(user);
+        System.out.println(request.getHeader("cookie"));
         return JsonResult.ok(user);
     }
 
@@ -105,7 +106,7 @@ public class ResourceController {
      *
      * @param n      请求数量
      * @param c      并发数量
-     * @param C      cookie
+     * @param cookie      cookie
      * @param url    请求地址
      * @param params 参数
      * @return
@@ -115,10 +116,9 @@ public class ResourceController {
             @RequestParam String url,
             @RequestParam(required = false, defaultValue = "1") int n,
             @RequestParam(required = false, defaultValue = "1") int c,
-            @RequestParam(required = false, defaultValue = "") String C,
+            @RequestParam(required = false, defaultValue = "") String cookie,
             @RequestBody Map<String, String> params) {
-
-        return JsonResult.ok();
+        return abTest(n, c, cookie, url, params);
     }
 
     @GetMapping("/getTest")
@@ -127,25 +127,36 @@ public class ResourceController {
             @RequestParam(required = false, defaultValue = "1") int n,
             @RequestParam(required = false, defaultValue = "1") int c,
             @RequestParam(required = false, defaultValue = "") String cookie) {
-        return abTest(n, c, cookie, url);
+        return abTest(n, c, cookie, url, null);
     }
 
 
-    public String transRequest(String url) {
+    private String transRequest(String url) {
         return Constant.HTTP + Utils.getHostIp() + Constant.SPLIT + ipConfiguration.getPort() + url;
     }
 
-    private JSONObject abTest(int n, int c, String cookie, String url) {
+    private JSONObject abTest(int n, int c, String cookie, String url, Map<String, String> params) {
+        File file = new File("");
         try {
             StringBuilder cmdBuilder = new StringBuilder();
-            cmdBuilder.append("ab -n ").append(n).append(" -c").append(c);
+            cmdBuilder.append("ab -n ").append(n).append(" -c ").append(c);
             if (StringUtils.isNotEmpty(cookie)) {
                 cmdBuilder.append(" -C ").append(cookie);
             }
+            if (params != null) {
+                String fileName = Constant.CUR_PATH + "/postFile:" + UUID.randomUUID().toString().substring(0, 5) + ".txt";
+                file = new File(fileName);
+                FileOutputStream fileOutput = new FileOutputStream(file, false);
+                OutputStreamWriter writer = new OutputStreamWriter(fileOutput, Charset.forName("UTF-8"));
+                writer.write(JSONObject.toJSONString(params));
+                writer.flush();
+                cmdBuilder.append(" -p ").append(fileName);
+                cmdBuilder.append(" -T ").append("application/json");
+            }
             cmdBuilder.append(" ").append(transRequest(url));
+            log.info("ab test: " + cmdBuilder);
             Process exec = Runtime.getRuntime().exec(cmdBuilder.toString());
-            BufferedInputStream buffer = new BufferedInputStream(exec.getInputStream());
-            BufferedReader reader = new BufferedReader(new InputStreamReader(buffer));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(exec.getInputStream()));
             TestResponse response = new TestResponse();
             String str = reader.readLine();
             while (str != null) {
@@ -166,6 +177,10 @@ public class ResourceController {
             return JsonResult.ok(response);
         } catch (Exception e) {
             log.warn("cmd error!", e);
+        } finally {
+            if (file.exists()) {
+                file.delete();
+            }
         }
         return JsonResult.ok();
     }

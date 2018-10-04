@@ -29,9 +29,6 @@ public abstract class BaseReader {
     @Autowired
     ReflectUtils reflectUtils;
 
-    /** 获取当前路径 **/
-    private final String CUR_PATH = System.getProperty("user.dir");
-
     private EasyDocProperties properties;
 
     public BaseReader(EasyDocProperties properties) {
@@ -48,7 +45,7 @@ public abstract class BaseReader {
         }
         View view = new View(properties);
         StopWatch sw = new StopWatch("easy-doc");
-        File file = new File(CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/"));
+        File file = new File(Constant.CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/"));
         sw.start("analysis");
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
