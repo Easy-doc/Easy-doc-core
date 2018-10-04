@@ -7,6 +7,7 @@ package com.stalary.easydoc.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * TestResponse
@@ -16,6 +17,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TestResponse {
 
     /** 最慢时间 **/
@@ -24,11 +26,9 @@ public class TestResponse {
     /** 最快时间 **/
     private int fastTime;
 
-    /** 总耗时 **/
-    private int totalTime;
-
     /** 平均时间 **/
-    private int avgTime;
+    private double avgTime;
 
-    private int qps;
+    /** qps **/
+    private double qps;
 }

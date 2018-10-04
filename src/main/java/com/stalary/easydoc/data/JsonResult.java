@@ -25,4 +25,15 @@ public class JsonResult {
                 .fluentPut("code", 0)
                 .fluentPut("data", data);
     }
+
+    public static JSONObject failed() {
+        return failed(null);
+    }
+
+    public static JSONObject failed(String msg) {
+        return new JSONObject()
+                .fluentPut("success", false)
+                .fluentPut("code", -1)
+                .fluentPut("msg", msg);
+    }
 }

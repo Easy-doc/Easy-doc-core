@@ -12,6 +12,7 @@ import com.stalary.easydoc.data.JsonResult;
 import com.stalary.easydoc.data.TestResponse;
 import com.stalary.easydoc.test.User;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
@@ -21,13 +22,12 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * ResourceController
@@ -121,50 +121,52 @@ public class ResourceController {
         return JsonResult.ok();
     }
 
-    ExecutorService exec;
     @GetMapping("/getTest")
     public JSONObject getTest(
             @RequestParam String url,
             @RequestParam(required = false, defaultValue = "1") int n,
             @RequestParam(required = false, defaultValue = "1") int c,
-            @RequestParam(required = false, defaultValue = "") String C) throws InterruptedException {
-        // 替换为ab
-        CountDownLatch cd = new CountDownLatch(n);
-        long totalTimeStart = System.currentTimeMillis();
-        AtomicInteger min = new AtomicInteger(Integer.MAX_VALUE);
-        AtomicInteger max = new AtomicInteger(Integer.MIN_VALUE);
-        AtomicInteger sum = new AtomicInteger(0);
-        exec = Executors.newFixedThreadPool(c);
-        for (int i = 0; i < n; i++) {
-            exec.execute(() -> {
-                try {
-                    long start = System.currentTimeMillis();
-                    Request.Get(transRequest(url))
-                            .addHeader("cookie", C)
-                            .execute();
-                    int temp = (int) (System.currentTimeMillis() - start);
-                    // 计算请求耗时最长和最大
-                    min.set(Math.min(temp, min.get()));
-                    max.set(Math.max(temp, max.get()));
-                    sum.addAndGet(temp);
-                } catch (Exception e) {
-                    log.warn("getTest error", e);
-                } finally {
-                    cd.countDown();
-                }
-            });
-        }
-        cd.await();
-        // 计算总耗时
-        int totalTime = (int) (System.currentTimeMillis() - totalTimeStart);
-        int avgTime = sum.get() / n;
-        int qps = 1000 * n / totalTime;
-        exec.shutdownNow();
-        return JsonResult.ok(new TestResponse(max.get(), min.get(), totalTime, avgTime, qps));
+            @RequestParam(required = false, defaultValue = "") String cookie) {
+        return abTest(n, c, cookie, url);
     }
 
 
     public String transRequest(String url) {
         return Constant.HTTP + Utils.getHostIp() + Constant.SPLIT + ipConfiguration.getPort() + url;
+    }
+
+    private JSONObject abTest(int n, int c, String cookie, String url) {
+        try {
+            StringBuilder cmdBuilder = new StringBuilder();
+            cmdBuilder.append("ab -n ").append(n).append(" -c").append(c);
+            if (StringUtils.isNotEmpty(cookie)) {
+                cmdBuilder.append(" -C ").append(cookie);
+            }
+            cmdBuilder.append(" ").append(transRequest(url));
+            Process exec = Runtime.getRuntime().exec(cmdBuilder.toString());
+            BufferedInputStream buffer = new BufferedInputStream(exec.getInputStream());
+            BufferedReader reader = new BufferedReader(new InputStreamReader(buffer));
+            TestResponse response = new TestResponse();
+            String str = reader.readLine();
+            while (str != null) {
+                str = str.replaceAll(" +", " ");
+                if (str.contains("Requests per second")) {
+                    String temp = str.split(":")[1];
+                    response.setQps(Double.valueOf(temp.split(" ")[1]));
+                } else if (str.contains("longest request")) {
+                    response.setSlowTime(Integer.valueOf(str.split(" ")[2]));
+                } else if (str.contains("50%")) {
+                    response.setFastTime(Integer.valueOf(str.split(" ")[2]));
+                } else if (str.contains("Time per request") && str.contains("(mean)")) {
+                    String temp = str.split(":")[1];
+                    response.setAvgTime(Double.valueOf(temp.split(" ")[1]));
+                }
+                str = reader.readLine();
+            }
+            return JsonResult.ok(response);
+        } catch (Exception e) {
+            log.warn("cmd error!", e);
+        }
+        return JsonResult.ok();
     }
 }
