@@ -18,7 +18,6 @@ import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -50,7 +49,7 @@ public class ResourceController {
 
     private String cookieCache;
 
-    @GetMapping(value = "/resource", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/resource")
     public JSONObject getResource() {
         return JsonResult.ok(resourceService.read());
     }
@@ -59,11 +58,11 @@ public class ResourceController {
      * @method get get方法测试
      * @param url 测试的url，包括参数
      * @return data 返回值
-     * @throws Exception
+     * @throws IOException 执行http请求时的异常
      */
     @GetMapping("/get")
     public JSONObject get(
-            @RequestParam String url) throws Exception {
+            @RequestParam String url) throws IOException {
         Response response = Request.Get(transRequest(url))
                 .addHeader("token", tokenCache)
                 .addHeader("cookie", cookieCache)
@@ -76,12 +75,12 @@ public class ResourceController {
      * @param url 测试的url，包括参数
      * @param params body中参数
      * @return data 返回值
-     * @throws Exception
+     * @throws IOException 执行http请求时的异常
      */
     @PostMapping("/post")
     public JSONObject post(
             @RequestParam String url,
-            @RequestBody Map<String, String> params) throws Exception {
+            @RequestBody Map<String, String> params) throws IOException {
         List<NameValuePair> nameValuePairs = new ArrayList<>();
         if (params != null) {
             for (Map.Entry<String, String> entry : params.entrySet()) {
@@ -112,8 +111,7 @@ public class ResourceController {
     /**
      * @method token 测试post方法
      * @param request HttpServletRequest
-     * @param user 用户对象
-     * @return user 用户对象
+     * @return User 用户对象
      */
     @PostMapping("/token")
     public JSONObject token(
