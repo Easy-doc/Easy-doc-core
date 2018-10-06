@@ -12,9 +12,11 @@ import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -150,6 +152,37 @@ public class ReflectUtils {
             return Class.forName(properties.getPath() + "." + name);
         } catch (Exception e) {
             log.warn("path2Class error!", e);
+        }
+        return null;
+    }
+
+    public Object getBody(String controllerName, String methodName) {
+        try {
+            Class clazz = path2Class(controllerName);
+            if (clazz != null) {
+                for (Method method : clazz.getDeclaredMethods()) {
+                    Parameter[] parameters = method.getParameters();
+                    for (Parameter parameter : parameters) {
+                        if (parameter.isAnnotationPresent(RequestBody.class)) {
+                            System.out.println(parameter.getType().getName());
+                        }
+                    }
+                    /*if (method.getName().equals(methodName)) {
+                        Type[] types = method.getGenericParameterTypes();
+                        for (Type type : types) {
+                            String path = properties.getPath();
+                            String temp = path.substring(0, path.length() < 3 ? path.length() : 3);
+                            String typeName = type.getTypeName();
+                            if (typeName.startsWith(temp)) {
+                                Object object = Class.forName(typeName);
+                                return object;
+                            }
+                        }
+                    }*/
+                }
+            }
+        } catch (Exception e) {
+            log.warn("getBody error!", e);
         }
         return null;
     }

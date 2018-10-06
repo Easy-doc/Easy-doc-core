@@ -1,5 +1,6 @@
 package com.stalary.easydoc.readers;
 
+import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
@@ -47,7 +48,6 @@ public abstract class BaseReader {
         StopWatch sw = new StopWatch("easy-doc");
         String fileName = Constant.CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/");
         File file = new File(fileName);
-        System.out.println(fileName);
         sw.start("analysis");
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
@@ -149,6 +149,7 @@ public abstract class BaseReader {
         } else if (map.containsKey(Constant.METHOD)) {
             map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
             map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
+            map.put(Constant.BODY, JSONObject.toJSONString(reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD))));
             map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
             renderMethod(controller, map, paramMap, returnMap, bodyMap);
         } else if (map.containsKey(Constant.MODEL)) {
