@@ -5,11 +5,11 @@
 使用maven引入
 ```xml
 <repositories>
-	<repository>
-		<id>oss</id>
-		<name>oss</name>
-		<url>https://oss.sonatype.org/content/groups/public</url>
-	</repository>
+    <repository>
+	<id>oss</id>
+	<name>oss</name>
+	<url>https://oss.sonatype.org/content/groups/public</url>
+    </repository>
     <repository>
         <id>aliyun-repository</id>
         <name>aliyun repository</name>
@@ -33,7 +33,7 @@ com:
       contact: stalary@613.com # 项目联系人
       description: swagger测试项目 # 项目描述
       type: doc # 解析方式(doc|xml)
-      path: com.stalary.swagger.controller # 解析的包路径
+      path: com.stalary.swagger # 解析的包路径(包括data和controller的包)
 ```
 
 # 注释书写规则
@@ -76,8 +76,6 @@ com:
 @return: | 方法返回值，不同code的可以写多个，返回对象使用json格式或者指定对象路径(包名+类名)
 @throws: | 抛出的异常
 @param: | 参数名
-@required: | 必填的参数名
-@body: | post方法传递的body 
 @example: | 传递参数的例子
 @cookie: | 设置此注释会从header中读取cookie用于接口测试
 @token: | 设置此注释会从header中读取token用于接口测试
