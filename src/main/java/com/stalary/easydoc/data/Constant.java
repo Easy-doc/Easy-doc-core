@@ -34,8 +34,6 @@ public class Constant {
 
     public static final String PATH = "path";
 
-    public static final String BODY = "body";
-
     public static final String TYPE = "type";
 
     public static final String XML = "xml";
@@ -45,8 +43,6 @@ public class Constant {
     public static final String SPLIT = ":";
 
     public static final String HTTP = "http://";
-
-    public static final String INPUT = "input";
 
     public static final String OUTPUT = "output";
 

@@ -52,7 +52,6 @@ public class DocReader extends BaseReader {
                 Map<String, String> paramMap = new HashMap<>();
                 Map<String, String> fieldMap = new HashMap<>();
                 Map<String, String> returnMap = new HashMap<>();
-                Map<String, String> bodyMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
                 // 3. 合并多个空格
@@ -113,7 +112,7 @@ public class DocReader extends BaseReader {
                         }
                     }
                 }
-                render(controller, map, paramMap, fieldMap, returnMap, bodyMap, view, model);
+                render(controller, map, paramMap, fieldMap, returnMap, view, model);
             }
         } catch (Exception e) {
             log.warn("singleReader error!", e);

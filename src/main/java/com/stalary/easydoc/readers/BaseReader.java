@@ -131,15 +131,14 @@ public abstract class BaseReader {
         view.getControllerList().add(controller);
     }
 
-    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<String, String> returnMap, Map<String, String> bodyMap, Model input) {
+    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<String, String> returnMap, Model body) {
         // 其次遍历存储method
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .name(map.getOrDefault(Constant.METHOD, ""))
                 .path(map.getOrDefault(Constant.PATH, ""))
                 .type(map.getOrDefault(Constant.TYPE, ""))
-                .body(bodyMap)
-                .input(input)
+                .body(body)
                 .paramMap(paramMap)
                 .returnMap(returnMap)
                 .build();
@@ -159,11 +158,11 @@ public abstract class BaseReader {
             for (Controller controller : controllerList) {
                 List<Method> methodList = controller.getMethodList();
                 for (Method method : methodList) {
-                    if (method.getInput() != null) {
+                    if (method.getBody() != null) {
                         // 当input还未解析时，存入model
-                        if (model.getName().equals(method.getInput().getName())) {
-                            if (StringUtils.isEmpty(method.getInput().getDescription())) {
-                                method.setInput(model);
+                        if (model.getName().equals(method.getBody().getName())) {
+                            if (StringUtils.isEmpty(method.getBody().getDescription())) {
+                                method.setBody(model);
                             }
                         }
                     }
@@ -179,14 +178,12 @@ public abstract class BaseReader {
      * @param paramMap 参数数据
      * @param fieldMap 属性数据
      * @param returnMap 返回参数数据
-     * @param bodyMap post传递的body数据
      * @param view 前端展示对象
      * @param model model对象
      */
     void render(Controller controller, Map<String, String> map,
                 Map<String, String> paramMap, Map<String, String> fieldMap,
-                Map<String, String> returnMap, Map<String, String> bodyMap,
-                View view, Model model) {
+                Map<String, String> returnMap, View view, Model model) {
         // 填充controller，method，model
         if (map.size() > 0) {
             if (map.containsKey(Constant.CONTROLLER)) {
@@ -196,7 +193,7 @@ public abstract class BaseReader {
                 map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
                 map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
                 map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
-                renderMethod(controller, map, paramMap, returnMap, bodyMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
+                renderMethod(controller, map, paramMap, returnMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
             } else if (map.containsKey(Constant.MODEL)) {
                 renderModel(model, map, fieldMap, view);
             }

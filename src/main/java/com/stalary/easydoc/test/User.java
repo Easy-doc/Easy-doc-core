@@ -15,7 +15,7 @@ import com.stalary.easydoc.annotation.ModelData;
 import lombok.Data;
 
 /**
- * <model>user</model>
+ * <model>User</model>
  * <description>用户对象</description>
  * <field>
  *     <name>用户名</name>

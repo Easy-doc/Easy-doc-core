@@ -2,6 +2,7 @@ package com.stalary.easydoc.test;
 
 import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.data.JsonResult;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +36,8 @@ public class ReadTest1 {
      * </return>
      */
     @RequestMapping(value = "/user", method = RequestMethod.POST)
-    public JSONObject user(User user) {
+    public JSONObject user(
+            @RequestBody User user) {
         return JsonResult.ok(user);
     }
 }

@@ -65,7 +65,6 @@ public class XmlReader extends BaseReader {
                 Map<String, String> paramMap = new HashMap<>();
                 Map<String, String> fieldMap = new HashMap<>();
                 Map<String, String> returnMap = new HashMap<>();
-                Map<String, String> bodyMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
                 // 3. 文l档化块级注释
@@ -102,18 +101,12 @@ public class XmlReader extends BaseReader {
                                 returnMap.put(cur.getName().substring(4), cur.getText());
                             }
                             break;
-                        case Constant.BODY:
-                            for (Iterator<Element> i = element.elementIterator(); i.hasNext(); ) {
-                                Element cur = i.next();
-                                bodyMap.put(cur.getName(), cur.getText());
-                            }
-                            break;
                         default:
                             map.put(element.getName(), element.getText());
                             break;
                     }
                 }
-                render(controller, map, paramMap, fieldMap, returnMap, bodyMap, view, model);
+                render(controller, map, paramMap, fieldMap, returnMap, view, model);
             }
         } catch (Exception e) {
             log.warn("singleReader error!", e);

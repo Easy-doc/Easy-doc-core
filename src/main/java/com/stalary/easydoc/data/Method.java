@@ -40,16 +40,9 @@ public class Method {
     /** 参数map，key代表参数名称，value默认为"" **/
     private Map<String, String> paramMap = new HashMap<>();
 
-    /** post方法中的body **/
-    @Deprecated
-    private Map<String, String> body;
-
     /** 返回map，key代表code，value代表返回的描述 **/
     private Map<String, String> returnMap = new HashMap<>();
 
-    /** 输入对象 **/
-    private Model input;
-
-    /** 输出对象 **/
-    private Model output;
+    /** post方法中的body **/
+    private Model body;
 }
