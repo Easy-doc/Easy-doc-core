@@ -30,10 +30,6 @@ public class ReadTest1 {
     /**
      * <method>user</method>
      * <description>测试对象方法</description>
-     * <body>
-     *     <name>用户名</name>
-     *     <age>年龄</age>
-     * </body>
      * <return>
      *     <code0>user对象</code0>
      * </return>

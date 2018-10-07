@@ -173,14 +173,17 @@ public class ReflectUtils {
                                 if (!name.startsWith("java")) {
                                     final String finalName = name.substring(name.lastIndexOf(".") + 1);
                                     AtomicReference<Model> finalModel = new AtomicReference<>();
-                                    System.out.println(view.getModelList());
                                     view.getModelList().forEach(model -> {
                                         if (model.getName().equals(finalName)) {
                                             finalModel.set(model);
                                         }
                                     });
-                                    System.out.println(finalModel.get());
-                                    return finalModel.get();
+                                    // 还未解析出model时，暂时存储name
+                                    Model model = finalModel.get();
+                                    if (model != null) {
+                                        return model;
+                                    }
+                                    return new Model().toBuilder().name(finalName).build();
                                 }
                             }
                         }

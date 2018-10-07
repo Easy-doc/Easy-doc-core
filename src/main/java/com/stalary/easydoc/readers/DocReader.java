@@ -9,7 +9,6 @@ import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Controller;
 import com.stalary.easydoc.data.Model;
-import com.stalary.easydoc.data.View;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -30,20 +29,17 @@ import java.util.regex.Pattern;
 @Component
 public class DocReader extends BaseReader {
 
-    private EasyDocProperties properties;
-
     public DocReader(EasyDocProperties properties) {
         super(properties);
-        this.properties = properties;
     }
 
+    // todo: body待完成
     @Override
-    public View singleReader(File file) {
+    public void singleReader(File file) {
         try {
             // 获取文件名称
             String fileName = file.getName();
             String name = fileName.substring(0, fileName.indexOf("."));
-            View view = new View();
             Controller controller = new Controller();
             Model model = new Model();
             String str = readFile(file);
@@ -70,7 +66,7 @@ public class DocReader extends BaseReader {
                 String[] split = temp.split(" ");
                 String cur = "";
                 if (split.length <= 1) {
-                    return new View();
+                    return;
                 }
                 if (name.equals(split[1]) && reflectUtils.isController(name)) {
                     map.put(Constant.CONTROLLER, split[1]);
@@ -119,11 +115,9 @@ public class DocReader extends BaseReader {
                 }
                 render(controller, map, paramMap, fieldMap, returnMap, bodyMap, view, model);
             }
-            return view;
         } catch (Exception e) {
             log.warn("singleReader error!", e);
         }
-        return new View();
     }
 
 }

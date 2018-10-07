@@ -5,6 +5,7 @@ import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
+import org.springframework.util.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +27,8 @@ public abstract class BaseReader {
     /** view缓存 **/
     private View viewCache = null;
 
+    protected View view;
+
     @Autowired
     ReflectUtils reflectUtils;
 
@@ -43,7 +46,7 @@ public abstract class BaseReader {
         if (viewCache != null) {
             return viewCache;
         }
-        View view = new View(properties);
+        view = new View(properties);
         StopWatch sw = new StopWatch("easy-doc");
         String fileName = Constant.CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/");
         File file = new File(fileName);
@@ -53,7 +56,7 @@ public abstract class BaseReader {
         pathMapper(fileList);
         System.out.println(Constant.pathMap);
         for (File aFileList : fileList) {
-            view.addView(singleReader(aFileList));
+            singleReader(aFileList);
         }
         sw.stop();
         System.out.println(sw.prettyPrint());
@@ -85,7 +88,7 @@ public abstract class BaseReader {
         return new NamePack(packPath.substring(packPath.lastIndexOf(".") + 1), packPath);
     }
 
-    abstract View singleReader(File file);
+    abstract void singleReader(File file);
 
     private void getFile(File file, List<File> fileList) {
         if (file.exists()) {
@@ -150,6 +153,23 @@ public abstract class BaseReader {
                 .name(map.getOrDefault(Constant.MODEL, ""))
                 .build();
         view.getModelList().add(model);
+        // 渲染input
+        List<Controller> controllerList = view.getControllerList();
+        if (controllerList.size() > 0) {
+            for (Controller controller : controllerList) {
+                List<Method> methodList = controller.getMethodList();
+                for (Method method : methodList) {
+                    if (method.getInput() != null) {
+                        // 当input还未解析时，存入model
+                        if (model.getName().equals(method.getInput().getName())) {
+                            if (StringUtils.isEmpty(method.getInput().getDescription())) {
+                                method.setInput(model);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -168,17 +188,18 @@ public abstract class BaseReader {
                 Map<String, String> returnMap, Map<String, String> bodyMap,
                 View view, Model model) {
         // 填充controller，method，model
-        if (map.containsKey(Constant.CONTROLLER)) {
-            map.put(Constant.PATH, reflectUtils.getControllerPath(map.get(Constant.CONTROLLER)));
-            renderController(controller, map, view);
-        } else if (map.containsKey(Constant.METHOD)) {
-            map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
-            map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
-            map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
-            // todo:model为后解析。。
-            renderMethod(controller, map, paramMap, returnMap, bodyMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
-        } else if (map.containsKey(Constant.MODEL)) {
-            renderModel(model, map, fieldMap, view);
+        if (map.size() > 0) {
+            if (map.containsKey(Constant.CONTROLLER)) {
+                map.put(Constant.PATH, reflectUtils.getControllerPath(map.get(Constant.CONTROLLER)));
+                renderController(controller, map, view);
+            } else if (map.containsKey(Constant.METHOD)) {
+                map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
+                map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
+                map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
+                renderMethod(controller, map, paramMap, returnMap, bodyMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
+            } else if (map.containsKey(Constant.MODEL)) {
+                renderModel(model, map, fieldMap, view);
+            }
         }
     }
 }

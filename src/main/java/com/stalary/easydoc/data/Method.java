@@ -41,6 +41,7 @@ public class Method {
     private Map<String, String> paramMap = new HashMap<>();
 
     /** post方法中的body **/
+    @Deprecated
     private Map<String, String> body;
 
     /** 返回map，key代表code，value代表返回的描述 **/

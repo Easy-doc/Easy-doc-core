@@ -9,7 +9,6 @@ import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Controller;
 import com.stalary.easydoc.data.Model;
-import com.stalary.easydoc.data.View;
 import lombok.extern.slf4j.Slf4j;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -52,9 +51,8 @@ public class XmlReader extends BaseReader {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public View singleReader(File file) {
+    public void singleReader(File file) {
         try {
-            View view = new View();
             Controller controller = new Controller();
             Model model = new Model();
             String str = readFile(file);
@@ -117,11 +115,9 @@ public class XmlReader extends BaseReader {
                 }
                 render(controller, map, paramMap, fieldMap, returnMap, bodyMap, view, model);
             }
-            return view;
         } catch (Exception e) {
             log.warn("singleReader error!", e);
         }
-        return null;
     }
 
 }
