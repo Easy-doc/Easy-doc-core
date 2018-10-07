@@ -45,4 +45,10 @@ public class Method {
 
     /** 返回map，key代表code，value代表返回的描述 **/
     private Map<String, String> returnMap = new HashMap<>();
+
+    /** 输入对象 **/
+    private Model input;
+
+    /** 输出对象 **/
+    private Model output;
 }

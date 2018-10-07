@@ -37,7 +37,6 @@ public class DocReader extends BaseReader {
         this.properties = properties;
     }
 
-    // todo: body待完成
     @Override
     public View singleReader(File file) {
         try {

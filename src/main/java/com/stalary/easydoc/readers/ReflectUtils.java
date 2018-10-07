@@ -5,8 +5,11 @@
  */
 package com.stalary.easydoc.readers;
 
-import com.stalary.easydoc.annotation.Model;
+import com.stalary.easydoc.annotation.ModelData;
 import com.stalary.easydoc.config.EasyDocProperties;
+import com.stalary.easydoc.data.Constant;
+import com.stalary.easydoc.data.Model;
+import com.stalary.easydoc.data.View;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -20,6 +23,7 @@ import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ReflectReader
@@ -60,7 +64,7 @@ public class ReflectUtils {
     public boolean isModel(String name) {
         Class clazz = path2Class(name);
         if (clazz != null) {
-            return AnnotatedElementUtils.hasAnnotation(clazz, Model.class);
+            return AnnotatedElementUtils.hasAnnotation(clazz, ModelData.class);
         }
         return false;
     }
@@ -149,36 +153,38 @@ public class ReflectUtils {
      */
     private Class path2Class(String name) {
         try {
-            return Class.forName(properties.getPath() + "." + name);
+            return Class.forName(Constant.pathMap.get(name));
         } catch (Exception e) {
             log.warn("path2Class error!", e);
         }
         return null;
     }
 
-    public Object getBody(String controllerName, String methodName) {
+    public Model getBody(String controllerName, String methodName, View view) {
         try {
             Class clazz = path2Class(controllerName);
             if (clazz != null) {
                 for (Method method : clazz.getDeclaredMethods()) {
-                    Parameter[] parameters = method.getParameters();
-                    for (Parameter parameter : parameters) {
-                        if (parameter.isAnnotationPresent(RequestBody.class)) {
-                            System.out.println(parameter.getType().getName());
-                        }
-                    }
-                    /*if (method.getName().equals(methodName)) {
-                        Type[] types = method.getGenericParameterTypes();
-                        for (Type type : types) {
-                            String path = properties.getPath();
-                            String temp = path.substring(0, path.length() < 3 ? path.length() : 3);
-                            String typeName = type.getTypeName();
-                            if (typeName.startsWith(temp)) {
-                                Object object = Class.forName(typeName);
-                                return object;
+                    if (methodName.equals(method.getName())) {
+                        Parameter[] parameters = method.getParameters();
+                        for (Parameter parameter : parameters) {
+                            if (parameter.isAnnotationPresent(RequestBody.class)) {
+                                String name = parameter.getType().getName();
+                                if (!name.startsWith("java")) {
+                                    final String finalName = name.substring(name.lastIndexOf(".") + 1);
+                                    AtomicReference<Model> finalModel = new AtomicReference<>();
+                                    System.out.println(view.getModelList());
+                                    view.getModelList().forEach(model -> {
+                                        if (model.getName().equals(finalName)) {
+                                            finalModel.set(model);
+                                        }
+                                    });
+                                    System.out.println(finalModel.get());
+                                    return finalModel.get();
+                                }
                             }
                         }
-                    }*/
+                    }
                 }
             }
         } catch (Exception e) {

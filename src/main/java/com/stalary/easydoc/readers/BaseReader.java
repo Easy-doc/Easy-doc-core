@@ -1,6 +1,5 @@
 package com.stalary.easydoc.readers;
 
-import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +50,8 @@ public abstract class BaseReader {
         sw.start("analysis");
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
+        pathMapper(fileList);
+        System.out.println(Constant.pathMap);
         for (File aFileList : fileList) {
             view.addView(singleReader(aFileList));
         }
@@ -59,6 +60,29 @@ public abstract class BaseReader {
         // 缓存
         viewCache = view;
         return view;
+    }
+
+    /**
+     * 将所有文件构造出映射关系
+     * @param fileList
+     */
+    private void pathMapper(List<File> fileList) {
+        fileList.forEach(file -> {
+            NamePack namePack = path2Pack(file.getPath());
+            Constant.pathMap.put(namePack.getName(), namePack.getPackPath());
+        });
+    }
+
+    /**
+     * 将文件路径转化为类名:包路径的映射
+     * @param path
+     * @return
+     */
+    private NamePack path2Pack(String path) {
+        String temp = path.replaceAll("/", ".");
+        String packPath = temp.substring(temp.indexOf(properties.getPath()));
+        packPath = packPath.substring(0, packPath.lastIndexOf("."));
+        return new NamePack(packPath.substring(packPath.lastIndexOf(".") + 1), packPath);
     }
 
     abstract View singleReader(File file);
@@ -104,7 +128,7 @@ public abstract class BaseReader {
         view.getControllerList().add(controller);
     }
 
-    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<String, String> returnMap, Map<String, String> bodyMap) {
+    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<String, String> returnMap, Map<String, String> bodyMap, Model input) {
         // 其次遍历存储method
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
@@ -112,6 +136,7 @@ public abstract class BaseReader {
                 .path(map.getOrDefault(Constant.PATH, ""))
                 .type(map.getOrDefault(Constant.TYPE, ""))
                 .body(bodyMap)
+                .input(input)
                 .paramMap(paramMap)
                 .returnMap(returnMap)
                 .build();
@@ -149,9 +174,9 @@ public abstract class BaseReader {
         } else if (map.containsKey(Constant.METHOD)) {
             map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
             map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
-            map.put(Constant.BODY, JSONObject.toJSONString(reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD))));
             map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
-            renderMethod(controller, map, paramMap, returnMap, bodyMap);
+            // todo:model为后解析。。
+            renderMethod(controller, map, paramMap, returnMap, bodyMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
         } else if (map.containsKey(Constant.MODEL)) {
             renderModel(model, map, fieldMap, view);
         }

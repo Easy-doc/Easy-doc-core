@@ -39,10 +39,4 @@ public class Controller {
 
     /** 接口中的方法 **/
     private List<Method> methodList = new ArrayList<>();
-
-    /** 输入对象 **/
-    private Model input;
-
-    /** 输出对象 **/
-    private Model output;
 }

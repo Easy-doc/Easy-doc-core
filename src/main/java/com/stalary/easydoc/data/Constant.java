@@ -5,6 +5,9 @@
  */
 package com.stalary.easydoc.data;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Constant
  *
@@ -43,6 +46,13 @@ public class Constant {
 
     public static final String HTTP = "http://";
 
+    public static final String INPUT = "input";
+
+    public static final String OUTPUT = "output";
+
     /** 获取当前路径 **/
     public static final String CUR_PATH = System.getProperty("user.dir");
+
+    /** 类名和路径的映射 **/
+    public static final Map<String, String> pathMap = new HashMap<>();
 }

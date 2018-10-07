@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 import java.util.Map;
 
 /**
- * Model
+ * ModelData
  *
  * @author lirongqian
  * @since 2018/09/26

@@ -11,8 +11,7 @@ package com.stalary.easydoc.test;
  * @field name 姓名
  * @field age 年龄
  */
-
-import com.stalary.easydoc.annotation.Model;
+import com.stalary.easydoc.annotation.ModelData;
 import lombok.Data;
 
 /**
@@ -23,7 +22,7 @@ import lombok.Data;
  *     <age>年龄</age>
  * </field>
  */
-@Model
+@ModelData
 @Data
 public class User {
 
