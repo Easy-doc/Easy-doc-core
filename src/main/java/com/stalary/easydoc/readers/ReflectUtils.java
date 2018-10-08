@@ -5,7 +5,6 @@
  */
 package com.stalary.easydoc.readers;
 
-import com.stalary.easydoc.annotation.ModelData;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Model;
@@ -51,20 +50,6 @@ public class ReflectUtils {
         Class clazz = path2Class(name);
         if (clazz != null) {
             return AnnotatedElementUtils.hasAnnotation(clazz, Controller.class);
-        }
-        return false;
-    }
-
-    /**
-     * 判断是否为model
-     *
-     * @param name
-     * @return
-     */
-    public boolean isModel(String name) {
-        Class clazz = path2Class(name);
-        if (clazz != null) {
-            return AnnotatedElementUtils.hasAnnotation(clazz, ModelData.class);
         }
         return false;
     }

@@ -5,13 +5,12 @@
  */
 package com.stalary.easydoc.data;
 
-import com.stalary.easydoc.annotation.ModelData;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * TestResponse
+ * @model TestResponse
  * @description 压力测试返回对象
  * @field slowTime 最慢返回时间
  * @field fastTime 最快返回时间
@@ -23,7 +22,6 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ModelData
 public class TestResponse {
 
     /** 最慢时间 **/

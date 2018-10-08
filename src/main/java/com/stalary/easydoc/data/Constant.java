@@ -28,6 +28,8 @@ public class Constant {
 
     public static final String MODEL = "model";
 
+    public static final String MODELTAG = "@model";
+
     public static final String AUTHOR = "author";
 
     public static final String DESCRIPTION = "description";
