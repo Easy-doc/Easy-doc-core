@@ -33,7 +33,6 @@ public class DocReader extends BaseReader {
         super(properties);
     }
 
-    // todo: body待完成
     @Override
     public void singleReader(File file) {
         try {
@@ -70,7 +69,7 @@ public class DocReader extends BaseReader {
                 if (name.equals(split[1]) && reflectUtils.isController(name)) {
                     map.put(Constant.CONTROLLER, split[1]);
                 }
-                if (Constant.MODELTAG.equals(split[1]) && name.equals(split[2])) {
+                if (Constant.MODEL_TAG.equals(split[1]) && name.equals(split[2])) {
                     map.put(Constant.MODEL, split[2]);
                 }
                 for (int i = 1; i < split.length; i++) {

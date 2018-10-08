@@ -9,6 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.config.IpConfiguration;
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.JsonResult;
+import com.stalary.easydoc.data.TestBody;
 import com.stalary.easydoc.data.TestResponse;
 import com.stalary.easydoc.test.User;
 import lombok.extern.slf4j.Slf4j;
@@ -60,6 +61,7 @@ public class ResourceController {
      * @return data 返回值
      * @throws IOException 执行http请求时的异常
      */
+    @Deprecated
     @GetMapping("/get")
     public JSONObject get(
             @RequestParam String url) throws IOException {
@@ -71,12 +73,26 @@ public class ResourceController {
     }
 
     /**
+     * @method testParam 测试get含参方法
+     * @param name 名称
+     * @param age 年龄
+     * @return data 返回值
+     */
+    @GetMapping("/testParam")
+    public JSONObject testParam(
+            @RequestParam String name,
+            @RequestParam int age) {
+        return JsonResult.ok("name: " + name + " age: " + age);
+    }
+
+    /**
      * @method post post方法测试
      * @param url 测试的url，包括参数
      * @param params body中参数
      * @return data 返回值
      * @throws IOException 执行http请求时的异常
      */
+    @Deprecated
     @PostMapping("/post")
     public JSONObject post(
             @RequestParam String url,
@@ -126,44 +142,32 @@ public class ResourceController {
      * @method postTest post请求压力测试
      * @param n      请求数量
      * @param c      并发数量
-     * @param cookie    cookie
+     * @param cookie cookie
+     * @param isGet  是否为get，默认true
      * @param url    请求地址
-     * @param params 参数
+     * @param body   参数
      * @return TestResponse 时间统计对象
      */
-    @PostMapping("/postTest")
-    public JSONObject postTest(
+    @PostMapping("/pressureTest")
+    public JSONObject pressureTest(
             @RequestParam String url,
             @RequestParam(required = false, defaultValue = "1") int n,
             @RequestParam(required = false, defaultValue = "1") int c,
             @RequestParam(required = false, defaultValue = "") String cookie,
-            @RequestBody Map<String, String> params) {
-        return abTest(n, c, cookie, url, params);
-    }
-
-    /**
-     * @method getTest get请求压力测试
-     * @param url   请求地址
-     * @param n     请求数量
-     * @param c     并发数量
-     * @param cookie    cookie
-     * @return TestResponse 时间统计对象
-     */
-    @GetMapping("/getTest")
-    public JSONObject getTest(
-            @RequestParam String url,
-            @RequestParam(required = false, defaultValue = "1") int n,
-            @RequestParam(required = false, defaultValue = "1") int c,
-            @RequestParam(required = false, defaultValue = "") String cookie) {
-        return abTest(n, c, cookie, url, null);
+            @RequestParam(required = false, defaultValue = "true") boolean isGet,
+            @RequestBody TestBody body) {
+        return abTest(n, c, cookie, url, body, isGet);
     }
 
 
     private String transRequest(String url) {
-        return Constant.HTTP + Utils.getHostIp() + Constant.SPLIT + ipConfiguration.getPort() + url;
+        String result = Constant.HTTP + Utils.getHostIp() + Constant.SPLIT + ipConfiguration.getPort() + url;
+        log.info("transRequest: " + result);
+        return result;
     }
 
-    private JSONObject abTest(int n, int c, String cookie, String url, Map<String, String> params) {
+    private JSONObject abTest(int n, int c, String cookie, String url,
+                              TestBody body, boolean isGet) {
         File file = new File("");
         try {
             StringBuilder cmdBuilder = new StringBuilder();
@@ -171,17 +175,21 @@ public class ResourceController {
             if (StringUtils.isNotEmpty(cookie)) {
                 cmdBuilder.append(" -C ").append(cookie);
             }
-            if (params != null) {
+            if (!isGet) {
                 String fileName = Constant.CUR_PATH + "/postFile:" + UUID.randomUUID().toString().substring(0, 5) + ".txt";
                 file = new File(fileName);
                 FileOutputStream fileOutput = new FileOutputStream(file, false);
                 OutputStreamWriter writer = new OutputStreamWriter(fileOutput, Charset.forName("UTF-8"));
-                writer.write(JSONObject.toJSONString(params));
+                writer.write(JSONObject.toJSONString(body.getBody()));
                 writer.flush();
                 cmdBuilder.append(" -p ").append(fileName);
                 cmdBuilder.append(" -T ").append("application/json");
             }
             cmdBuilder.append(" ").append(transRequest(url));
+            cmdBuilder.append("?");
+            body.getParams().forEach((k, v) -> cmdBuilder.append(k).append("=").append(v).append("&"));
+            // 删除末尾&
+            cmdBuilder.deleteCharAt(cmdBuilder.length() - 1);
             log.info("ab test: " + cmdBuilder);
             Process exec = Runtime.getRuntime().exec(cmdBuilder.toString());
             BufferedReader reader = new BufferedReader(new InputStreamReader(exec.getInputStream()));
