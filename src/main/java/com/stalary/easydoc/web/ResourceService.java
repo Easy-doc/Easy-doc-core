@@ -35,10 +35,13 @@ public class ResourceService {
     }
 
     public View read() {
-        if (Constant.XML.equals(properties.getType())) {
-            return xmlReader.multiReader();
-        } else {
-            return docReader.multiReader();
+        if (properties.isOpen()) {
+            if (Constant.XML.equals(properties.getType())) {
+                return xmlReader.multiReader();
+            } else {
+                return docReader.multiReader();
+            }
         }
+        return new View();
     }
 }

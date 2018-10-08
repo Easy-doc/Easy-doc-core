@@ -54,7 +54,6 @@ public abstract class BaseReader {
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
         pathMapper(fileList);
-        System.out.println(Constant.pathMap);
         for (File aFileList : fileList) {
             singleReader(aFileList);
         }

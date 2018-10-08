@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 19960
 com:
   stalary:
     easydoc:
@@ -8,3 +8,4 @@ com:
       description: 测试项目
       contact: stalary@163.com
       type: doc
+      open: true

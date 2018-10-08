@@ -136,7 +136,7 @@ public class ReflectUtils {
             List<String> result = new ArrayList<>();
             Method[] methods = clazz.getDeclaredMethods();
             for (Method method : methods) {
-                if (method.isAnnotationPresent(RequestMapping.class)) {
+                if (AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class)) {
                     result.add(method.getName());
                 }
             }
@@ -168,7 +168,7 @@ public class ReflectUtils {
                     if (methodName.equals(method.getName())) {
                         Parameter[] parameters = method.getParameters();
                         for (Parameter parameter : parameters) {
-                            if (parameter.isAnnotationPresent(RequestBody.class)) {
+                            if (AnnotatedElementUtils.hasAnnotation(parameter, RequestBody.class)) {
                                 String name = parameter.getType().getName();
                                 if (!name.startsWith("java")) {
                                     final String finalName = name.substring(name.lastIndexOf(".") + 1);
