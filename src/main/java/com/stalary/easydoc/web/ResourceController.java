@@ -139,7 +139,7 @@ public class ResourceController {
     }
 
     /**
-     * @method postTest post请求压力测试
+     * @method pressureTest 压力测试
      * @param n      请求数量
      * @param c      并发数量
      * @param cookie cookie
