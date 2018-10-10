@@ -40,6 +40,19 @@ com:
 > 使用javadoc和xml两种模式，可以在application.yml中进行选择
 
 > demo都在test包中
+
+## javadoc格式(待完成)
+注释名 | 解释
+--- | ---
+@controller: | 类名
+@method: | 方法名   
+@description: | 类/方法/实体描述
+@author: | 类作者
+@return: | 方法返回值，不同code的可以写多个，返回对象使用json格式或者指定对象路径(包名+类名)
+@param: | 参数名
+@model: | 实体标识
+@field： | 实体的参数
+
 ## xml格式
 ### controller
 注释名 | 解释
@@ -64,18 +77,3 @@ com:
 \<model>\</model> | model名称
 \<field>\</field> | model的属性
 \<description>\</description> | model的描述
-
-
-## javadoc格式(待完成)
-注释名 | 解释
---- | ---
-@controller: | 类名
-@method: | 方法名   
-@description: | 类/方法描述
-@author: | 类作者
-@return: | 方法返回值，不同code的可以写多个，返回对象使用json格式或者指定对象路径(包名+类名)
-@throws: | 抛出的异常
-@param: | 参数名
-@example: | 传递参数的例子
-@cookie: | 设置此注释会从header中读取cookie用于接口测试
-@token: | 设置此注释会从header中读取token用于接口测试
