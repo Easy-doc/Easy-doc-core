@@ -33,11 +33,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class XmlReader extends BaseReader {
 
-    private EasyDocProperties properties;
-
     public XmlReader(EasyDocProperties properties) {
         super(properties);
-        this.properties = properties;
     }
 
     @Autowired
@@ -65,6 +62,7 @@ public class XmlReader extends BaseReader {
                 Map<String, String> paramMap = new HashMap<>();
                 Map<String, String> fieldMap = new HashMap<>();
                 Map<String, String> returnMap = new HashMap<>();
+                Map<String, String> throwsMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
                 // 3. 文l档化块级注释
@@ -106,7 +104,7 @@ public class XmlReader extends BaseReader {
                             break;
                     }
                 }
-                render(controller, map, paramMap, fieldMap, returnMap, view, model);
+                render(controller, map, paramMap, fieldMap, returnMap, throwsMap, view, model);
             }
         } catch (Exception e) {
             log.warn("singleReader error!", e);

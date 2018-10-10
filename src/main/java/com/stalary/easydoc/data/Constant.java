@@ -52,5 +52,9 @@ public class Constant {
     public static final String CUR_PATH = System.getProperty("user.dir");
 
     /** 类名和路径的映射 **/
-    public static final Map<String, String> pathMap = new HashMap<>();
+    public static final Map<String, String> PATH_MAP = new HashMap<>();
+
+    public static final String DEPRECATED = "deprecated";
+
+    public static final String THROWS = "throws";
 }

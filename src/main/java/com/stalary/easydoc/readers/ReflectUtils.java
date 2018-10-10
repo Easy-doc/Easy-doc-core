@@ -5,11 +5,12 @@
  */
 package com.stalary.easydoc.readers;
 
-import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Model;
 import com.stalary.easydoc.data.View;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Component;
@@ -19,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -34,10 +33,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 public class ReflectUtils {
 
-    private EasyDocProperties properties;
-
-    public ReflectUtils(EasyDocProperties properties) {
-        this.properties = properties;
+    public ReflectUtils() {
     }
 
     /**
@@ -48,10 +44,10 @@ public class ReflectUtils {
      */
     public boolean isController(String name) {
         Class clazz = path2Class(name);
-        if (clazz != null) {
-            return AnnotatedElementUtils.hasAnnotation(clazz, Controller.class);
+        if (clazz == null) {
+            throw new NullPointerException("class is null");
         }
-        return false;
+        return AnnotatedElementUtils.hasAnnotation(clazz, Controller.class);
     }
 
     /**
@@ -69,13 +65,12 @@ public class ReflectUtils {
         return "";
     }
 
-    public RequestMapping getMethod(String controllerName, String methodName) {
+    public Method getMethod(String controllerName, String methodName) {
         Class clazz = path2Class(controllerName);
         if (clazz != null) {
             for (Method method : clazz.getDeclaredMethods()) {
                 if (method.getName().equals(methodName)) {
-                    // 获取名称或者别名为RequestMapping的注解
-                    return AnnotatedElementUtils.findMergedAnnotation(method, RequestMapping.class);
+                    return method;
                 }
             }
         }
@@ -90,7 +85,7 @@ public class ReflectUtils {
      * @return
      */
     public String getMethodPath(String controllerName, String methodName) {
-        RequestMapping mapping = getMethod(controllerName, methodName);
+        RequestMapping mapping = AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
         if (mapping != null) {
             if (mapping.value().length != 0) {
                 return mapping.value()[0];
@@ -100,34 +95,13 @@ public class ReflectUtils {
     }
 
     public String getMethodType(String controllerName, String methodName) {
-        RequestMapping mapping = getMethod(controllerName, methodName);
+        RequestMapping mapping = AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
         if (mapping != null) {
             if (mapping.method().length != 0) {
                 return mapping.method()[0].name();
             }
         }
         return "";
-    }
-
-    /**
-     * 获取需要生成文档的接口
-     *
-     * @param name
-     * @return
-     */
-    public List<String> getMethod(String name) {
-        Class clazz = path2Class(name);
-        if (clazz != null) {
-            List<String> result = new ArrayList<>();
-            Method[] methods = clazz.getDeclaredMethods();
-            for (Method method : methods) {
-                if (AnnotatedElementUtils.hasAnnotation(method, RequestMapping.class)) {
-                    result.add(method.getName());
-                }
-            }
-            return result;
-        }
-        return new ArrayList<>();
     }
 
     /**
@@ -138,46 +112,108 @@ public class ReflectUtils {
      */
     private Class path2Class(String name) {
         try {
-            return Class.forName(Constant.pathMap.get(name));
+            return Class.forName(Constant.PATH_MAP.get(name));
         } catch (Exception e) {
             log.warn("path2Class error!", e);
         }
         return null;
     }
 
+    /**
+     * 获取被@RequestBody注解的参数
+     *
+     * @param controllerName controllerName
+     * @param methodName     methodName
+     * @return Parameter
+     */
+    private Parameter getBodyParam(String controllerName, String methodName) {
+        Method method = getMethod(controllerName, methodName);
+        Parameter[] parameters = method.getParameters();
+        for (Parameter parameter : parameters) {
+            if (AnnotatedElementUtils.hasAnnotation(parameter, RequestBody.class)) {
+                String name = parameter.getType().getName();
+                if (!name.startsWith("java")) {
+                    return parameter;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    /**
+     * 获取被@RequestBody注解的Model
+     *
+     * @param controllerName
+     * @param methodName
+     * @param view
+     * @return
+     */
     public Model getBody(String controllerName, String methodName, View view) {
         try {
-            Class clazz = path2Class(controllerName);
-            if (clazz != null) {
-                for (Method method : clazz.getDeclaredMethods()) {
-                    if (methodName.equals(method.getName())) {
-                        Parameter[] parameters = method.getParameters();
-                        for (Parameter parameter : parameters) {
-                            if (AnnotatedElementUtils.hasAnnotation(parameter, RequestBody.class)) {
-                                String name = parameter.getType().getName();
-                                if (!name.startsWith("java")) {
-                                    final String finalName = name.substring(name.lastIndexOf(".") + 1);
-                                    AtomicReference<Model> finalModel = new AtomicReference<>();
-                                    view.getModelList().forEach(model -> {
-                                        if (model.getName().equals(finalName)) {
-                                            finalModel.set(model);
-                                        }
-                                    });
-                                    // 还未解析出model时，暂时存储name
-                                    Model model = finalModel.get();
-                                    if (model != null) {
-                                        return model;
-                                    }
-                                    return new Model().toBuilder().name(finalName).build();
-                                }
-                            }
-                        }
+            Parameter parameter = getBodyParam(controllerName, methodName);
+            if (parameter != null) {
+                String name = parameter.getType().getName();
+                final String finalName = name.substring(name.lastIndexOf(".") + 1);
+                AtomicReference<Model> finalModel = new AtomicReference<>();
+                view.getModelList().forEach(model -> {
+                    if (model.getName().equals(finalName)) {
+                        finalModel.set(model);
                     }
+                });
+                // 还未解析出model时，暂时存储name
+                Model model = finalModel.get();
+                if (model != null) {
+                    return model;
                 }
+                return new Model().toBuilder().name(finalName).build();
             }
         } catch (Exception e) {
             log.warn("getBody error!", e);
         }
         return null;
     }
+
+    /**
+     * 判断是否已经被弃用
+     *
+     * @param className
+     * @param methodName
+     * @return
+     */
+    public boolean isDeprecated(String className, String methodName) {
+        Class clazz = path2Class(className);
+        if (clazz == null) {
+            throw new NullPointerException("class is null");
+        }
+        if (StringUtils.isEmpty(className)) {
+            return false;
+        }
+        // 只传入controller代表判断controller
+        if (StringUtils.isEmpty(methodName)) {
+            Deprecated annotation = AnnotationUtils.findAnnotation(clazz, Deprecated.class);
+            return annotation != null;
+        } else {
+            for (Method method : clazz.getDeclaredMethods()) {
+                if (methodName.equals(method.getName())) {
+                    Deprecated annotation = AnnotationUtils.findAnnotation(method, Deprecated.class);
+                    return annotation != null;
+                }
+            }
+        }
+        return false;
+    }
+
+    public Map<String, Class> getParams(String controllerName, String methodName) {
+        Method method = getMethod(controllerName, methodName);
+        LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
+        Map<String, Class> result = new HashMap<>();
+        List<String> keyList = new ArrayList<>(Arrays.asList(Objects.requireNonNull(discoverer.getParameterNames(method))));
+        List<Class> valueList = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
+        for (int i = 0; i < keyList.size(); i++) {
+            result.put(keyList.get(i), valueList.get(i));
+        }
+        return result;
+    }
+
 }

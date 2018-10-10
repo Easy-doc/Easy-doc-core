@@ -24,10 +24,9 @@ import java.util.Map;
 @Slf4j
 public abstract class BaseReader {
 
-    /** view缓存 **/
-    private View viewCache = null;
+    private View viewCache;
 
-    protected View view;
+    View view;
 
     @Autowired
     ReflectUtils reflectUtils;
@@ -71,7 +70,7 @@ public abstract class BaseReader {
     private void pathMapper(List<File> fileList) {
         fileList.forEach(file -> {
             NamePack namePack = path2Pack(file.getPath());
-            Constant.pathMap.put(namePack.getName(), namePack.getPackPath());
+            Constant.PATH_MAP.put(namePack.getName(), namePack.getPackPath());
         });
     }
 
@@ -87,6 +86,10 @@ public abstract class BaseReader {
         return new NamePack(packPath.substring(packPath.lastIndexOf(".") + 1), packPath);
     }
 
+    /**
+     * 单文件读取，子类实现
+     * @param file
+     */
     abstract void singleReader(File file);
 
     private void getFile(File file, List<File> fileList) {
@@ -127,10 +130,13 @@ public abstract class BaseReader {
         controller.setDescription(map.getOrDefault(Constant.DESCRIPTION, ""));
         controller.setName(map.getOrDefault(Constant.CONTROLLER, ""));
         controller.setPath(map.getOrDefault(Constant.PATH, ""));
+        controller.setDeprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")));
         view.getControllerList().add(controller);
     }
 
-    private void renderMethod(Controller controller, Map<String, String> map, Map<String, String> paramMap, Map<String, String> returnMap, Model body) {
+    private void renderMethod(Controller controller, Map<String, String> map,
+                              Map<String, String> paramMap, Map<String, String> returnMap,
+                              Map<String, String> throwsMap, Model body) {
         // 其次遍历存储method
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
@@ -140,6 +146,8 @@ public abstract class BaseReader {
                 .body(body)
                 .paramMap(paramMap)
                 .returnMap(returnMap)
+                .throwsMap(throwsMap)
+                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
                 .build();
         controller.getMethodList().add(method);
     }
@@ -149,6 +157,7 @@ public abstract class BaseReader {
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .fieldMap(fieldMap)
                 .name(map.getOrDefault(Constant.MODEL, ""))
+                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
                 .build();
         view.getModelList().add(model);
         // 渲染input
@@ -182,18 +191,22 @@ public abstract class BaseReader {
      */
     void render(Controller controller, Map<String, String> map,
                 Map<String, String> paramMap, Map<String, String> fieldMap,
-                Map<String, String> returnMap, View view, Model model) {
+                Map<String, String> returnMap, Map<String, String> throwsMap,
+                View view, Model model) {
         // 填充controller，method，model
         if (map.size() > 0) {
             if (map.containsKey(Constant.CONTROLLER)) {
                 map.put(Constant.PATH, reflectUtils.getControllerPath(map.get(Constant.CONTROLLER)));
+                map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(map.get(Constant.CONTROLLER), "")));
                 renderController(controller, map, view);
             } else if (map.containsKey(Constant.METHOD)) {
                 map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
                 map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
                 map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
-                renderMethod(controller, map, paramMap, returnMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
+                map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(controller.getName(), map.get(Constant.METHOD))));
+                renderMethod(controller, map, paramMap, returnMap, throwsMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
             } else if (map.containsKey(Constant.MODEL)) {
+                map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(map.get(Constant.MODEL), "")));
                 renderModel(model, map, fieldMap, view);
             }
         }

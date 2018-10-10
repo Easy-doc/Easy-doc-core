@@ -32,4 +32,8 @@ public class Model {
 
     /** 参数和对应的解释 **/
     private Map<String, String> fieldMap;
+
+    /** 代表实体是否已经被弃置 **/
+    @Builder.Default
+    private boolean deprecated = false;
 }

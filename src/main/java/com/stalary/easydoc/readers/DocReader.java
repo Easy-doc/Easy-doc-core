@@ -51,6 +51,7 @@ public class DocReader extends BaseReader {
                 Map<String, String> paramMap = new HashMap<>();
                 Map<String, String> fieldMap = new HashMap<>();
                 Map<String, String> returnMap = new HashMap<>();
+                Map<String, String> throwsMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
                 // 3. 合并多个空格
@@ -105,13 +106,20 @@ public class DocReader extends BaseReader {
                                     }
                                     map.put(Constant.METHOD, t);
                                     break;
+                                case Constant.THROWS:
+                                    if (i + 1 < split.length) {
+                                        throwsMap.put(t, split[i + 1]);
+                                        i = i + 1;
+                                    }
+                                    break;
                                 default:
                                     map.put(cur, t);
+                                    break;
                             }
                         }
                     }
                 }
-                render(controller, map, paramMap, fieldMap, returnMap, view, model);
+                render(controller, map, paramMap, fieldMap, returnMap, throwsMap, view, model);
             }
         } catch (Exception e) {
             log.warn("singleReader error!", e);

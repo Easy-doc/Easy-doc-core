@@ -38,5 +38,9 @@ public class Controller {
     private String path;
 
     /** 接口中的方法 **/
-    private List<Method> methodList = new ArrayList<>();
+    private final List<Method> methodList = new ArrayList<>();
+
+    /** 代表接口是否已经被弃置 **/
+    @Builder.Default
+    private boolean deprecated = false;
 }

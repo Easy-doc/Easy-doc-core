@@ -40,8 +40,8 @@ public class BeansConfig {
     }
 
     @Bean
-    public ReflectUtils reflectReader(EasyDocProperties properties) {
-        return new ReflectUtils(properties);
+    public ReflectUtils reflectReader() {
+        return new ReflectUtils();
     }
 
     @Bean

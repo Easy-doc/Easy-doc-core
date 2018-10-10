@@ -10,7 +10,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -38,11 +37,18 @@ public class Method {
     private String description;
 
     /** 参数map，key代表参数名称，value默认为"" **/
-    private Map<String, String> paramMap = new HashMap<>();
+    private Map<String, String> paramMap;
 
     /** 返回map，key代表code，value代表返回的描述 **/
-    private Map<String, String> returnMap = new HashMap<>();
+    private Map<String, String> returnMap;
+
+    /** 可能抛出的异常 **/
+    private Map<String, String> throwsMap;
 
     /** post方法中的body **/
     private Model body;
+
+    /** 代表方法是否已经被弃置 **/
+    @Builder.Default
+    private boolean deprecated = false;
 }
