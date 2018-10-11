@@ -10,7 +10,6 @@ import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.config.IpConfiguration;
 import com.stalary.easydoc.data.*;
 import com.stalary.easydoc.readers.DocReader;
-import com.stalary.easydoc.readers.ReflectUtils;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -35,9 +34,6 @@ public class ResourceService {
 
     @Autowired
     private DocReader docReader;
-
-    @Autowired
-    private ReflectUtils reflectUtils;
 
     @Autowired
     private IpConfiguration ipConfiguration;
@@ -113,45 +109,4 @@ public class ResourceService {
         }
         return JsonResult.ok();
     }
-
-    /**
-     * 生成mock测试数据
-     * @return
-     */
-    /*public TestBody mock(String controllerName, String methodName) {
-        TestBody testBody = new TestBody();
-        Map<String, Class> params = reflectUtils.getParams(controllerName, methodName);
-//        Object body = reflectUtils.getBody(controllerName, methodName);
-//        JSONObject.
-        Map<String, Object> result = new HashMap<>();
-        Random random = new Random();
-        params.forEach((k, v) -> {
-            String name = v.getName();
-            System.out.println(name);
-            if (name.equals(String.class.getName())) {
-                result.put(k, nextString());
-            } else if (name.equals(boolean.class.getName())) {
-                result.put(k , random.nextBoolean());
-            } else if (name.equals(int.class.getName()) || name.equals(Integer.class.getName())) {
-                result.put(k, 10000 + random.nextInt(10000));
-            } else if (name.equals(float.class.getName()) || name.equals(Float.class.getName())) {
-                result.put(k, 10000 + random.nextFloat());
-            } else if (name.equals(double.class.getName()) || name.equals(Double.class.getName())) {
-                result.put(k, 10000 + random.nextDouble());
-            }
-        });
-        testBody.setParams(result);
-
-        System.out.println(result);
-        return null;
-    }*/
-
-    /*private String nextString() {
-        Random random = new Random();
-        char[] text = new char[10];
-        for (int i = 0; i < 10; i++) {
-            text[i] = Constant.SOURCES.charAt(random.nextInt(Constant.SOURCES.length()));
-        }
-        return new String(text);
-    }*/
 }

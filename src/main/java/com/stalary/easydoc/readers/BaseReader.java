@@ -39,6 +39,7 @@ public abstract class BaseReader {
 
     /**
      * 批量读取文件
+     *
      * @return View
      */
     public View multiReader() {
@@ -65,6 +66,7 @@ public abstract class BaseReader {
 
     /**
      * 将所有文件构造出映射关系
+     *
      * @param fileList
      */
     private void pathMapper(List<File> fileList) {
@@ -76,6 +78,7 @@ public abstract class BaseReader {
 
     /**
      * 将文件路径转化为类名:包路径的映射
+     *
      * @param path
      * @return
      */
@@ -88,6 +91,7 @@ public abstract class BaseReader {
 
     /**
      * 单文件读取，子类实现
+     *
      * @param file
      */
     abstract void singleReader(File file);
@@ -154,12 +158,33 @@ public abstract class BaseReader {
 
     private void renderParamList(String controller, String method, List<Param> paramList) {
         Map<String, String> params = reflectUtils.getParams(controller, method);
-        paramList.forEach(param -> {
-//            param.setType();
-        });
+        paramList.forEach(param -> param.setType(trans2JS(params.getOrDefault(param.getName(), ""))));
+    }
+
+    private String trans2JS(String type) {
+        switch (type) {
+            case "java.lang.String":
+                return "String";
+            case "java.lang.Integer":
+            case "java.lang.Double":
+            case "java.lang.Float":
+            case "int":
+            case "double":
+            case "float":
+                return "Number";
+            case "java.lang.Boolean":
+            case "boolean":
+                return "Boolean";
+            case "java.util.Map":
+            case "java.lang.Object":
+                return "Object";
+            default:
+                return type;
+        }
     }
 
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
+        renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .fieldList(fieldList)
@@ -184,6 +209,11 @@ public abstract class BaseReader {
                 }
             }
         }
+    }
+
+    private void renderModelField(String modelName, List<Param> fieldList) {
+        Map<String, String> fieldMap = reflectUtils.getField(modelName);
+        fieldList.forEach(field -> field.setType(trans2JS(fieldMap.getOrDefault(field.getName(), ""))));
     }
 
     /**

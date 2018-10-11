@@ -18,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.*;
@@ -215,6 +216,19 @@ public class ReflectUtils {
         }
         for (int i = 0; i < keyList.size(); i++) {
             result.put(keyList.get(i), valueList.get(i));
+        }
+        return result;
+    }
+
+    public Map<String, String> getField(String modelName) {
+        Class clazz = path2Class(modelName);
+        if (clazz == null) {
+            throw new NullPointerException("get Field class is null");
+        }
+        Map<String, String> result = new HashMap<>();
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            result.put(field.getName(), field.getType().getName());
         }
         return result;
     }

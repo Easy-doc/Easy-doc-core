@@ -10,17 +10,10 @@ package com.stalary.easydoc.test;
  * @description 用户对象
  * @field name 姓名
  * @field age 年龄
+ * @author lirongqian
  */
 import lombok.Data;
 
-/**
- * <model>User</model>
- * <description>用户对象</description>
- * <field>
- *     <name>用户名</name>
- *     <age>年龄</age>
- * </field>
- */
 @Data
 public class User {
 
