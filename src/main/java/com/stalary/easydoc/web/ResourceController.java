@@ -73,8 +73,8 @@ public class ResourceController {
      */
     @GetMapping("/testParam")
     public JSONObject testParam(
-            @RequestParam String name,
-            @RequestParam int age) {
+            @RequestParam(required = false, defaultValue = "stalary") String name,
+            @RequestParam(required = false, defaultValue = "22") int age) {
         return JsonResult.ok("name: " + name + " age: " + age);
     }
 

@@ -25,8 +25,21 @@ public class Param {
     /** 类型 **/
     private String type;
 
+    /** 是否必传，默认为true **/
+    private boolean required = true;
+
+    /** 默认值 **/
+    private String defaultValue = "";
+
     public Param(String name, String description) {
         this.name = name;
         this.description = description;
     }
+
+    public Param(String type, boolean required, String defaultValue) {
+        this.type = type;
+        this.required = required;
+        this.defaultValue = defaultValue;
+    }
+
 }

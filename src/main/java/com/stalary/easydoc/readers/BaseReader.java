@@ -157,11 +157,19 @@ public abstract class BaseReader {
     }
 
     private void renderParamList(String controller, String method, List<Param> paramList) {
-        Map<String, String> params = reflectUtils.getParams(controller, method);
-        paramList.forEach(param -> param.setType(trans2JS(params.getOrDefault(param.getName(), ""))));
+        Map<String, Param> params = reflectUtils.getParams(controller, method);
+        paramList.forEach(param -> {
+            Param temp = params.get(param.getName());
+            param.setType(trans2JS(temp.getType()));
+            param.setRequired(temp.isRequired());
+            param.setDefaultValue(temp.getDefaultValue());
+        });
     }
 
     private String trans2JS(String type) {
+        if (StringUtils.isEmpty(type)) {
+            return "";
+        }
         switch (type) {
             case "java.lang.String":
                 return "String";

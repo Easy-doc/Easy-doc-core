@@ -7,6 +7,7 @@ package com.stalary.easydoc.readers;
 
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Model;
+import com.stalary.easydoc.data.Param;
 import com.stalary.easydoc.data.View;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ValueConstants;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -205,17 +208,34 @@ public class ReflectUtils {
         return false;
     }
 
-    public Map<String, String> getParams(String controllerName, String methodName) {
+    public Map<String, Param> getParams(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
         LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
-        Map<String, String> result = new HashMap<>();
+        Map<String, Param> result = new HashMap<>();
         List<String> keyList = new ArrayList<>(Arrays.asList(Objects.requireNonNull(discoverer.getParameterNames(method))));
+        List<String> typeList = new ArrayList<>();
+        List<Boolean> requiredList = new ArrayList<>();
         List<String> valueList = new ArrayList<>();
         for (Class clazz : method.getParameterTypes()) {
-            valueList.add(clazz.getName());
+            typeList.add(clazz.getName());
+
+        }
+        for (Parameter parameter : method.getParameters()) {
+            RequestParam annotation = AnnotationUtils.findAnnotation(parameter, RequestParam.class);
+            if (annotation == null) {
+                requiredList.add(true);
+                valueList.add("");
+            } else {
+                requiredList.add(annotation.required());
+                if (ValueConstants.DEFAULT_NONE.equals(annotation.defaultValue())) {
+                    valueList.add("");
+                } else {
+                    valueList.add(annotation.defaultValue());
+                }
+            }
         }
         for (int i = 0; i < keyList.size(); i++) {
-            result.put(keyList.get(i), valueList.get(i));
+            result.put(keyList.get(i), new Param(typeList.get(i), requiredList.get(i), valueList.get(i)));
         }
         return result;
     }
