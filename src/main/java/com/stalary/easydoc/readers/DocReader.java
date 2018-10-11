@@ -6,15 +6,15 @@
 package com.stalary.easydoc.readers;
 
 import com.stalary.easydoc.config.EasyDocProperties;
-import com.stalary.easydoc.data.Constant;
-import com.stalary.easydoc.data.Controller;
-import com.stalary.easydoc.data.Model;
+import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,10 +48,12 @@ public class DocReader extends BaseReader {
             Matcher matcher = pattern.matcher(str);
             while (matcher.find()) {
                 Map<String, String> map = new HashMap<>();
-                Map<String, String> paramMap = new HashMap<>();
-                Map<String, String> fieldMap = new HashMap<>();
-                Map<String, String> returnMap = new HashMap<>();
+                List<Param> paramList = new ArrayList<>();
+                List<Param> fieldList = new ArrayList<>();
+                List<Response> responseList = new ArrayList<>();
                 Map<String, String> throwsMap = new HashMap<>();
+                Map<String, String> returnMap = new HashMap<>();
+                Map<String, String> fieldMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
                 // 3. 合并多个空格
@@ -83,19 +85,30 @@ public class DocReader extends BaseReader {
                             switch (cur) {
                                 case Constant.PARAM:
                                     if (i + 1 < split.length) {
-                                        paramMap.put(t, split[i + 1]);
+                                        paramList.add(new Param(t, split[i + 1]));
                                         i = i + 1;
                                     }
                                     break;
                                 case Constant.RETURN:
                                     if (i + 1 < split.length) {
-                                        returnMap.put(t, split[i + 1]);
+                                        if (StringUtils.isNumeric(t)) {
+                                            responseList.add(new Response(Integer.valueOf(t), split[i + 1]));
+                                        } else {
+                                            int size = responseList.size();
+                                            if (size == 0) {
+                                                Map<String, String> result = new HashMap<>();
+                                                result.put(t, split[i + 1]);
+                                                responseList.add(new Response(0, "成功", result));
+                                            } else {
+                                                responseList.get(responseList.size() - 1).getFieldMap().put(t, split[i + 1]);
+                                            }
+                                        }
                                         i = i + 1;
                                     }
                                     break;
                                 case Constant.FIELD:
                                     if (i + 1 < split.length) {
-                                        fieldMap.put(t, split[i + 1]);
+                                        fieldList.add(new Param(t, split[i + 1]));
                                         i = i + 1;
                                     }
                                     break;
@@ -119,7 +132,7 @@ public class DocReader extends BaseReader {
                         }
                     }
                 }
-                render(controller, map, paramMap, fieldMap, returnMap, throwsMap, view, model);
+                render(controller, map, paramList, fieldList, responseList, throwsMap, view, model);
             }
         } catch (Exception e) {
             log.warn("singleReader error!", e);

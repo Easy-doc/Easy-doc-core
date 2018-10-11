@@ -204,12 +204,15 @@ public class ReflectUtils {
         return false;
     }
 
-    public Map<String, Class> getParams(String controllerName, String methodName) {
+    public Map<String, String> getParams(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
         LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
-        Map<String, Class> result = new HashMap<>();
+        Map<String, String> result = new HashMap<>();
         List<String> keyList = new ArrayList<>(Arrays.asList(Objects.requireNonNull(discoverer.getParameterNames(method))));
-        List<Class> valueList = new ArrayList<>(Arrays.asList(method.getParameterTypes()));
+        List<String> valueList = new ArrayList<>();
+        for (Class clazz : method.getParameterTypes()) {
+            valueList.add(clazz.getName());
+        }
         for (int i = 0; i < keyList.size(); i++) {
             result.put(keyList.get(i), valueList.get(i));
         }

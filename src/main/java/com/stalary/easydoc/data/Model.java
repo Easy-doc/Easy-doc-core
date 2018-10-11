@@ -10,7 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * ModelData
@@ -31,7 +31,7 @@ public class Model {
     private String description;
 
     /** 参数和对应的解释 **/
-    private Map<String, String> fieldMap;
+    private List<Param> fieldList;
 
     /** 代表实体是否已经被弃置 **/
     @Builder.Default

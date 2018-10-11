@@ -67,6 +67,7 @@ public class ResourceController {
      * @method testParam 测试get含参方法
      * @param name 名称
      * @param age 年龄
+     * @return 0 返回成功
      * @return name 名称
      * @return age 年龄
      */
@@ -106,7 +107,7 @@ public class ResourceController {
     /**
      * @method addAuth 添加auth(cookie|token)
      * @param params cookie|token(可以两者都传)
-     * @return JSONObject
+     * @return 0 JSONObject
      */
     @PostMapping("/addAuth")
     public JSONObject addAuth(
@@ -119,6 +120,7 @@ public class ResourceController {
     /**
      * @method token 测试post方法
      * @param request HttpServletRequest
+     * @return 0 返回成功
      * @return User 用户对象
      */
     @PostMapping("/token")
@@ -137,6 +139,7 @@ public class ResourceController {
      * @param isGet  是否为get，默认true
      * @param url    请求地址
      * @param body   参数
+     * @return 0 测试成功
      * @return TestResponse 时间统计对象
      */
     @PostMapping("/pressureTest")
@@ -150,11 +153,4 @@ public class ResourceController {
         return resourceService.abTest(n, c, cookie, url, body, isGet);
     }
 
-    @GetMapping("/mock")
-    public JSONObject mock(
-            @RequestParam String controllerName,
-            @RequestParam String methodName) {
-//        resourceService.mock(controllerName, methodName);
-        return JsonResult.ok();
-    }
 }

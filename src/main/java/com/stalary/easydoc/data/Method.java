@@ -10,6 +10,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,10 +38,10 @@ public class Method {
     private String description;
 
     /** 参数map，key代表参数名称，value默认为"" **/
-    private Map<String, String> paramMap;
+    private List<Param> paramList;
 
-    /** 返回map，key代表code，value代表返回的描述 **/
-    private Map<String, String> returnMap;
+    /** 返回值的code，描述，参数 **/
+    private List<Response> responseList;
 
     /** 可能抛出的异常 **/
     private Map<String, String> throwsMap;

@@ -11,7 +11,6 @@ import com.stalary.easydoc.config.IpConfiguration;
 import com.stalary.easydoc.data.*;
 import com.stalary.easydoc.readers.DocReader;
 import com.stalary.easydoc.readers.ReflectUtils;
-import com.stalary.easydoc.readers.XmlReader;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -38,9 +37,6 @@ public class ResourceService {
     private DocReader docReader;
 
     @Autowired
-    private XmlReader xmlReader;
-
-    @Autowired
     private ReflectUtils reflectUtils;
 
     @Autowired
@@ -52,11 +48,7 @@ public class ResourceService {
 
     View read() {
         if (properties.isOpen()) {
-            if (Constant.XML.equals(properties.getType())) {
-                return xmlReader.multiReader();
-            } else {
-                return docReader.multiReader();
-            }
+            return docReader.multiReader();
         }
         return new View();
     }
@@ -68,7 +60,7 @@ public class ResourceService {
     }
 
     JSONObject abTest(int n, int c, String cookie, String url,
-                              TestBody body, boolean isGet) {
+                      TestBody body, boolean isGet) {
         File file = new File("");
         try {
             StringBuilder cmdBuilder = new StringBuilder();

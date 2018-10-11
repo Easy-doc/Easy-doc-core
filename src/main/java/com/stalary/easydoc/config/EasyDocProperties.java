@@ -30,9 +30,6 @@ public class EasyDocProperties {
     /** 联系人 **/
     private String contact;
 
-    /** 文档类型(xml|doc)，默认xml **/
-    private String type = "xml";
-
     /** easy-doc开关，默认开启 **/
     private boolean open = true;
 }

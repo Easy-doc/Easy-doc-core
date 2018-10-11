@@ -135,27 +135,34 @@ public abstract class BaseReader {
     }
 
     private void renderMethod(Controller controller, Map<String, String> map,
-                              Map<String, String> paramMap, Map<String, String> returnMap,
+                              List<Param> paramList, List<Response> responseList,
                               Map<String, String> throwsMap, Model body) {
-        // 其次遍历存储method
+        renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .name(map.getOrDefault(Constant.METHOD, ""))
                 .path(map.getOrDefault(Constant.PATH, ""))
                 .type(map.getOrDefault(Constant.TYPE, ""))
                 .body(body)
-                .paramMap(paramMap)
-                .returnMap(returnMap)
+                .paramList(paramList)
+                .responseList(responseList)
                 .throwsMap(throwsMap)
                 .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
                 .build();
         controller.getMethodList().add(method);
     }
 
-    private void renderModel(Model model, Map<String, String> map, Map<String, String> fieldMap, View view) {
+    private void renderParamList(String controller, String method, List<Param> paramList) {
+        Map<String, String> params = reflectUtils.getParams(controller, method);
+        paramList.forEach(param -> {
+//            param.setType();
+        });
+    }
+
+    private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
         model = model.toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .fieldMap(fieldMap)
+                .fieldList(fieldList)
                 .name(map.getOrDefault(Constant.MODEL, ""))
                 .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
                 .build();
@@ -181,17 +188,10 @@ public abstract class BaseReader {
 
     /**
      * 渲染controller，method，model，部分字段通过反射进行读取
-     * @param controller controller
-     * @param map 所有数据
-     * @param paramMap 参数数据
-     * @param fieldMap 属性数据
-     * @param returnMap 返回参数数据
-     * @param view 前端展示对象
-     * @param model model对象
      */
     void render(Controller controller, Map<String, String> map,
-                Map<String, String> paramMap, Map<String, String> fieldMap,
-                Map<String, String> returnMap, Map<String, String> throwsMap,
+                List<Param> paramList, List<Param> fieldList,
+                List<Response> responseList, Map<String, String> throwsMap,
                 View view, Model model) {
         // 填充controller，method，model
         if (map.size() > 0) {
@@ -204,10 +204,10 @@ public abstract class BaseReader {
                 map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
                 map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
                 map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(controller.getName(), map.get(Constant.METHOD))));
-                renderMethod(controller, map, paramMap, returnMap, throwsMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
+                renderMethod(controller, map, paramList, responseList, throwsMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
             } else if (map.containsKey(Constant.MODEL)) {
                 map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(map.get(Constant.MODEL), "")));
-                renderModel(model, map, fieldMap, view);
+                renderModel(model, map, fieldList, view);
             }
         }
     }

@@ -52,6 +52,7 @@ public class Constant {
     public static final String CUR_PATH = System.getProperty("user.dir");
 
     /** 类名和路径的映射 **/
+    //todo: 可能存在key重复
     public static final Map<String, String> PATH_MAP = new HashMap<>();
 
     public static final String DEPRECATED = "deprecated";
