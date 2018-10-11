@@ -25,9 +25,6 @@ import java.util.Map;
 @Builder(toBuilder = true)
 public class Method {
 
-    /** 方法名称 **/
-    private String name;
-
     /** 请求路径 **/
     private String path;
 

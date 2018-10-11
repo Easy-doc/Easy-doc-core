@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -144,7 +146,6 @@ public abstract class BaseReader {
         renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .name(map.getOrDefault(Constant.METHOD, ""))
                 .path(map.getOrDefault(Constant.PATH, ""))
                 .type(map.getOrDefault(Constant.TYPE, ""))
                 .body(body)
@@ -238,8 +239,21 @@ public abstract class BaseReader {
                 map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(map.get(Constant.CONTROLLER), "")));
                 renderController(controller, map, view);
             } else if (map.containsKey(Constant.METHOD)) {
-                map.put(Constant.PATH, reflectUtils.getMethodPath(controller.getName(), map.get(Constant.METHOD)));
-                map.put(Constant.TYPE, reflectUtils.getMethodType(controller.getName(), map.get(Constant.METHOD)));
+                RequestMapping mapping = reflectUtils.getMethodMapping(controller.getName(), map.get(Constant.METHOD));
+                if (mapping != null) {
+                    if (mapping.value().length != 0) {
+                        map.put(Constant.PATH, mapping.value()[0]);
+                    }
+                    if (mapping.method().length != 0) {
+                        RequestMethod[] method = mapping.method();
+                        StringBuilder sb = new StringBuilder();
+                        for (RequestMethod requestMethod : method) {
+                            sb.append(requestMethod.toString()).append(",");
+                        }
+                        sb.deleteCharAt(sb.length() - 1);
+                        map.put(Constant.TYPE, sb.toString());
+                    }
+                }
                 map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
                 map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(controller.getName(), map.get(Constant.METHOD))));
                 renderMethod(controller, map, paramList, responseList, throwsMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));

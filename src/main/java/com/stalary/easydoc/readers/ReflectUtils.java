@@ -82,30 +82,14 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取method中的路径
+     * 获取method的RequestMapping
      *
      * @param controllerName
      * @param methodName
      * @return
      */
-    public String getMethodPath(String controllerName, String methodName) {
-        RequestMapping mapping = AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
-        if (mapping != null) {
-            if (mapping.value().length != 0) {
-                return mapping.value()[0];
-            }
-        }
-        return "";
-    }
-
-    public String getMethodType(String controllerName, String methodName) {
-        RequestMapping mapping = AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
-        if (mapping != null) {
-            if (mapping.method().length != 0) {
-                return mapping.method()[0].name();
-            }
-        }
-        return "";
+    public RequestMapping getMethodMapping(String controllerName, String methodName) {
+        return AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
     }
 
     /**
