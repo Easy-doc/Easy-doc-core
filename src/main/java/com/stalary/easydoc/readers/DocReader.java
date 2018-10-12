@@ -52,8 +52,6 @@ public class DocReader extends BaseReader {
                 List<Param> fieldList = new ArrayList<>();
                 List<Response> responseList = new ArrayList<>();
                 Map<String, String> throwsMap = new HashMap<>();
-                Map<String, String> returnMap = new HashMap<>();
-                Map<String, String> fieldMap = new HashMap<>();
                 // 1. 去除所有单行注释
                 // 2. 匹配块级注释
                 // 3. 合并多个空格

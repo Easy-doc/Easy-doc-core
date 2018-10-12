@@ -37,16 +37,10 @@ import java.util.concurrent.atomic.AtomicReference;
 @Component
 public class ReflectUtils {
 
-    public ReflectUtils() {
-    }
-
     /**
      * 判断是否为controller
-     *
-     * @param name
-     * @return
      */
-    public boolean isController(String name) {
+    boolean isController(String name) {
         Class clazz = path2Class(name);
         if (clazz == null) {
             throw new NullPointerException("class is null");
@@ -56,11 +50,8 @@ public class ReflectUtils {
 
     /**
      * 获取controller中的路径
-     *
-     * @param name
-     * @return
      */
-    public String getControllerPath(String name) {
+    String getControllerPath(String name) {
         Class clazz = path2Class(name);
         RequestMapping annotation = AnnotationUtils.findAnnotation(Objects.requireNonNull(clazz), RequestMapping.class);
         if (annotation != null) {
@@ -69,7 +60,10 @@ public class ReflectUtils {
         return "";
     }
 
-    public Method getMethod(String controllerName, String methodName) {
+    /**
+     * 获取method
+     */
+    private Method getMethod(String controllerName, String methodName) {
         Class clazz = path2Class(controllerName);
         if (clazz != null) {
             for (Method method : clazz.getDeclaredMethods()) {
@@ -83,20 +77,13 @@ public class ReflectUtils {
 
     /**
      * 获取method的RequestMapping
-     *
-     * @param controllerName
-     * @param methodName
-     * @return
      */
-    public RequestMapping getMethodMapping(String controllerName, String methodName) {
+    RequestMapping getMethodMapping(String controllerName, String methodName) {
         return AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
     }
 
     /**
      * 将包路径转化为class
-     *
-     * @param name
-     * @return
      */
     private Class path2Class(String name) {
         try {
@@ -108,11 +95,7 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取被@RequestBody注解的参数
-     *
-     * @param controllerName controllerName
-     * @param methodName     methodName
-     * @return Parameter
+     * 获取被@RequestBody注解的自定义参数
      */
     private Parameter getBodyParam(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
@@ -130,14 +113,9 @@ public class ReflectUtils {
 
 
     /**
-     * 获取被@RequestBody注解的Model
-     *
-     * @param controllerName
-     * @param methodName
-     * @param view
-     * @return
+     * 获取Model
      */
-    public Model getBody(String controllerName, String methodName, View view) {
+    Model getBody(String controllerName, String methodName, View view) {
         try {
             Parameter parameter = getBodyParam(controllerName, methodName);
             if (parameter != null) {
@@ -164,12 +142,8 @@ public class ReflectUtils {
 
     /**
      * 判断是否已经被弃用
-     *
-     * @param className
-     * @param methodName
-     * @return
      */
-    public boolean isDeprecated(String className, String methodName) {
+    boolean isDeprecated(String className, String methodName) {
         Class clazz = path2Class(className);
         if (clazz == null) {
             throw new NullPointerException("class is null");
@@ -192,7 +166,10 @@ public class ReflectUtils {
         return false;
     }
 
-    public Map<String, Param> getParams(String controllerName, String methodName) {
+    /**
+     * 获取method中的param
+     */
+    Map<String, Param> getParams(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
         LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
         Map<String, Param> result = new HashMap<>();
@@ -224,7 +201,10 @@ public class ReflectUtils {
         return result;
     }
 
-    public Map<String, String> getField(String modelName) {
+    /**
+     * 获取model中的field
+     */
+    Map<String, String> getField(String modelName) {
         Class clazz = path2Class(modelName);
         if (clazz == null) {
             throw new NullPointerException("get Field class is null");

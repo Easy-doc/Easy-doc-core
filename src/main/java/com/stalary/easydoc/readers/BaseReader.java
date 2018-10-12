@@ -41,8 +41,6 @@ public abstract class BaseReader {
 
     /**
      * 批量读取文件
-     *
-     * @return View
      */
     public View multiReader() {
         if (viewCache != null) {
@@ -68,8 +66,6 @@ public abstract class BaseReader {
 
     /**
      * 将所有文件构造出映射关系
-     *
-     * @param fileList
      */
     private void pathMapper(List<File> fileList) {
         fileList.forEach(file -> {
@@ -80,9 +76,6 @@ public abstract class BaseReader {
 
     /**
      * 将文件路径转化为类名:包路径的映射
-     *
-     * @param path
-     * @return
      */
     private NamePack path2Pack(String path) {
         String temp = path.replaceAll("/", ".");
@@ -92,9 +85,7 @@ public abstract class BaseReader {
     }
 
     /**
-     * 单文件读取，子类实现
-     *
-     * @param file
+     * 单文件读取匹配，子类实现
      */
     abstract void singleReader(File file);
 
@@ -113,6 +104,9 @@ public abstract class BaseReader {
         }
     }
 
+    /**
+     * 读取文件
+     */
     String readFile(File file) {
         try {
             // 此处设置编码，解决乱码问题
@@ -129,100 +123,6 @@ public abstract class BaseReader {
             log.warn("readFile error!", e);
         }
         return "";
-    }
-
-    private void renderController(Controller controller, Map<String, String> map, View view) {
-        controller.setAuthor(map.getOrDefault(Constant.AUTHOR, ""));
-        controller.setDescription(map.getOrDefault(Constant.DESCRIPTION, ""));
-        controller.setName(map.getOrDefault(Constant.CONTROLLER, ""));
-        controller.setPath(map.getOrDefault(Constant.PATH, ""));
-        controller.setDeprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")));
-        view.getControllerList().add(controller);
-    }
-
-    private void renderMethod(Controller controller, Map<String, String> map,
-                              List<Param> paramList, List<Response> responseList,
-                              Map<String, String> throwsMap, Model body) {
-        renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
-        Method method = new Method().toBuilder()
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .path(map.getOrDefault(Constant.PATH, ""))
-                .type(map.getOrDefault(Constant.TYPE, ""))
-                .body(body)
-                .paramList(paramList)
-                .responseList(responseList)
-                .throwsMap(throwsMap)
-                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
-                .build();
-        controller.getMethodList().add(method);
-    }
-
-    private void renderParamList(String controller, String method, List<Param> paramList) {
-        Map<String, Param> params = reflectUtils.getParams(controller, method);
-        paramList.forEach(param -> {
-            Param temp = params.get(param.getName());
-            param.setType(trans2JS(temp.getType()));
-            param.setRequired(temp.isRequired());
-            param.setDefaultValue(temp.getDefaultValue());
-        });
-    }
-
-    private String trans2JS(String type) {
-        if (StringUtils.isEmpty(type)) {
-            return "";
-        }
-        switch (type) {
-            case "java.lang.String":
-                return "String";
-            case "java.lang.Integer":
-            case "java.lang.Double":
-            case "java.lang.Float":
-            case "int":
-            case "double":
-            case "float":
-                return "Number";
-            case "java.lang.Boolean":
-            case "boolean":
-                return "Boolean";
-            case "java.util.Map":
-            case "java.lang.Object":
-                return "Object";
-            default:
-                return type;
-        }
-    }
-
-    private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
-        renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
-        model = model.toBuilder()
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .fieldList(fieldList)
-                .name(map.getOrDefault(Constant.MODEL, ""))
-                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
-                .build();
-        view.getModelList().add(model);
-        // 渲染input
-        List<Controller> controllerList = view.getControllerList();
-        if (controllerList.size() > 0) {
-            for (Controller controller : controllerList) {
-                List<Method> methodList = controller.getMethodList();
-                for (Method method : methodList) {
-                    if (method.getBody() != null) {
-                        // 当input还未解析时，存入model
-                        if (model.getName().equals(method.getBody().getName())) {
-                            if (StringUtils.isEmpty(method.getBody().getDescription())) {
-                                method.setBody(model);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private void renderModelField(String modelName, List<Param> fieldList) {
-        Map<String, String> fieldMap = reflectUtils.getField(modelName);
-        fieldList.forEach(field -> field.setType(trans2JS(fieldMap.getOrDefault(field.getName(), ""))));
     }
 
     /**
@@ -262,5 +162,118 @@ public abstract class BaseReader {
                 renderModel(model, map, fieldList, view);
             }
         }
+    }
+
+    /**
+     * 渲染controller，因为需要继续被使用，所以不能使用Builder
+     */
+    private void renderController(Controller controller, Map<String, String> map, View view) {
+        controller.setAuthor(map.getOrDefault(Constant.AUTHOR, ""));
+        controller.setDescription(map.getOrDefault(Constant.DESCRIPTION, ""));
+        controller.setName(map.getOrDefault(Constant.CONTROLLER, ""));
+        controller.setPath(map.getOrDefault(Constant.PATH, ""));
+        controller.setDeprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")));
+        view.getControllerList().add(controller);
+    }
+
+    /**
+     * 渲染method，需要对param进行渲染
+     */
+    private void renderMethod(Controller controller, Map<String, String> map,
+                              List<Param> paramList, List<Response> responseList,
+                              Map<String, String> throwsMap, Model body) {
+        renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
+        Method method = new Method().toBuilder()
+                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+                .path(map.getOrDefault(Constant.PATH, ""))
+                .type(map.getOrDefault(Constant.TYPE, ""))
+                .body(body)
+                .paramList(paramList)
+                .responseList(responseList)
+                .throwsMap(throwsMap)
+                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
+                .build();
+        controller.getMethodList().add(method);
+    }
+
+    /**
+     * 渲染model，需要渲染field，并且存入body
+     */
+    private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
+        renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
+        model = model.toBuilder()
+                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+                .name(map.getOrDefault(Constant.MODEL, ""))
+                .author(map.getOrDefault(Constant.AUTHOR, ""))
+                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
+                .fieldList(fieldList)
+                .build();
+        view.getModelList().add(model);
+        // 渲染body
+        List<Controller> controllerList = view.getControllerList();
+        if (controllerList.size() > 0) {
+            for (Controller controller : controllerList) {
+                List<Method> methodList = controller.getMethodList();
+                for (Method method : methodList) {
+                    if (method.getBody() != null) {
+                        // 当body还未解析时，存入model
+                        if (model.getName().equals(method.getBody().getName())) {
+                            if (StringUtils.isEmpty(method.getBody().getDescription())) {
+                                method.setBody(model);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 渲染param
+     */
+    private void renderParamList(String controller, String method, List<Param> paramList) {
+        Map<String, Param> params = reflectUtils.getParams(controller, method);
+        paramList.forEach(param -> {
+            Param temp = params.get(param.getName());
+            param.setType(trans2JS(temp.getType()));
+            param.setRequired(temp.isRequired());
+            param.setDefaultValue(temp.getDefaultValue());
+        });
+    }
+
+    /**
+     * 将java类型转化为js类型
+     */
+    private String trans2JS(String type) {
+        if (StringUtils.isEmpty(type)) {
+            return "";
+        }
+        switch (type) {
+            case "java.lang.String":
+                return "String";
+            case "java.lang.Integer":
+            case "java.lang.Double":
+            case "java.lang.Float":
+            case "int":
+            case "double":
+            case "float":
+                return "Number";
+            case "java.lang.Boolean":
+            case "boolean":
+                return "Boolean";
+            case "java.util.Map":
+            case "java.lang.Object":
+                return "Object";
+            default:
+                return type;
+        }
+    }
+
+    /**
+     * 渲染field
+     */
+    private void renderModelField(String modelName, List<Param> fieldList) {
+        Map<String, String> fieldMap = reflectUtils.getField(modelName);
+        fieldList.forEach(field -> field.setType(trans2JS(fieldMap.getOrDefault(field.getName(), ""))));
     }
 }

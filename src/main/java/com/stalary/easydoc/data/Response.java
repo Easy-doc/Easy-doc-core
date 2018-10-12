@@ -19,10 +19,13 @@ import java.util.Map;
 @Data
 public class Response {
 
+    /** 返回code **/
     private int code;
 
+    /** 描述 **/
     private String description;
 
+    /** 返回的参数 **/
     private Map<String, String> fieldMap = new HashMap<>();
 
     public Response(int code, String description) {

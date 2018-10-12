@@ -27,6 +27,9 @@ public class Model {
     /** 名称 **/
     private String name;
 
+    /** 作者 **/
+    private String author;
+
     /** 描述 **/
     private String description;
 

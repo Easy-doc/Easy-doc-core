@@ -29,7 +29,7 @@ public class Param {
     private boolean required = true;
 
     /** 默认值 **/
-    private String defaultValue = "";
+    private String defaultValue;
 
     public Param(String name, String description) {
         this.name = name;

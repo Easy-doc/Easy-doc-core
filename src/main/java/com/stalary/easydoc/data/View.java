@@ -35,15 +35,6 @@ public class View {
     /** 所有返回对象 **/
     private List<Model> modelList;
 
-    /**
-     * 添加view
-     * @param view
-     */
-    public void addView(View view) {
-        this.getControllerList().addAll(this.getControllerList().size(), view.getControllerList());
-        this.getModelList().addAll(view.getModelList());
-    }
-
     public View(EasyDocProperties properties) {
         this.controllerList = new ArrayList<>();
         this.modelList = new ArrayList<>();

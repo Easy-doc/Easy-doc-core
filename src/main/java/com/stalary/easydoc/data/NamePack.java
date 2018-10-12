@@ -20,7 +20,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class NamePack {
 
+    /** 类名 **/
     private String name;
 
+    /** 包路径 **/
     private String packPath;
 }
