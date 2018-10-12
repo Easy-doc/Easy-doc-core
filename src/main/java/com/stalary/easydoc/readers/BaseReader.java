@@ -215,6 +215,7 @@ public abstract class BaseReader {
      * 渲染model，需要渲染field，并且存入body
      */
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
+        // todo：对象的嵌套待解决
         renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
