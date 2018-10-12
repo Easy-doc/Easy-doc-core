@@ -98,7 +98,7 @@ public class DocReader extends BaseReader {
                                                 result.put(t, split[i + 1]);
                                                 responseList.add(new Response(0, "成功", result));
                                             } else {
-                                                responseList.get(responseList.size() - 1).getFieldMap().put(t, split[i + 1]);
+                                                responseList.get(responseList.size() - 1).getFieldList().add(new Field(t, split[i + 1]));
                                             }
                                         }
                                         i = i + 1;

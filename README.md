@@ -20,7 +20,7 @@
 <dependency>
     <groupId>com.stalary</groupId>
     <artifactId>easy-doc</artifactId>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -32,48 +32,30 @@ com:
       name: swagger demo # 项目名称
       contact: stalary@613.com # 项目联系人
       description: swagger测试项目 # 项目描述
-      type: doc # 解析方式(doc|xml)
       path: com.stalary.swagger # 解析的包路径(包括data和controller的包)
+      open: true # 是否开启
 ```
 
 # 注释书写规则
-> 使用javadoc和xml两种模式，可以在application.yml中进行选择
 
-> demo都在test包中
+> demo具体可以查看ResourceController|TestBody|TestResponse等
 
-## javadoc格式(待完成)
 注释名 | 解释
 --- | ---
-@controller: | 类名
-@method: | 方法名   
-@description: | 类/方法/实体描述
-@author: | 类作者
-@return: | 方法返回值，不同code的可以写多个，返回对象使用json格式或者指定对象路径(包名+类名)
-@param: | 参数名
-@model: | 实体标识
-@field： | 实体的参数
+@method | 方法名   
+@description | 类/方法/实体描述
+@author | 类作者
+@throws | 抛出的异常
+@return | 方法返回值，第一行为code 介绍，后面为对应code的每个参数的含义
+@param | 参数名
+@model | 实体标识
+@field | 实体的参数
 
-## xml格式
-### controller
-注释名 | 解释
---- | ---
-\<controller>\</controller> | controller名称
-\<author>\</author> | controller作者
-\<description>\</description> | controller的描述
-\<path>\</path> | controller路径
-### method
-注释名 | 解释
---- | ---
-\<method>\</method> | 方法名称
-\<path>\</path> | 请求路径
-\<type>\</type> | 请求类型(get,post等)
-\<description>\</description> | 方法的描述
-\<body>\</body> | post方法的请求体
-\<param>\</param> | 请求参数
-\<return>\</return> | 接口返回描述(如<code0>成功</code0>)
-### model
-注释名 | 解释
---- | ---
-\<model>\</model> | model名称
-\<field>\</field> | model的属性
-\<description>\</description> | model的描述
+# 原理
+基于反射和正则表达式实现，依赖于spring，并且需要对源文件进行扫描。
+
+核心扫描方法为DocReader中的singleReader
+
+渲染方法为BaseReader中的render
+
+所有反射相关的操作都位于ReflectUtils

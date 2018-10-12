@@ -7,7 +7,8 @@ package com.stalary.easydoc.data;
 
 import lombok.Data;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,7 +27,7 @@ public class Response {
     private String description;
 
     /** 返回的参数 **/
-    private Map<String, String> fieldMap = new HashMap<>();
+    private List<Field> fieldList = new ArrayList<>();
 
     public Response(int code, String description) {
         this.code = code;
@@ -36,6 +37,6 @@ public class Response {
     public Response(int code, String description, Map<String, String> fieldMap) {
         this.code = code;
         this.description = description;
-        this.fieldMap = fieldMap;
+        fieldMap.forEach((k, v) -> fieldList.add(new Field(k, v)));
     }
 }

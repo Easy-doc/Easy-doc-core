@@ -183,6 +183,7 @@ public abstract class BaseReader {
                               List<Param> paramList, List<Response> responseList,
                               Map<String, String> throwsMap, Model body) {
         renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
+        renderResponseList(responseList);
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .path(map.getOrDefault(Constant.PATH, ""))
@@ -194,6 +195,20 @@ public abstract class BaseReader {
                 .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
                 .build();
         controller.getMethodList().add(method);
+    }
+
+    private void renderResponseList(List<Response> responseList) {
+        responseList.forEach(response -> {
+            for (Field field : response.getFieldList()) {
+                if (Constant.PATH_MAP.containsKey(field.getName())) {
+                    try {
+                        field.setData(reflectUtils.path2Class(field.getName()).newInstance());
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
     }
 
     /**
