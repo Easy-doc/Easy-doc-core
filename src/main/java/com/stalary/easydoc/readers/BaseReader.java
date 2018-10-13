@@ -279,15 +279,15 @@ public abstract class BaseReader {
             case "java.lang.Boolean":
             case "boolean":
                 return "Boolean";
-            case "java.util.Map":
-            case "java.util.List":
-            case "java.lang.Object":
-                return "body";
             case "javax.servlet.http.HttpServletRequest":
             case "javax.servlet.http.HttpServletResponse":
                 return "";
+            case "java.util.Map":
+            case "java.util.List":
+            case "java.lang.Object":
+                return "Object";
             default:
-                return "body";
+                return "Object";
         }
     }
 
