@@ -42,6 +42,7 @@ public abstract class BaseReader {
     /**
      * 批量读取文件
      */
+    // todo:暴露出main方法调用的接口，缓存view
     public View multiReader() {
         if (viewCache != null) {
             return viewCache;
@@ -278,10 +279,11 @@ public abstract class BaseReader {
             case "boolean":
                 return "Boolean";
             case "java.util.Map":
+            case "java.util.List":
             case "java.lang.Object":
                 return "Object";
             default:
-                return type;
+                return "body";
         }
     }
 

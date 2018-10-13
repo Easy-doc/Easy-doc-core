@@ -121,6 +121,7 @@ public class ResourceController {
     /**
      * @method token 测试post方法
      * @param request HttpServletRequest
+     * @param user 用户对象
      * @return 0 返回成功
      * @return User 用户对象
      */

@@ -42,9 +42,6 @@ public class ReflectUtils {
      */
     boolean isController(String name) {
         Class clazz = path2Class(name);
-        if (clazz == null) {
-            throw new NullPointerException("class is null");
-        }
         return AnnotatedElementUtils.hasAnnotation(clazz, Controller.class);
     }
 
@@ -53,7 +50,7 @@ public class ReflectUtils {
      */
     String getControllerPath(String name) {
         Class clazz = path2Class(name);
-        RequestMapping annotation = AnnotationUtils.findAnnotation(Objects.requireNonNull(clazz), RequestMapping.class);
+        RequestMapping annotation = AnnotationUtils.findAnnotation(clazz, RequestMapping.class);
         if (annotation != null) {
             return annotation.value()[0];
         }
@@ -65,14 +62,12 @@ public class ReflectUtils {
      */
     private Method getMethod(String controllerName, String methodName) {
         Class clazz = path2Class(controllerName);
-        if (clazz != null) {
-            for (Method method : clazz.getDeclaredMethods()) {
-                if (method.getName().equals(methodName)) {
-                    return method;
-                }
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.getName().equals(methodName)) {
+                return method;
             }
         }
-        return null;
+        throw new NullPointerException("getMethod method is null");
     }
 
     /**
@@ -89,9 +84,8 @@ public class ReflectUtils {
         try {
             return Class.forName(Constant.PATH_MAP.get(name));
         } catch (Exception e) {
-            log.warn("path2Class error!", e);
+            throw new NullPointerException("path2Class error");
         }
-        return null;
     }
 
     /**
@@ -148,9 +142,6 @@ public class ReflectUtils {
      */
     boolean isDeprecated(String className, String methodName) {
         Class clazz = path2Class(className);
-        if (clazz == null) {
-            throw new NullPointerException("class is null");
-        }
         if (StringUtils.isEmpty(className)) {
             return false;
         }
@@ -182,7 +173,6 @@ public class ReflectUtils {
         List<String> valueList = new ArrayList<>();
         for (Class clazz : method.getParameterTypes()) {
             typeList.add(clazz.getName());
-
         }
         for (Parameter parameter : method.getParameters()) {
             RequestParam annotation = AnnotationUtils.findAnnotation(parameter, RequestParam.class);
@@ -209,9 +199,6 @@ public class ReflectUtils {
      */
     Map<String, String> getField(String modelName) {
         Class clazz = path2Class(modelName);
-        if (clazz == null) {
-            throw new NullPointerException("get Field class is null");
-        }
         Map<String, String> result = new HashMap<>();
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
