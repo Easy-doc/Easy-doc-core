@@ -269,13 +269,14 @@ public abstract class BaseReader {
         switch (type) {
             case "java.lang.String":
                 return "String";
-            case "java.lang.Integer":
             case "java.lang.Double":
             case "java.lang.Float":
-            case "int":
             case "double":
             case "float":
-                return "Number";
+                return "Double";
+            case "java.lang.Integer":
+            case "int":
+                return "Integer";
             case "java.lang.Boolean":
             case "boolean":
                 return "Boolean";
