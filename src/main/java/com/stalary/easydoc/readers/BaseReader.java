@@ -256,6 +256,7 @@ public abstract class BaseReader {
             param.setRequired(temp.isRequired());
             param.setDefaultValue(temp.getDefaultValue());
         });
+
     }
 
     /**
@@ -281,7 +282,10 @@ public abstract class BaseReader {
             case "java.util.Map":
             case "java.util.List":
             case "java.lang.Object":
-                return "Object";
+                return "body";
+            case "javax.servlet.http.HttpServletRequest":
+            case "javax.servlet.http.HttpServletResponse":
+                return "";
             default:
                 return "body";
         }
