@@ -1,3 +1,4 @@
+![logo](logo.png)
 # Easy-doc
 简单易用的java接口文档生成，目前仍在开发中，仅提供测试版本
 

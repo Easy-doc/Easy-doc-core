@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ClassUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -44,7 +45,20 @@ public class ResourceService {
 
     View read() {
         if (properties.isOpen()) {
-            return docReader.multiReader();
+            if (properties.isSource()) {
+                return docReader.multiReader();
+            } else {
+                try (InputStream inputStream = ClassUtils.class.getClassLoader().getResourceAsStream("test.json"); BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream))) {
+                    String temp;
+                    StringBuilder sb = new StringBuilder();
+                    while ((temp = bf.readLine()) != null) {
+                        sb.append(temp);
+                    }
+                    return docReader.multiReader(sb.toString());
+                } catch (Exception e) {
+                    log.warn("multiReader readTxt error", e);
+                }
+            }
         }
         return new View();
     }

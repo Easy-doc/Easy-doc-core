@@ -65,6 +65,14 @@ public abstract class BaseReader {
         return view;
     }
 
+    public View multiReader(String str) {
+        if (viewCache != null) {
+            return viewCache;
+        }
+
+        return view;
+    }
+
     /**
      * 将所有文件构造出映射关系
      */
@@ -89,6 +97,8 @@ public abstract class BaseReader {
      * 单文件读取匹配，子类实现
      */
     abstract void singleReader(File file);
+
+    abstract void singleReader(String str);
 
     private void getFile(File file, List<File> fileList) {
         if (file.exists()) {
@@ -282,7 +292,7 @@ public abstract class BaseReader {
                 return "Boolean";
             case "javax.servlet.http.HttpServletRequest":
             case "javax.servlet.http.HttpServletResponse":
-                return "";
+                return "String";
             case "java.util.Map":
             case "java.util.List":
             case "java.lang.Object":
