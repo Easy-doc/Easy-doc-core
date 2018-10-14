@@ -32,4 +32,7 @@ public class EasyDocProperties {
 
     /** easy-doc开关，默认开启 **/
     private boolean open = true;
+
+    /** 是否使用json缓存 **/
+    private boolean json = false;
 }
