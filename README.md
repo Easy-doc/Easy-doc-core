@@ -1,6 +1,13 @@
 ![logo](logo.png)
-# Easy-doc
+# Easy-Doc
 简单易用的java接口文档生成，目前仍在开发中，仅提供测试版本
+
+# 原理
+- 基于反射和正则表达式实现，依赖于spring，并且需要对源文件进行扫描。
+- 核心扫描方法为DocReader中的singleReader
+- 核心渲染方法为BaseReader中的render
+- 所有反射相关的操作都位于ReflectUtils
+- jar包生成接口文档需要使用插件处理 
 
 # 引入依赖方法
 使用maven引入
@@ -26,6 +33,8 @@
 ```
 
 # 初始化配置
+如果source设置为false，则需要使用[easydoc-maven-plugin](https://github.com/Easy-doc/easydoc-maven-plugin)生成一份过滤后的源码文件
+
 ```yml
 com:
   stalary:
@@ -35,11 +44,13 @@ com:
       description: swagger测试项目 # 项目描述
       path: com.stalary.swagger # 解析的包路径(包括data和controller的包)
       open: true # 是否开启
+      source: true # 是否读取源码,false则为读取resources中的easydoc.txt
 ```
 
 # 注释书写规则
 
 > demo具体可以查看ResourceController|TestBody|TestResponse等
+
 
 注释名 | 解释
 --- | ---
@@ -52,11 +63,5 @@ com:
 @model | 实体标识
 @field | 实体的参数
 
-# 原理
-基于反射和正则表达式实现，依赖于spring，并且需要对源文件进行扫描。
-
-核心扫描方法为DocReader中的singleReader
-
-渲染方法为BaseReader中的render
-
-所有反射相关的操作都位于ReflectUtils
+# 返回样例
+[接口地址](http://easydoc.stalary.com/api)

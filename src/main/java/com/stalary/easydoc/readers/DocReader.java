@@ -35,7 +35,15 @@ public class DocReader extends BaseReader {
 
     @Override
     public void singleReader(String str) {
-
+        String[] split = str.split(Constant.MATCH_SPLIT);
+        String name = split[0];
+        Controller controller = new Controller();
+        Model model = new Model();
+        if (split.length > 1) {
+            for (int i = 1; i < split.length; i++) {
+                handle(controller, model, split[i], name);
+            }
+        }
     }
 
     @Override

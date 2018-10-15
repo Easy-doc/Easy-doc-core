@@ -38,15 +38,9 @@ public class Constant {
 
     public static final String TYPE = "type";
 
-    public static final String XML = "xml";
-
-    public static final String DOC = "doc";
-
     public static final String SPLIT = ":";
 
     public static final String HTTP = "http://";
-
-    public static final String OUTPUT = "output";
 
     /** 获取当前路径 **/
     public static final String CUR_PATH = System.getProperty("user.dir");
@@ -58,4 +52,10 @@ public class Constant {
     public static final String DEPRECATED = "deprecated";
 
     public static final String THROWS = "throws";
+
+    public static final String MATCH_SPLIT = "~~";
+
+    public static final String FILE_SPLIT = "@@@";
+
+    public static final String PATH_SPLIT = ",,,";
 }

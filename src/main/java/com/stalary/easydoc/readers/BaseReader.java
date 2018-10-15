@@ -1,5 +1,7 @@
 package com.stalary.easydoc.readers;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +44,6 @@ public abstract class BaseReader {
     /**
      * 批量读取文件
      */
-    // todo:暴露出main方法调用的接口，缓存view
     public View multiReader() {
         if (viewCache != null) {
             return viewCache;
@@ -69,7 +70,19 @@ public abstract class BaseReader {
         if (viewCache != null) {
             return viewCache;
         }
-
+        view = new View(properties);
+        StopWatch sw = new StopWatch("easy-doc");
+        sw.start("analysis");
+        String[] pathSplit = str.split(Constant.PATH_SPLIT);
+        Constant.PATH_MAP.putAll(JSONObject.parseObject(pathSplit[0], new TypeReference<Map<String, String>>(){}));
+        String[] fileSplit = pathSplit[1].split(Constant.FILE_SPLIT);
+        for (String temp : fileSplit) {
+            singleReader(temp);
+        }
+        sw.stop();
+        System.out.println(sw.prettyPrint());
+        // 缓存
+        viewCache = view;
         return view;
     }
 
@@ -94,10 +107,15 @@ public abstract class BaseReader {
     }
 
     /**
-     * 单文件读取匹配，子类实现
+     * 单文件读取匹配，读取文件
+     * @param file 文件
      */
     abstract void singleReader(File file);
 
+    /**
+     * 单文件读取匹配，读取字符串
+     * @param str 字符串
+     */
     abstract void singleReader(String str);
 
     private void getFile(File file, List<File> fileList) {
