@@ -48,7 +48,11 @@ public class ResourceService {
             if (properties.isSource()) {
                 return docReader.multiReader();
             } else {
-                try (InputStream inputStream = ClassUtils.class.getClassLoader().getResourceAsStream("easydoc.txt"); BufferedReader bf = new BufferedReader(new InputStreamReader(inputStream, Charset.forName("UTF-8")))) {
+                try (InputStream inputStream =
+                             ClassUtils.class.getClassLoader().getResourceAsStream("easydoc.txt");
+                     BufferedReader bf =
+                             new BufferedReader(new InputStreamReader(inputStream,
+                                     Charset.forName("UTF-8")))) {
                     String temp;
                     StringBuilder sb = new StringBuilder();
                     while ((temp = bf.readLine()) != null) {
