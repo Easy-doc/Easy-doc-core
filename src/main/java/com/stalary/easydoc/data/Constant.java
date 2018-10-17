@@ -42,6 +42,8 @@ public class Constant {
 
     public static final String HTTP = "http://";
 
+    public static final String WIN = "win";
+
     /** 获取当前路径 **/
     public static final String CUR_PATH = System.getProperty("user.dir");
 
@@ -58,8 +60,5 @@ public class Constant {
     public static final String FILE_SPLIT = "@@@";
 
     public static final String PATH_SPLIT = ",,,";
-
-    public static final int Windows = 1;
-
 
 }

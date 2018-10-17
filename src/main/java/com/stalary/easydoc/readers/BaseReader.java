@@ -106,12 +106,11 @@ public abstract class BaseReader {
      */
     private NamePack path2Pack(String path) {
         String temp;
-        if (systemConfiguration.getSystemType() == Constant.Windows){
-            temp = path.replaceAll("\\\\",".");
-        }else {
+        if (systemConfiguration.isWin()) {
+            temp = path.replaceAll("\\\\", ".");
+        } else {
             temp = path.replaceAll("/", ".");
         }
-
         String packPath = temp.substring(temp.indexOf(properties.getPath()));
         packPath = packPath.substring(0, packPath.lastIndexOf("."));
         return new NamePack(packPath.substring(packPath.lastIndexOf(".") + 1), packPath);
