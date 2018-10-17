@@ -78,7 +78,8 @@ public abstract class BaseReader {
         StopWatch sw = new StopWatch("easy-doc");
         sw.start("analysis");
         String[] pathSplit = str.split(Constant.PATH_SPLIT);
-        Constant.PATH_MAP.putAll(JSONObject.parseObject(pathSplit[0], new TypeReference<Map<String, String>>(){}));
+        Constant.PATH_MAP.putAll(JSONObject.parseObject(pathSplit[0], new TypeReference<Map<String, String>>() {
+        }));
         String[] fileSplit = pathSplit[1].split(Constant.FILE_SPLIT);
         for (String temp : fileSplit) {
             singleReader(temp);
@@ -118,12 +119,14 @@ public abstract class BaseReader {
 
     /**
      * 单文件读取匹配，读取文件
+     *
      * @param file 文件
      */
     abstract void singleReader(File file);
 
     /**
      * 单文件读取匹配，读取字符串
+     *
      * @param str 字符串
      */
     abstract void singleReader(String str);
@@ -147,10 +150,10 @@ public abstract class BaseReader {
      * 读取文件
      */
     String readFile(File file) {
-        try {
-            // 此处设置编码，解决乱码问题
-            InputStreamReader fileReader = new InputStreamReader(new FileInputStream(file), Charset.forName("UTF-8"));
-            BufferedReader reader = new BufferedReader(fileReader);
+        // 此处设置编码，解决乱码问题
+        try (BufferedReader reader =
+                     new BufferedReader(new InputStreamReader(new FileInputStream(file),
+                             Charset.forName("UTF-8")))) {
             StringBuilder sb = new StringBuilder();
             String s = reader.readLine();
             while (s != null) {

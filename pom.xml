@@ -16,9 +16,9 @@
     </licenses>
     <scm>
         <tag>master</tag>
-        <url>git@github.com:GallantExplorers/Easy-doc.git</url>
-        <connection>scm:git:git@github.com:GallantExplorers/Easy-doc.git</connection>
-        <developerConnection>scm:git:git@github.com:GallantExplorers/Easy-doc.git</developerConnection>
+        <url>git@github.com:Easy-doc/Easy-doc.git</url>
+        <connection>scm:git:git@github.com:Easy-doc/Easy-doc.git</connection>
+        <developerConnection>scm:git:git@github.com:Easy-doc/Easy-doc.git</developerConnection>
     </scm>
     <developers>
         <developer>
