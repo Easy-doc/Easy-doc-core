@@ -3,6 +3,7 @@ package com.stalary.easydoc.readers;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.stalary.easydoc.config.EasyDocProperties;
+import com.stalary.easydoc.config.SystemConfiguration;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public abstract class BaseReader {
 
     @Autowired
     ReflectUtils reflectUtils;
+
+    @Autowired
+    private SystemConfiguration systemConfiguration;
 
     private EasyDocProperties properties;
 
@@ -101,7 +105,13 @@ public abstract class BaseReader {
      * 将文件路径转化为类名:包路径的映射
      */
     private NamePack path2Pack(String path) {
-        String temp = path.replaceAll("/", ".");
+        String temp;
+        if (systemConfiguration.getSystemType() == Constant.Windows){
+            temp = path.replaceAll("\\\\",".");
+        }else {
+            temp = path.replaceAll("/", ".");
+        }
+
         String packPath = temp.substring(temp.indexOf(properties.getPath()));
         packPath = packPath.substring(0, packPath.lastIndexOf("."));
         return new NamePack(packPath.substring(packPath.lastIndexOf(".") + 1), packPath);

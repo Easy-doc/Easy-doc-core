@@ -58,4 +58,8 @@ public class Constant {
     public static final String FILE_SPLIT = "@@@";
 
     public static final String PATH_SPLIT = ",,,";
+
+    public static final int Windows = 1;
+
+
 }

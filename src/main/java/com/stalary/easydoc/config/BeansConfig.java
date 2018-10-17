@@ -47,6 +47,10 @@ public class BeansConfig {
     public IpConfiguration ipConfiguration() {
         return new IpConfiguration();
     }
+    @Bean
+    public SystemConfiguration systemConfiguration(){
+        return new SystemConfiguration();
+    }
 
     @Bean
     public TimeAdvice timeAdvice() {
