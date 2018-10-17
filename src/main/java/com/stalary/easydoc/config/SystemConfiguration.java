@@ -13,12 +13,12 @@ import org.springframework.stereotype.Component;
 public class SystemConfiguration {
 
     @Getter
-    private boolean isWin = false;
+    private boolean windows = false;
 
     public SystemConfiguration() {
         String os = System.getProperty("os.name");
-        if(os.toLowerCase().startsWith(Constant.WIN)){
-           this.isWin = true;
+        if(os.toLowerCase().startsWith(Constant.WINDOWS)){
+           this.windows = true;
         }
     }
 }

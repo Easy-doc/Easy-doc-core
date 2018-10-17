@@ -42,7 +42,7 @@ public class Constant {
 
     public static final String HTTP = "http://";
 
-    public static final String WIN = "win";
+    public static final String WINDOWS = "win";
 
     /** 获取当前路径 **/
     public static final String CUR_PATH = System.getProperty("user.dir");

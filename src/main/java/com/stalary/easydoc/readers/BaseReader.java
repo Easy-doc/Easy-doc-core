@@ -106,7 +106,7 @@ public abstract class BaseReader {
      */
     private NamePack path2Pack(String path) {
         String temp;
-        if (systemConfiguration.isWin()) {
+        if (systemConfiguration.isWindows()) {
             temp = path.replaceAll("\\\\", ".");
         } else {
             temp = path.replaceAll("/", ".");
