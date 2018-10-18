@@ -33,7 +33,14 @@
 ```
 
 # 初始化配置
-如果source设置为false，则需要使用[easydoc-maven-plugin](https://github.com/Easy-doc/easydoc-maven-plugin)生成一份过滤后的源码文件
+如果source设置为false
+
+使用maven需要[easydoc-maven-plugin](https://github.com/Easy-doc/easydoc-maven-plugin)
+
+使用gradle需要[easydoc-gradle-plugin](https://github.com/Easy-doc/easydoc-gradle-plugin)
+
+生成一份过滤后的源码文件
+
 
 ```yml
 com:
