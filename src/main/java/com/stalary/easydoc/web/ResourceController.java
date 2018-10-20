@@ -32,6 +32,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/easy-doc")
 @Slf4j
+@CrossOrigin(allowCredentials = "true", allowedHeaders = "*", origins = "*")
 public class ResourceController {
 
     @Autowired
