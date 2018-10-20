@@ -56,4 +56,9 @@ public class BeansConfig {
     public TimeAdvice timeAdvice() {
         return new TimeAdvice();
     }
+
+    @Bean
+    public CorsConfig corsConfig() {
+        return new CorsConfig();
+    }
 }
