@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -85,8 +86,12 @@ public class ResourceController {
     public JSONObject token(
             HttpServletRequest request,
             @RequestBody User user) {
-        String token = request.getHeader("token");
-        return JsonResult.ok(user);
+        String cookie = request.getHeader("Cookie");
+        String token = request.getHeader("Authorization");
+        Map<String, String> map = new HashMap<>();
+        map.put("cookie", cookie);
+        map.put("token", token);
+        return JsonResult.ok(map);
     }
 
     /**
