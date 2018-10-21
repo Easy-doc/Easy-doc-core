@@ -6,6 +6,7 @@
 package com.stalary.easydoc.web;
 
 import com.alibaba.fastjson.JSONObject;
+import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.JsonResult;
 import com.stalary.easydoc.data.TestBody;
 import com.stalary.easydoc.test.User;
@@ -35,9 +36,14 @@ public class ResourceController {
 
     private String cookieCache;
 
-    @GetMapping(value = "/resource")
+    @GetMapping("/resource")
     public JSONObject getResource() {
         return JsonResult.ok(resourceService.read());
+    }
+
+    @GetMapping("/list")
+    public JSONObject list() {
+        return JsonResult.ok(Constant.URL_LIST);
     }
 
     /**

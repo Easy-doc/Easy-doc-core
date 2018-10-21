@@ -5,7 +5,9 @@
  */
 package com.stalary.easydoc.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,6 +52,9 @@ public class Constant {
     /** 类名和路径的映射 **/
     //todo: 可能存在key重复
     public static final Map<String, String> PATH_MAP = new HashMap<>();
+
+    /** 存储url映射 **/
+    public static final List<String> URL_LIST = new ArrayList<>();
 
     public static final String DEPRECATED = "deprecated";
 

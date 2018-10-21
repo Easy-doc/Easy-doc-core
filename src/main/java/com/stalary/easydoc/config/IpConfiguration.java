@@ -1,15 +1,16 @@
 package com.stalary.easydoc.config;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Objects;
 
 
 /**
  * IpConfiguration
+ *
  * @author stalary
  */
 @Component
@@ -21,8 +22,14 @@ public class IpConfiguration {
     Environment environment;
 
     @PostConstruct
-    public void onApplicationEvent() {
-        this.port  = Integer.parseInt(Objects.requireNonNull(environment.getProperty("server.port")));
+    public void init() {
+        String property = environment.getProperty("server.port");
+        if (StringUtils.isEmpty(property)) {
+            // 默认设置为8080
+            this.port = 8080;
+        } else {
+            this.port = Integer.parseInt(property);
+        }
     }
 
     public int getPort() {

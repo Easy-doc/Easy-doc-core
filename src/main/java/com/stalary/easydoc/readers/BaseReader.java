@@ -20,6 +20,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * @author Stalary
@@ -40,6 +42,8 @@ public abstract class BaseReader {
     private SystemConfiguration systemConfiguration;
 
     private EasyDocProperties properties;
+
+    private ExecutorService exec = Executors.newSingleThreadExecutor();
 
     public BaseReader(EasyDocProperties properties) {
         this.properties = properties;
@@ -67,7 +71,17 @@ public abstract class BaseReader {
         System.out.println(sw.prettyPrint());
         // 缓存
         viewCache = view;
+        exec.execute(() -> addURL(view));
         return view;
+    }
+
+    /**
+     * 填充url
+     */
+    private void addURL(View view) {
+        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> {
+            Constant.URL_LIST.add(controller.getPath() + method.getPath());
+        }));
     }
 
     public View multiReader(String str) {
