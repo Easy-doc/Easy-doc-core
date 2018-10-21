@@ -9,7 +9,10 @@ import lombok.Data;
 
 /**
  * @model Field
- *
+ * @description 字段
+ * @field name 名称
+ * @field description 描述
+ * @field data 数据
  * @author lirongqian
  * @since 2018/10/12
  */

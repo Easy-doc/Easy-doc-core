@@ -141,6 +141,7 @@ public class ReflectUtils {
      * 判断是否已经被弃用
      */
     boolean isDeprecated(String className, String methodName) {
+        System.out.println(className);
         Class clazz = path2Class(className);
         if (StringUtils.isEmpty(className)) {
             return false;
