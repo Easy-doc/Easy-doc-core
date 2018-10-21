@@ -15,6 +15,7 @@ package com.stalary.easydoc.test;
 import lombok.Data;
 
 @Data
+@Deprecated
 public class User {
 
     private String name;
