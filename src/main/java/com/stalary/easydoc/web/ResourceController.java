@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -85,12 +86,14 @@ public class ResourceController {
     @PostMapping("/token")
     public JSONObject token(
             HttpServletRequest request,
+            HttpServletResponse response,
             @RequestBody User user) {
-        String cookie = request.getHeader("Cookie");
+        String cookie = request.getHeader("Set-Cookie");
         String token = request.getHeader("Authorization");
         Map<String, String> map = new HashMap<>();
         map.put("cookie", cookie);
         map.put("token", token);
+        response.setHeader("Cookie", cookie);
         return JsonResult.ok(map);
     }
 
