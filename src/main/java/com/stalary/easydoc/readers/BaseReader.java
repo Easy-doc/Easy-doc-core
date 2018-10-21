@@ -7,7 +7,6 @@ import com.stalary.easydoc.config.SystemConfiguration;
 import com.stalary.easydoc.data.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -57,18 +56,32 @@ public abstract class BaseReader {
             return viewCache;
         }
         view = new View(properties);
-        StopWatch sw = new StopWatch("easy-doc");
         String fileName = Constant.CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/");
         File file = new File(fileName);
-        sw.start("analysis");
         List<File> fileList = new ArrayList<>();
         getFile(file, fileList);
         pathMapper(fileList);
         for (File aFileList : fileList) {
             singleReader(aFileList);
         }
-        sw.stop();
-        System.out.println(sw.prettyPrint());
+        // 缓存
+        viewCache = view;
+        exec.execute(() -> addURL(view));
+        return view;
+    }
+
+    public View multiReader(String str) {
+        if (viewCache != null) {
+            return viewCache;
+        }
+        view = new View(properties);
+        String[] pathSplit = str.split(Constant.PATH_SPLIT);
+        Constant.PATH_MAP.putAll(JSONObject.parseObject(pathSplit[0], new TypeReference<Map<String, String>>() {
+        }));
+        String[] fileSplit = pathSplit[1].split(Constant.FILE_SPLIT);
+        for (String temp : fileSplit) {
+            singleReader(temp);
+        }
         // 缓存
         viewCache = view;
         exec.execute(() -> addURL(view));
@@ -84,26 +97,6 @@ public abstract class BaseReader {
         }));
     }
 
-    public View multiReader(String str) {
-        if (viewCache != null) {
-            return viewCache;
-        }
-        view = new View(properties);
-        StopWatch sw = new StopWatch("easy-doc");
-        sw.start("analysis");
-        String[] pathSplit = str.split(Constant.PATH_SPLIT);
-        Constant.PATH_MAP.putAll(JSONObject.parseObject(pathSplit[0], new TypeReference<Map<String, String>>() {
-        }));
-        String[] fileSplit = pathSplit[1].split(Constant.FILE_SPLIT);
-        for (String temp : fileSplit) {
-            singleReader(temp);
-        }
-        sw.stop();
-        System.out.println(sw.prettyPrint());
-        // 缓存
-        viewCache = view;
-        return view;
-    }
 
     /**
      * 将所有文件构造出映射关系
@@ -330,6 +323,8 @@ public abstract class BaseReader {
                 return "Double";
             case "java.lang.Integer":
             case "int":
+            case "java.lang.Long":
+            case "long":
                 return "Integer";
             case "java.lang.Boolean":
             case "boolean":
