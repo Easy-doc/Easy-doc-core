@@ -51,9 +51,4 @@ public class BeansConfig {
     public SystemConfiguration systemConfiguration(){
         return new SystemConfiguration();
     }
-
-    @Bean
-    public TimeAdvice timeAdvice() {
-        return new TimeAdvice();
-    }
 }
