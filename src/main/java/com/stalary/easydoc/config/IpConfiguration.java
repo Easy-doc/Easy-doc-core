@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.Objects;
 
 
@@ -19,8 +20,9 @@ public class IpConfiguration {
     @Autowired
     Environment environment;
 
+    @PostConstruct
     public void onApplicationEvent() {
-        this.port  = Integer.parseInt(Objects.requireNonNull(environment.getProperty("local.server.port")));
+        this.port  = Integer.parseInt(Objects.requireNonNull(environment.getProperty("server.port")));
     }
 
     public int getPort() {

@@ -10,17 +10,10 @@ import com.stalary.easydoc.data.JsonResult;
 import com.stalary.easydoc.data.TestBody;
 import com.stalary.easydoc.test.User;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
-import org.apache.http.message.BasicNameValuePair;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -48,23 +41,6 @@ public class ResourceController {
     }
 
     /**
-     * @method get get方法测试
-     * @param url 测试的url，包括参数
-     * @return data 返回值
-     * @throws IOException 执行http请求时的异常
-     */
-    @Deprecated
-    @GetMapping("/get")
-    public JSONObject get(
-            @RequestParam String url) throws IOException {
-        Response response = Request.Get(resourceService.transRequest(url))
-                .addHeader("token", tokenCache)
-                .addHeader("cookie", cookieCache)
-                .execute();
-        return JsonResult.ok(JSONObject.parseObject(response.returnContent().asString()).get("data"));
-    }
-
-    /**
      * @method testParam 测试get含参方法
      * @param name 名称
      * @param age 年龄
@@ -77,32 +53,6 @@ public class ResourceController {
             @RequestParam(required = false, defaultValue = "stalary") String name,
             @RequestParam(required = false, defaultValue = "22") int age) {
         return JsonResult.ok("name: " + name + " age: " + age);
-    }
-
-    /**
-     * @method post post方法测试
-     * @param url 测试的url，包括参数
-     * @param params body中参数
-     * @return 0 请求成功
-     * @throws IOException 执行http请求时的异常
-     */
-    @Deprecated
-    @PostMapping("/post")
-    public JSONObject post(
-            @RequestParam String url,
-            @RequestBody Map<String, String> params) throws IOException {
-        List<NameValuePair> nameValuePairs = new ArrayList<>();
-        if (params != null) {
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                nameValuePairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
-            }
-        }
-        Response response = Request.Post(resourceService.transRequest(url))
-                .addHeader("token", tokenCache)
-                .addHeader("cookie", cookieCache)
-                .bodyForm(nameValuePairs)
-                .execute();
-        return JsonResult.ok(JSONObject.parseObject(response.returnContent().asString()).get("data"));
     }
 
     /**
