@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * NamePack
+ * @model NamePack
  *
  * @author lirongqian
  * @since 2018/10/06

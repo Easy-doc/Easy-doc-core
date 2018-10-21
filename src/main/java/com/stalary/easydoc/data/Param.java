@@ -8,7 +8,7 @@ package com.stalary.easydoc.data;
 import lombok.Data;
 
 /**
- * Param
+ * @model Param
  *
  * @author lirongqian
  * @since 2018/10/10
