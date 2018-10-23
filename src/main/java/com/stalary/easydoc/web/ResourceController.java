@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
@@ -21,8 +22,9 @@ import java.util.Map;
 
 /**
  * ResourceController
- * @description 资源获取controller
+ *
  * @author lirongqian
+ * @description 资源获取controller
  * @since 2018/09/25
  */
 @RestController
@@ -49,12 +51,10 @@ public class ResourceController {
     }
 
     /**
-     * @method testParam 测试get含参方法
      * @param name 名称
-     * @param age 年龄
-     * @return 0 返回成功
-     * @return name 名称
+     * @param age  年龄
      * @return age 年龄
+     * @method testParam 测试get含参方法
      */
     @GetMapping("/testParam")
     public JSONObject testParam(
@@ -63,10 +63,21 @@ public class ResourceController {
         return JsonResult.ok("name: " + name + " age: " + age);
     }
 
+    @PostMapping("/addCookie")
+    public JSONObject addCookie(
+            @RequestBody Map<String, String> params,
+            HttpServletResponse response) {
+        params.forEach((k, v) -> {
+            Cookie cookie = new Cookie(k, v);
+            response.addCookie(cookie);
+        });
+        return JsonResult.ok();
+    }
+
     /**
-     * @method addAuth 添加auth(cookie|token)
      * @param params cookie|token(可以两者都传)
      * @return 0 JSONObject
+     * @method addAuth 添加auth(cookie|token)
      */
     @PostMapping("/addAuth")
     public JSONObject addAuth(
@@ -77,11 +88,10 @@ public class ResourceController {
     }
 
     /**
-     * @method token 测试post方法
      * @param request HttpServletRequest
-     * @param user 用户对象
-     * @return 0 返回成功
+     * @param user    用户对象
      * @return User 用户对象
+     * @method token 测试post方法
      */
     @PostMapping("/token")
     public JSONObject token(
@@ -98,15 +108,14 @@ public class ResourceController {
     }
 
     /**
-     * @method pressureTest 压力测试
      * @param n      请求数量
      * @param c      并发数量
      * @param cookie cookie
      * @param isGet  是否为get，默认true
      * @param url    请求地址
      * @param body   参数
-     * @return 0 测试成功
      * @return TestResponse 时间统计对象
+     * @method pressureTest 压力测试
      */
     @PostMapping("/pressureTest")
     public JSONObject pressureTest(

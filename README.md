@@ -60,7 +60,6 @@ com:
 
 > demo具体可以查看ResourceController|TestBody|TestResponse等
 
-
 注释名 | 解释
 --- | ---
 @method | 方法名   
@@ -72,5 +71,33 @@ com:
 @model | 实体标识
 @field | 实体的参数
 
+使用idea可以设置live template，具体设置如下
+Preferences -> Editor -> Live Templates -> 创建Template group -> 创建LiveTemplate -> 设置自己想要的快捷键，在下方define勾选java
+
+method模版设置：
+```
+**
+ * @method $name$
+ * @description
+$param$
+ * @return
+ **/
+```
+
+model模版设置:
+```
+**
+ * @model $name$
+ * @description
+ **/
+```
+
+类注释从File and Code Templates设置
+```
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
+#parse("Class Header.java")
+public class ${NAME} {
+}
+```
 # 返回样例
 [接口地址](http://easydoc.stalary.com/api)
