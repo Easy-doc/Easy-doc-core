@@ -18,7 +18,7 @@
     <repository>
 	<id>oss</id>
 	<name>oss</name>
-	<url>https://oss.sonatype.org/content/groups/public</url>
+	<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
     </repository>
     <repository>
         <id>aliyun-repository</id>
