@@ -105,7 +105,6 @@ method模版设置：
 ```
 **
  * @method $name$
- * @description
 $param$
  * @return
  **/
