@@ -4,8 +4,8 @@ com:
   stalary:
     easydoc:
       path: com.stalary.easydoc
-      name: test
-      description: 测试项目
+      name: Easy-Doc
+      description: Easy-Doc测试项目
       contact: stalary@163.com
       open: true
       source: true
