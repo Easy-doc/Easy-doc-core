@@ -34,6 +34,33 @@
 </dependency>
 ```
 
+使用gradle引入
+```gradle
+buildscript {
+  repositories {
+        maven {
+            url 'http://maven.aliyun.com/nexus/content/groups/public/'
+        }
+        mavenCentral()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+        }
+  }
+}
+repositories {
+    maven {
+        url 'http://maven.aliyun.com/nexus/content/groups/public/'
+    }
+    mavenCentral()
+    maven {
+        url 'https://oss.sonatype.org/content/repositories/snapshots/'
+    }
+}
+dependencies {
+  implementation('com.stalary:easy-doc:1.0-SNAPSHOT')	
+}
+```
+
 # 初始化配置
 如果source设置为false
 
