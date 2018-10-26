@@ -103,4 +103,4 @@ public class ${NAME} {
 }
 ```
 # 返回样例
-[接口地址](http://easydoc.stalary.com/api)
+[接口地址](http://easydoc.stalary.com/easy-doc/resource)
