@@ -53,9 +53,13 @@ public class ResourceController {
     /**
      * @param name 名称
      * @param age  年龄
-     * @return age 年龄
+     * @return 0 成功
+     * @return 字符串 名字+年龄
+     * @return -1 失败
      * @method testParam 测试get含参方法
      */
+    // todo 解析多个return
+    // todo 对象嵌套
     @GetMapping("/testParam")
     public JSONObject testParam(
             @RequestParam(required = false, defaultValue = "stalary") String name,
