@@ -21,9 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -206,5 +204,29 @@ public class ReflectUtils {
         }
         return result;
     }
+
+    //todo：嵌套问题暂时不解决
+    /*void renderBody() {
+        if (field.getType() == java.util.List.class) {
+            List list = new ArrayList();
+            field.setAccessible(true);
+            Type genericType = field.getGenericType();
+            if (genericType == null) {
+                continue;
+            }
+            // 如果是泛型参数的类型
+            if (genericType instanceof ParameterizedType) {
+                ParameterizedType pt = (ParameterizedType) genericType;
+                //得到泛型里的class类型对象
+                Class<?> genericClazz = (Class<?>) pt.getActualTypeArguments()[0];
+                try {
+                    list.add(genericClazz.newInstance());
+                    System.out.println(list);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }*/
 
 }

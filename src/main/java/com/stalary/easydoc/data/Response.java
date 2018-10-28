@@ -39,4 +39,7 @@ public class Response {
         this.description = description;
         fieldMap.forEach((k, v) -> fieldList.add(new Field(k, v)));
     }
+
+    public Response() {
+    }
 }

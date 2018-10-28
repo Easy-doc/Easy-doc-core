@@ -29,4 +29,7 @@ public class Field {
         this.name = name;
         this.description = description;
     }
+
+    public Field() {
+    }
 }

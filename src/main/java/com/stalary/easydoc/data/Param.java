@@ -47,4 +47,6 @@ public class Param {
         this.defaultValue = defaultValue;
     }
 
+    public Param() {
+    }
 }

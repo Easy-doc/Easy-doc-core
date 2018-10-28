@@ -110,7 +110,7 @@ public class DocReader extends BaseReader {
                             break;
                         case Constant.RETURN:
                             if (i + 1 < split.length) {
-                                if (StringUtils.isNumeric(t)) {
+                                if (StringUtils.isNumeric(t) || StringUtils.isNumeric(t.substring(1))) {
                                     responseList.add(new Response(Integer.valueOf(t), split[i + 1]));
                                 } else {
                                     int size = responseList.size();

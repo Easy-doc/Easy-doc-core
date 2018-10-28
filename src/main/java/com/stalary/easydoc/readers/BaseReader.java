@@ -263,7 +263,6 @@ public abstract class BaseReader {
      * 渲染model，需要渲染field，并且存入body
      */
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
-        // todo：对象的嵌套待解决
         renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
@@ -329,13 +328,11 @@ public abstract class BaseReader {
             case "java.lang.Boolean":
             case "boolean":
                 return "Boolean";
+            case "java.util.List":
+                return "List";
             case "javax.servlet.http.HttpServletRequest":
             case "javax.servlet.http.HttpServletResponse":
                 return "String";
-            case "java.util.Map":
-            case "java.util.List":
-            case "java.lang.Object":
-                return "Object";
             default:
                 return "Object";
         }

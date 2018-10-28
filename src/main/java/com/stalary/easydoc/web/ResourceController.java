@@ -51,15 +51,14 @@ public class ResourceController {
     }
 
     /**
+     * @method testParam 测试get含参方法
      * @param name 名称
      * @param age  年龄
      * @return 0 成功
      * @return 字符串 名字+年龄
      * @return -1 失败
-     * @method testParam 测试get含参方法
+     * @return 失败 失败返回
      */
-    // todo 解析多个return
-    // todo 对象嵌套
     @GetMapping("/testParam")
     public JSONObject testParam(
             @RequestParam(required = false, defaultValue = "stalary") String name,
@@ -71,17 +70,22 @@ public class ResourceController {
     public JSONObject addCookie(
             @RequestBody Map<String, String> params,
             HttpServletResponse response) {
+        StringBuilder cookies = new StringBuilder();
         params.forEach((k, v) -> {
             Cookie cookie = new Cookie(k, v);
             response.addCookie(cookie);
+            cookies.append(k).append("=").append(v).append("; ");
         });
+        cookies.deleteCharAt(cookies.length() - 2);
+        cookies.deleteCharAt(cookies.length() - 1);
+        response.setHeader("Cookie", cookies.toString());
         return JsonResult.ok();
     }
 
     /**
+     * @method addAuth 添加auth(cookie|token)
      * @param params cookie|token(可以两者都传)
      * @return 0 JSONObject
-     * @method addAuth 添加auth(cookie|token)
      */
     @PostMapping("/addAuth")
     public JSONObject addAuth(
@@ -92,11 +96,12 @@ public class ResourceController {
     }
 
     /**
+     * @method token 测试post方法
      * @param request HttpServletRequest
      * @param user    用户对象
      * @return User 用户对象
-     * @method token 测试post方法
      */
+    // todo 对象嵌套
     @PostMapping("/token")
     public JSONObject token(
             HttpServletRequest request,
@@ -112,6 +117,7 @@ public class ResourceController {
     }
 
     /**
+     * @method pressureTest 压力测试
      * @param n      请求数量
      * @param c      并发数量
      * @param cookie cookie
@@ -119,7 +125,6 @@ public class ResourceController {
      * @param url    请求地址
      * @param body   参数
      * @return TestResponse 时间统计对象
-     * @method pressureTest 压力测试
      */
     @PostMapping("/pressureTest")
     public JSONObject pressureTest(
