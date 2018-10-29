@@ -78,7 +78,7 @@ public class ResourceController {
         });
         cookies.deleteCharAt(cookies.length() - 2);
         cookies.deleteCharAt(cookies.length() - 1);
-        response.setHeader("Cookie", cookies.toString());
+        response.addHeader("Cookie", cookies.toString());
         return JsonResult.ok();
     }
 
