@@ -56,7 +56,7 @@ public class DocReader extends BaseReader {
             Model model = new Model();
             String str = readFile(file);
             // 匹配出注释代码块
-            String regex = "(?<!:)\\/\\/.*|\\/\\*(\\s|.)*?\\*\\/";
+            String regex = "\\/\\*(\\s|.)*?\\*\\/";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(str);
             while (matcher.find()) {
@@ -65,7 +65,6 @@ public class DocReader extends BaseReader {
                 // 3. 合并多个空格
                 String temp = matcher
                         .group()
-                        .replaceAll("\\/\\/[^\n]*", "")
                         .replaceAll("\\/\\*\\*", "")
                         .replaceAll("\\*\\/", "")
                         .replaceAll("\\*", "")

@@ -90,6 +90,7 @@ public class ResourceController {
     @PostMapping("/addAuth")
     public JSONObject addAuth(
             @RequestBody Map<String, String> params) {
+        // 测试
         tokenCache = params.get("token");
         cookieCache = params.get("cookie");
         return JsonResult.ok();
@@ -101,7 +102,6 @@ public class ResourceController {
      * @param user    用户对象
      * @return User 用户对象
      */
-    // todo 对象嵌套
     @PostMapping("/token")
     public JSONObject token(
             HttpServletRequest request,
