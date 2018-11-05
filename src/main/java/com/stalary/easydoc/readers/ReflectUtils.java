@@ -65,7 +65,7 @@ public class ReflectUtils {
                 return method;
             }
         }
-        throw new NullPointerException("getMethod method is null");
+        throw new NullPointerException("getMethod method " + methodName + " is null");
     }
 
     /**
@@ -82,7 +82,7 @@ public class ReflectUtils {
         try {
             return Class.forName(Constant.PATH_MAP.get(name));
         } catch (Exception e) {
-            throw new NullPointerException("path2Class error");
+            throw new NullPointerException("path2Class " + name + " error");
         }
     }
 
@@ -92,7 +92,7 @@ public class ReflectUtils {
     private Parameter getBodyParam(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
         if (method == null) {
-            throw new NullPointerException("getBodyParam method is null");
+            throw new NullPointerException("getBodyParam method " + methodName + " is null");
         }
         Parameter[] parameters = method.getParameters();
         for (Parameter parameter : parameters) {
