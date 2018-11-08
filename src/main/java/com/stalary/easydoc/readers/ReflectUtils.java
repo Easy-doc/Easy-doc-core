@@ -205,7 +205,6 @@ public class ReflectUtils {
         return result;
     }
 
-    //todo：嵌套问题暂时不解决
     /*void renderBody() {
         if (field.getType() == java.util.List.class) {
             List list = new ArrayList();

@@ -262,6 +262,7 @@ public abstract class BaseReader {
     /**
      * 渲染model，需要渲染field，并且存入body
      */
+    // todo:解决父类问题
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
         renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
@@ -308,6 +309,7 @@ public abstract class BaseReader {
     /**
      * 将java类型转化为js类型
      */
+    // todo:解决嵌套问题
     private String trans2JS(String type) {
         if (StringUtils.isEmpty(type)) {
             return "";
