@@ -64,6 +64,7 @@ public abstract class BaseReader {
         for (File aFileList : fileList) {
             singleReader(aFileList);
         }
+        addData();
         // 缓存
         viewCache = view;
         exec.execute(() -> addURL(view));
@@ -82,6 +83,7 @@ public abstract class BaseReader {
         for (String temp : fileSplit) {
             singleReader(temp);
         }
+        addData();
         // 缓存
         viewCache = view;
         exec.execute(() -> addURL(view));
@@ -95,6 +97,19 @@ public abstract class BaseReader {
         view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> {
             Constant.URL_LIST.add(controller.getPath() + method.getPath());
         }));
+    }
+
+    /**
+     * 填充response中的data
+     */
+    // todo: 时间复杂度太高了。。待优化
+    private void addData() {
+        List<Model> modelList = view.getModelList();
+        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> method.getResponseList().forEach(response -> response.getFieldList().forEach(field -> modelList.forEach(model -> {
+            if (field.getName().equals(model.getName())) {
+                field.setData(model);
+            }
+        })))));
     }
 
 
@@ -231,7 +246,8 @@ public abstract class BaseReader {
                               List<Param> paramList, List<Response> responseList,
                               Map<String, String> throwsMap, Model body) {
         renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
-        renderResponseList(responseList);
+        // data渲染要放在最后
+//        renderResponseList(responseList);
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .path(map.getOrDefault(Constant.PATH, ""))
