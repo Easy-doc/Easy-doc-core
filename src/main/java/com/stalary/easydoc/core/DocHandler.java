@@ -127,7 +127,9 @@ public class DocHandler {
             String superName = reflectUtils.getSuper(model.getName());
             if (StringUtils.isNotEmpty(superName)) {
                 Model superModel = modelMap.get(superName);
-                model.getFieldList().addAll(superModel.getFieldList());
+                if (superModel != null) {
+                    model.getFieldList().addAll(superModel.getFieldList());
+                }
             }
         });
     }

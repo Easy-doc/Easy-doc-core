@@ -22,8 +22,6 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,8 +49,6 @@ public class DocReader {
     private SystemConfiguration systemConfiguration;
 
     private EasyDocProperties properties;
-
-    private ExecutorService exec = Executors.newSingleThreadExecutor();
 
     public DocReader(EasyDocProperties properties) {
         this.properties = properties;

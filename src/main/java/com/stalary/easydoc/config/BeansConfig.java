@@ -46,7 +46,7 @@ public class BeansConfig {
     }
 
     @Bean
-    public ReflectUtils reflectReader() {
+    public ReflectUtils reflectUtils() {
         return new ReflectUtils();
     }
 
