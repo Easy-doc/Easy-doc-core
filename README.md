@@ -7,7 +7,7 @@
 # 原理
 - 基于反射和正则表达式实现，依赖于spring，并且需要对源文件进行扫描。
 - 核心扫描方法为DocReader中的singleReader
-- 核心渲染方法为BaseReader中的render
+- 核心渲染方法为DocRender
 - 所有反射相关的操作都位于ReflectUtils
 - jar包生成接口文档需要使用插件处理 
 
