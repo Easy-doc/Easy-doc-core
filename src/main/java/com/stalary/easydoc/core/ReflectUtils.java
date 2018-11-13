@@ -3,7 +3,7 @@
  * <p>
  * Copyright 2018 Stalary.
  */
-package com.stalary.easydoc.readers;
+package com.stalary.easydoc.core;
 
 import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Model;
@@ -203,6 +203,16 @@ public class ReflectUtils {
             result.put(field.getName(), field.getType().getName());
         }
         return result;
+    }
+
+    public String getSuper(String name) {
+        Class clazz = path2Class(name);
+        Class superClazz = clazz.getSuperclass();
+        String simpleName = superClazz.getSimpleName();
+        if (Constant.OBJECT.equals(simpleName)) {
+            return null;
+        }
+        return simpleName;
     }
 
     /*void renderBody() {

@@ -9,7 +9,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.config.IpConfiguration;
 import com.stalary.easydoc.data.*;
-import com.stalary.easydoc.readers.DocReader;
+import com.stalary.easydoc.core.DocReader;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

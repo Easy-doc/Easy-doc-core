@@ -5,8 +5,10 @@
  */
 package com.stalary.easydoc.config;
 
-import com.stalary.easydoc.readers.DocReader;
-import com.stalary.easydoc.readers.ReflectUtils;
+import com.stalary.easydoc.core.DocHandler;
+import com.stalary.easydoc.core.DocReader;
+import com.stalary.easydoc.core.DocRender;
+import com.stalary.easydoc.core.ReflectUtils;
 import com.stalary.easydoc.web.ResourceController;
 import com.stalary.easydoc.web.ResourceService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -26,6 +28,16 @@ public class BeansConfig {
     @Bean
     public DocReader docReader(EasyDocProperties properties) {
         return new DocReader(properties);
+    }
+
+    @Bean
+    public DocHandler docHandler() {
+        return new DocHandler();
+    }
+
+    @Bean
+    public DocRender docRender() {
+        return new DocRender();
     }
 
     @Bean

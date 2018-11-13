@@ -1,197 +1,35 @@
-package com.stalary.easydoc.readers;
+/**
+ * @(#)DocRender.java, 2018-11-13.
+ *
+ * Copyright 2018 Stalary.
+ */
+package com.stalary.easydoc.core;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.stalary.easydoc.config.EasyDocProperties;
-import com.stalary.easydoc.config.SystemConfiguration;
 import com.stalary.easydoc.data.*;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
- * @author Stalary
- * @description
- * @date 2018/9/27
+ * DocRender
+ *
+ * @author lirongqian
+ * @since 2018/11/13
  */
-@Slf4j
-public abstract class BaseReader {
-
-    private View viewCache;
-
-    View view;
+@Component
+public class DocRender {
 
     @Autowired
     ReflectUtils reflectUtils;
 
-    @Autowired
-    private SystemConfiguration systemConfiguration;
-
-    private EasyDocProperties properties;
-
-    private ExecutorService exec = Executors.newSingleThreadExecutor();
-
-    public BaseReader(EasyDocProperties properties) {
-        this.properties = properties;
-    }
-
-    /**
-     * 批量读取文件
-     */
-    public View multiReader() {
-        if (viewCache != null) {
-            return viewCache;
-        }
-        view = new View(properties);
-        String fileName = Constant.CUR_PATH + "/src/main/java/" + properties.getPath().replaceAll("\\.", "/");
-        File file = new File(fileName);
-        List<File> fileList = new ArrayList<>();
-        getFile(file, fileList);
-        pathMapper(fileList);
-        for (File aFileList : fileList) {
-            singleReader(aFileList);
-        }
-        addData();
-        // 缓存
-        viewCache = view;
-        exec.execute(() -> addURL(view));
-        return view;
-    }
-
-    public View multiReader(String str) {
-        if (viewCache != null) {
-            return viewCache;
-        }
-        view = new View(properties);
-        String[] pathSplit = str.split(Constant.PATH_SPLIT);
-        Constant.PATH_MAP.putAll(JSONObject.parseObject(pathSplit[0], new TypeReference<Map<String, String>>() {
-        }));
-        String[] fileSplit = pathSplit[1].split(Constant.FILE_SPLIT);
-        for (String temp : fileSplit) {
-            singleReader(temp);
-        }
-        addData();
-        // 缓存
-        viewCache = view;
-        exec.execute(() -> addURL(view));
-        return view;
-    }
-
-    /**
-     * 填充url
-     */
-    private void addURL(View view) {
-        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> {
-            Constant.URL_LIST.add(controller.getPath() + method.getPath());
-        }));
-    }
-
-    /**
-     * 填充response中的data
-     */
-    // todo: 时间复杂度太高了。。待优化
-    private void addData() {
-        List<Model> modelList = view.getModelList();
-        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> method.getResponseList().forEach(response -> response.getFieldList().forEach(field -> modelList.forEach(model -> {
-            if (field.getName().equals(model.getName())) {
-                field.setData(model);
-            }
-        })))));
-    }
-
-
-    /**
-     * 将所有文件构造出映射关系
-     */
-    private void pathMapper(List<File> fileList) {
-        fileList.forEach(file -> {
-            NamePack namePack = path2Pack(file.getPath());
-            Constant.PATH_MAP.put(namePack.getName(), namePack.getPackPath());
-        });
-    }
-
-    /**
-     * 将文件路径转化为类名:包路径的映射
-     */
-    private NamePack path2Pack(String path) {
-        String temp;
-        if (systemConfiguration.isWindows()) {
-            temp = path.replaceAll("\\\\", ".");
-        } else {
-            temp = path.replaceAll("/", ".");
-        }
-        String packPath = temp.substring(temp.indexOf(properties.getPath()));
-        packPath = packPath.substring(0, packPath.lastIndexOf("."));
-        return new NamePack(packPath.substring(packPath.lastIndexOf(".") + 1), packPath);
-    }
-
-    /**
-     * 单文件读取匹配，读取文件
-     *
-     * @param file 文件
-     */
-    abstract void singleReader(File file);
-
-    /**
-     * 单文件读取匹配，读取字符串
-     *
-     * @param str 字符串
-     */
-    abstract void singleReader(String str);
-
-    private void getFile(File file, List<File> fileList) {
-        if (file.exists()) {
-            if (file.isFile()) {
-                fileList.add(file);
-            } else if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File single : files) {
-                        getFile(single, fileList);
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * 读取文件
-     */
-    String readFile(File file) {
-        // 此处设置编码，解决乱码问题
-        try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                             Charset.forName("UTF-8")))) {
-            StringBuilder sb = new StringBuilder();
-            String s = reader.readLine();
-            while (s != null) {
-                sb.append(s);
-                s = reader.readLine();
-            }
-            return sb.toString();
-        } catch (Exception e) {
-            log.warn("readFile error!", e);
-        }
-        return "";
-    }
-
     /**
      * 渲染controller，method，model，部分字段通过反射进行读取
      */
-    void render(Controller controller, Map<String, String> map,
+    public void render(Controller controller, Map<String, String> map,
                 List<Param> paramList, List<Param> fieldList,
                 List<Response> responseList, Map<String, String> throwsMap,
                 View view, Model model) {
@@ -261,7 +99,7 @@ public abstract class BaseReader {
         controller.getMethodList().add(method);
     }
 
-    private void renderResponseList(List<Response> responseList) {
+    public void renderResponseList(List<Response> responseList) {
         responseList.forEach(response -> {
             for (Field field : response.getFieldList()) {
                 if (Constant.PATH_MAP.containsKey(field.getName())) {
@@ -278,7 +116,6 @@ public abstract class BaseReader {
     /**
      * 渲染model，需要渲染field，并且存入body
      */
-    // todo:解决父类问题
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
         renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
@@ -298,7 +135,7 @@ public abstract class BaseReader {
                     if (method.getBody() != null) {
                         // 当body还未解析时，存入model
                         if (model.getName().equals(method.getBody().getName())) {
-                            if (StringUtils.isEmpty(method.getBody().getDescription())) {
+                            if (org.springframework.util.StringUtils.isEmpty(method.getBody().getDescription())) {
                                 method.setBody(model);
                             }
                         }
@@ -327,7 +164,7 @@ public abstract class BaseReader {
      */
     // todo:解决嵌套问题
     private String trans2JS(String type) {
-        if (StringUtils.isEmpty(type)) {
+        if (org.springframework.util.StringUtils.isEmpty(type)) {
             return "";
         }
         switch (type) {
@@ -363,4 +200,5 @@ public abstract class BaseReader {
         Map<String, String> fieldMap = reflectUtils.getField(modelName);
         fieldList.forEach(field -> field.setType(trans2JS(fieldMap.getOrDefault(field.getName(), ""))));
     }
+
 }

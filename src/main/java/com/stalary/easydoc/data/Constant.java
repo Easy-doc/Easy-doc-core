@@ -46,6 +46,10 @@ public class Constant {
 
     public static final String WINDOWS = "win";
 
+    public static final String JAVA = "/src/main/java/";
+
+    public static final String OBJECT = "Object";
+
     /** 获取当前路径 **/
     public static final String CUR_PATH = System.getProperty("user.dir");
 
