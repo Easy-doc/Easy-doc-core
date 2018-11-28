@@ -134,4 +134,13 @@ public class DocHandler {
         });
     }
 
+    /**
+     * 填充url
+     */
+    public void addURL(View view) {
+        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> {
+            Constant.URL_LIST.add(controller.getPath() + method.getPath());
+        }));
+    }
+
 }

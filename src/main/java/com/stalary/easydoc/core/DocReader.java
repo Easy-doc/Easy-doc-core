@@ -10,6 +10,7 @@ import com.alibaba.fastjson.TypeReference;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.config.SystemConfiguration;
 import com.stalary.easydoc.data.*;
+import com.stalary.easydoc.web.RegularExpressionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * DocReader
@@ -93,6 +93,7 @@ public class DocReader {
     private void commonReader() {
         docHandler.addSuperModel(view);
         docHandler.addData(view);
+        docHandler.addURL(view);
         // 缓存
         viewCache = view;
     }
@@ -158,19 +159,22 @@ public class DocReader {
             String str = readFile(file);
             // 匹配出注释代码块
             String regex = "\\/\\*(\\s|.)*?\\*\\/";
-            Pattern pattern = Pattern.compile(regex);
-            Matcher matcher = pattern.matcher(str);
-            while (matcher.find()) {
-                // 1. 去除所有单行注释
-                // 2. 匹配块级注释
-                // 3. 合并多个空格
-                String temp = matcher
-                        .group()
-                        .replaceAll("\\/\\*\\*", "")
-                        .replaceAll("\\*\\/", "")
-                        .replaceAll("\\*", "")
-                        .replaceAll(" +", " ");
-                docHandler.handle(controller, model, temp, name, view);
+            Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(str, regex, 200);
+            try {
+                while (matcher.find()) {
+                    // 1. 去除所有单行注释
+                    // 2. 匹配块级注释
+                    // 3. 合并多个空格
+                    String temp = matcher
+                            .group()
+                            .replaceAll("\\/\\*\\*", "")
+                            .replaceAll("\\*\\/", "")
+                            .replaceAll("\\*", "")
+                            .replaceAll(" +", " ");
+                    docHandler.handle(controller, model, temp, name, view);
+                }
+            } catch (Exception e) {
+                log.warn("matcher error, skip...");
             }
         } catch (Exception e) {
             log.warn("singleReader error!", e);

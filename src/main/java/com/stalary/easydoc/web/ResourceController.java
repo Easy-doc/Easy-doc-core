@@ -36,10 +36,6 @@ public class ResourceController {
     @Autowired
     private ResourceService resourceService;
 
-    private String tokenCache;
-
-    private String cookieCache;
-
     @GetMapping("/resource")
     public JSONObject getResource() {
         return JsonResult.ok(resourceService.read());
@@ -79,20 +75,6 @@ public class ResourceController {
         cookies.deleteCharAt(cookies.length() - 2);
         cookies.deleteCharAt(cookies.length() - 1);
         response.addHeader("Cookie", cookies.toString());
-        return JsonResult.ok();
-    }
-
-    /**
-     * @method addAuth 添加auth(cookie|token)
-     * @param params cookie|token(可以两者都传)
-     * @return 0 JSONObject
-     */
-    @PostMapping("/addAuth")
-    public JSONObject addAuth(
-            @RequestBody Map<String, String> params) {
-        // 测试
-        tokenCache = params.get("token");
-        cookieCache = params.get("cookie");
         return JsonResult.ok();
     }
 
