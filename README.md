@@ -129,4 +129,4 @@ public class ${NAME} {
 }
 ```
 # 返回样例
-[接口地址](http://easydoc.stalary.com/easy-doc/resource)
+[接口地址](http://usercenter.stalary.com/easy-doc.html)
