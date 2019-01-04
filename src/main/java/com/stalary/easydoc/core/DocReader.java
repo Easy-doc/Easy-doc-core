@@ -92,7 +92,6 @@ public class DocReader {
 
     private void commonReader() {
         docHandler.addSuperModel(view);
-        docHandler.addData(view);
         docHandler.addURL(view);
         // 缓存
         viewCache = view;
@@ -131,13 +130,20 @@ public class DocReader {
         }));
         String[] fileSplit = pathSplit[1].split(Constant.FILE_SPLIT);
         for (String temp : fileSplit) {
-            singleReader(temp);
+            try {
+                singleReader(temp);
+            } catch (Exception e) {
+                log.warn("singleReader error file: " + temp);
+            }
         }
         commonReader();
         return view;
     }
 
-    public void singleReader(String str) {
+    /**
+     * 单文件渲染
+     **/
+    private void singleReader(String str) {
         String[] split = str.split(Constant.MATCH_SPLIT);
         String name = split[0];
         Controller controller = new Controller();
@@ -160,21 +166,23 @@ public class DocReader {
             // 匹配出注释代码块
             String regex = "\\/\\*(\\s|.)*?\\*\\/";
             Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(str, regex, 200);
-            try {
-                while (matcher.find()) {
+            while (matcher.find()) {
+                String temp = "";
+                try {
                     // 1. 去除所有单行注释
                     // 2. 匹配块级注释
                     // 3. 合并多个空格
-                    String temp = matcher
+                    temp = matcher
                             .group()
                             .replaceAll("\\/\\*\\*", "")
                             .replaceAll("\\*\\/", "")
                             .replaceAll("\\*", "")
                             .replaceAll(" +", " ");
                     docHandler.handle(controller, model, temp, name, view);
+                } catch (Exception e) {
+                    log.warn("matcher error, please check it. skip..." + "\n" + name + " : " + temp);
+                    log.warn("error: " + e);
                 }
-            } catch (Exception e) {
-                log.warn("matcher error, skip...");
             }
         } catch (Exception e) {
             log.warn("singleReader error!", e);

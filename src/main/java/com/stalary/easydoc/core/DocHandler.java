@@ -10,10 +10,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,13 +39,36 @@ public class DocHandler {
         if (split.length <= 1) {
             return;
         }
+        // 合并解释之间的空格
+        int pre = 0;
+        boolean merge = false;
+        for (int i = 1; i < split.length; i++) {
+            if (split[i].contains("@")) {
+                int distance = i - pre;
+                if (distance > 3) {
+                    if (StringUtils.isNotBlank(split[pre])) {
+                        for (int j = pre + 3; j < i; j++) {
+                            split[pre + 2] += split[j];
+                            split[j] = "-";
+                            merge = true;
+                        }
+                    }
+                }
+                pre = i;
+            }
+        }
+        if (merge) {
+            List<String> filterList = Arrays.stream(split).filter(d -> !d.equals("-")).collect(Collectors.toList());
+            split = filterList.toArray(new String[]{});
+        }
+        int len = split.length;
         if (name.equals(split[1]) && reflectUtils.isController(name)) {
             map.put(Constant.CONTROLLER, split[1]);
         }
         if (Constant.MODEL_TAG.equals(split[1]) && name.equals(split[2])) {
             map.put(Constant.MODEL, split[2]);
         }
-        for (int i = 1; i < split.length; i++) {
+        for (int i = 1; i < len; i++) {
             String t = split[i];
             // 匹配到Controller
             if (t.contains("@")) {
@@ -57,13 +77,13 @@ public class DocHandler {
                 if (StringUtils.isNotEmpty(cur)) {
                     switch (cur) {
                         case Constant.PARAM:
-                            if (i + 1 < split.length) {
+                            if (i + 1 < len) {
                                 paramList.add(new Param(t, split[i + 1]));
-                                i = i + 1;
+                                i++;
                             }
                             break;
                         case Constant.RETURN:
-                            if (i + 1 < split.length) {
+                            if (i + 1 < len) {
                                 if (StringUtils.isNumeric(t) || StringUtils.isNumeric(t.substring(1))) {
                                     responseList.add(new Response(Integer.valueOf(t), split[i + 1]));
                                 } else {
@@ -76,26 +96,26 @@ public class DocHandler {
                                         responseList.get(responseList.size() - 1).getFieldList().add(new Field(t, split[i + 1]));
                                     }
                                 }
-                                i = i + 1;
+                                i++;
                             }
                             break;
                         case Constant.FIELD:
-                            if (i + 1 < split.length) {
+                            if (i + 1 < len) {
                                 fieldList.add(new Param(t, split[i + 1]));
-                                i = i + 1;
+                                i++;
                             }
                             break;
                         case Constant.METHOD:
-                            if (i + 1 < split.length) {
+                            if (i + 1 < len) {
                                 map.put(t, split[i + 1]);
-                                i = i + 1;
+                                i++;
                             }
                             map.put(Constant.METHOD, t);
                             break;
                         case Constant.THROWS:
-                            if (i + 1 < split.length) {
+                            if (i + 1 < len) {
                                 throwsMap.put(t, split[i + 1]);
-                                i = i + 1;
+                                i++;
                             }
                             break;
                         default:
@@ -108,21 +128,12 @@ public class DocHandler {
         docRender.render(controller, map, paramList, fieldList, responseList, throwsMap, view, model);
     }
 
-    /**
-     * 填充response中的data
-     */
-    // todo: 时间复杂度太高了。。待优化
-    public void addData(View view) {
-        List<Model> modelList = view.getModelList();
-        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> method.getResponseList().forEach(response -> response.getFieldList().forEach(field -> modelList.forEach(model -> {
-            if (field.getName().equals(model.getName())) {
-                field.setData(model);
-            }
-        })))));
-    }
+    // todo：重构一下解析数据，最后在添加嵌套或者子父类
 
+    // todo:解决对象的嵌套问题
     public void addSuperModel(View view) {
         Map<String, Model> modelMap = view.getModelList().stream().collect(Collectors.toMap(Model::getName, e -> e));
+        // 填充父类对象
         view.getModelList().forEach(model -> {
             String superName = reflectUtils.getSuper(model.getName());
             if (StringUtils.isNotEmpty(superName)) {
@@ -132,6 +143,10 @@ public class DocHandler {
                 }
             }
         });
+        // 填充responseList
+        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> method.getResponseList().forEach(response -> response.getFieldList().forEach(field -> {
+            field.setData(modelMap.get(field.getName()));
+        }))));
     }
 
     /**

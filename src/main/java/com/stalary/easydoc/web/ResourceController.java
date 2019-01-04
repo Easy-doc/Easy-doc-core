@@ -79,7 +79,7 @@ public class ResourceController {
     }
 
     /**
-     * @method token 测试post方法
+     * @method token 测试 post 方法
      * @param request HttpServletRequest
      * @param user    用户对象
      * @return User 用户对象
@@ -100,8 +100,8 @@ public class ResourceController {
 
     /**
      * @method pressureTest 压力测试
-     * @param n      请求数量
-     * @param c      并发数量
+     * @param n      请求 数量 2 1 a d
+     * @param c      并发 数量 b s
      * @param cookie cookie
      * @param isGet  是否为get，默认true
      * @param url    请求地址

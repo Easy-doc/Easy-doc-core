@@ -189,7 +189,7 @@ public class DocRender {
             case "javax.servlet.http.HttpServletResponse":
                 return "String";
             default:
-                return "Object";
+                return type;
         }
     }
 
