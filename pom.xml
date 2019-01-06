@@ -5,7 +5,7 @@
 
     <groupId>com.stalary</groupId>
     <artifactId>easy-doc</artifactId>
-    <version>0.0.3</version>
+    <version>0.0.4</version>
     <packaging>jar</packaging>
     <licenses>
         <license>
@@ -86,11 +86,15 @@
             <!-- 打成jar包引入时使用 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <!-- 测试使用 -->
             <!--<plugin>
