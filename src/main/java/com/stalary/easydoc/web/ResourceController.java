@@ -79,7 +79,7 @@ public class ResourceController {
     }
 
     /**
-     * @method token 测试 post 方法
+     * @method token 测试 post     方法
      * @param request HttpServletRequest
      * @param user    用户对象
      * @return User 用户对象

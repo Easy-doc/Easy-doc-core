@@ -48,7 +48,7 @@ public class DocHandler {
                 if (distance > 3) {
                     if (StringUtils.isNotBlank(split[pre])) {
                         for (int j = pre + 3; j < i; j++) {
-                            split[pre + 2] += split[j];
+                            split[pre + 2] += " " + split[j];
                             split[j] = "-";
                             merge = true;
                         }

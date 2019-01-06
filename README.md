@@ -30,7 +30,7 @@
 <dependency>
     <groupId>com.stalary</groupId>
     <artifactId>easy-doc</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>version</version>
 </dependency>
 ```
 使用gradle引入
@@ -42,7 +42,7 @@ buildscript {
         }
         mavenCentral()
         maven {
-            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            url 'https://oss.sonatype.org/content/repositories/releases/'
         }
   }
 }
@@ -56,7 +56,7 @@ repositories {
     }
 }
 dependencies {
-  implementation('com.stalary:easy-doc:1.0-SNAPSHOT')	
+  implementation('com.stalary:easy-doc:version')	
 }
 ```
 
