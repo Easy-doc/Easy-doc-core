@@ -28,6 +28,14 @@ public class DocHandler {
     @Autowired
     private DocRender docRender;
 
+    /**
+     * handle 核心处理方法
+     * @param controller controller渲染对象
+     * @param model model渲染对象
+     * @param temp 当前传入的文件
+     * @param name 文件名称
+     * @param view 前端渲染对象
+     **/
     public void handle(Controller controller, Model model, String temp, String name, View view) {
         Map<String, String> map = new HashMap<>();
         List<Param> paramList = new ArrayList<>();
@@ -128,9 +136,10 @@ public class DocHandler {
         docRender.render(controller, map, paramList, fieldList, responseList, throwsMap, view, model);
     }
 
-    // todo：重构一下解析数据，最后在添加嵌套或者子父类
-
-    // todo:解决对象的嵌套问题
+    /**
+     * addSuperModel 添加model的父类
+     * @param view 前端渲染对象
+     **/
     public void addSuperModel(View view) {
         Map<String, Model> modelMap = view.getModelList().stream().collect(Collectors.toMap(Model::getName, e -> e));
         // 填充父类对象
@@ -150,8 +159,9 @@ public class DocHandler {
     }
 
     /**
-     * 填充url
-     */
+     * addURL 添加接口映射
+     * @param view 前端渲染对象
+     **/
     public void addURL(View view) {
         view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> {
             Constant.URL_LIST.add(controller.getPath() + method.getPath());

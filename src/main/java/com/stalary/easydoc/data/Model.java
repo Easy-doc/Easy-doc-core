@@ -13,12 +13,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * @model Model
- * @field name 名称
- * @field author 作者
- * @field description 描述
- * @field fieldList 参数和对应的解释
- * @field deprecated 代表实体是否已经被弃置
+ * Model
  * @author lirongqian
  * @since 2018/09/26
  */

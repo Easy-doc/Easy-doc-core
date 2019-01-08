@@ -9,12 +9,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 
-/**
- * @model Staff
- * @description 专家
- * @field grade 等级
- * @field salary 薪资
- **/
 @EqualsAndHashCode(callSuper = true)
 @Data
 public class Staff extends User {

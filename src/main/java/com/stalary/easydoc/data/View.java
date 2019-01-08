@@ -12,8 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @model View
- * @description 展示对象
+ * View
  * @author lirongqian
  * @since 2018/09/25
  */

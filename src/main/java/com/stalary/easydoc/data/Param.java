@@ -8,13 +8,7 @@ package com.stalary.easydoc.data;
 import lombok.Data;
 
 /**
- * @model Param
- * @description 参数
- * @field name 名称
- * @field description 描述
- * @field type 类型
- * @field required 是否必传，默认为tru
- * @field defaultValue 默认值
+ * Param
  * @author lirongqian
  * @since 2018/10/10
  */

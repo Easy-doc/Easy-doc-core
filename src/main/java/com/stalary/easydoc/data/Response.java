@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @model Response
+ * Response
  *
  * @author lirongqian
  * @since 2018/10/10

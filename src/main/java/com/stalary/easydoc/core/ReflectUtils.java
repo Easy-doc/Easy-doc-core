@@ -36,16 +36,20 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ReflectUtils {
 
     /**
-     * 判断是否为controller
-     */
+     * isController 判断是否为controller
+     * @param name controller名称
+     * @return true|false
+     **/
     boolean isController(String name) {
         Class clazz = path2Class(name);
         return AnnotatedElementUtils.hasAnnotation(clazz, Controller.class);
     }
 
     /**
-     * 获取controller中的路径
-     */
+     * getControllerPath 获取controller中的路径
+     * @param name controller名称
+     * @return 路径
+     **/
     String getControllerPath(String name) {
         Class clazz = path2Class(name);
         RequestMapping annotation = AnnotationUtils.findAnnotation(clazz, RequestMapping.class);
@@ -56,8 +60,11 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取method
-     */
+     * getMethod 获取method
+     * @param controllerName controller名称
+     * @param methodName     方法名称
+     * @return 方法
+     **/
     private Method getMethod(String controllerName, String methodName) {
         Class clazz = path2Class(controllerName);
         for (Method method : clazz.getDeclaredMethods()) {
@@ -69,16 +76,21 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取method的RequestMapping
-     */
+     * getMethodMapping 获取RequestMapping
+     * @param controllerName controller名称
+     * @param methodName     方法名称
+     * @return RequestMapping
+     **/
     RequestMapping getMethodMapping(String controllerName, String methodName) {
         return AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
     }
 
     /**
-     * 将包路径转化为class
-     */
-    public Class path2Class(String name) {
+     * path2Class 将包路径转化为class
+     * @param name 类名
+     * @return 类
+     **/
+    private Class path2Class(String name) {
         try {
             return Class.forName(Constant.PATH_MAP.get(name));
         } catch (Exception e) {
@@ -87,13 +99,13 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取被@RequestBody注解的自定义参数
-     */
+     * getBodyParam 获取被@RequestBody注解的自定义参数
+     * @param controllerName controller名称
+     * @param methodName     方法名称
+     * @return 参数
+     **/
     private Parameter getBodyParam(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
-        if (method == null) {
-            throw new NullPointerException("getBodyParam method " + methodName + " is null");
-        }
         Parameter[] parameters = method.getParameters();
         for (Parameter parameter : parameters) {
             if (AnnotatedElementUtils.hasAnnotation(parameter, RequestBody.class)) {
@@ -106,10 +118,13 @@ public class ReflectUtils {
         return null;
     }
 
-
     /**
-     * 获取Model
-     */
+     * getBody 获取Model
+     * @param controllerName controller名称
+     * @param methodName     方法名称
+     * @param view           前端渲染对象
+     * @return Model对象
+     **/
     Model getBody(String controllerName, String methodName, View view) {
         try {
             Parameter parameter = getBodyParam(controllerName, methodName);
@@ -136,8 +151,11 @@ public class ReflectUtils {
     }
 
     /**
-     * 判断是否已经被弃用
-     */
+     * isDeprecated 判断是否已经被弃用
+     * @param className  类名
+     * @param methodName 方法名
+     * @return true|false
+     **/
     boolean isDeprecated(String className, String methodName) {
         Class clazz = path2Class(className);
         if (StringUtils.isEmpty(className)) {
@@ -159,8 +177,11 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取method中的param
-     */
+     * getParams 获取method中的param
+     * @param controllerName controller名称
+     * @param methodName 方法名
+     * @return 参数map
+     **/
     Map<String, Param> getParams(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
         LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
@@ -193,8 +214,10 @@ public class ReflectUtils {
     }
 
     /**
-     * 获取model中的field
-     */
+     * getField 获取model中的field
+     * @param modelName model名称
+     * @return 字段map
+     **/
     Map<String, String> getField(String modelName) {
         Class clazz = path2Class(modelName);
         Map<String, String> result = new HashMap<>();
@@ -205,6 +228,11 @@ public class ReflectUtils {
         return result;
     }
 
+    /**
+     * getSuper 获取父类名称
+     * @param name 类名
+     * @return 父类名
+     **/
     public String getSuper(String name) {
         Class clazz = path2Class(name);
         Class superClazz = clazz.getSuperclass();
@@ -214,28 +242,5 @@ public class ReflectUtils {
         }
         return simpleName;
     }
-
-    /*void renderBody() {
-        if (field.getType() == java.util.List.class) {
-            List list = new ArrayList();
-            field.setAccessible(true);
-            Type genericType = field.getGenericType();
-            if (genericType == null) {
-                continue;
-            }
-            // 如果是泛型参数的类型
-            if (genericType instanceof ParameterizedType) {
-                ParameterizedType pt = (ParameterizedType) genericType;
-                //得到泛型里的class类型对象
-                Class<?> genericClazz = (Class<?>) pt.getActualTypeArguments()[0];
-                try {
-                    list.add(genericClazz.newInstance());
-                    System.out.println(list);
-                } catch (InstantiationException | IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }*/
 
 }

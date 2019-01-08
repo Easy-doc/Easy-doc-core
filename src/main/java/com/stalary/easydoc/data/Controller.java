@@ -14,8 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @model Controller
- * @description 接口
+ * Controller
  * @author lirongqian
  * @since 2018/09/25
  */

@@ -54,6 +54,11 @@ public class DocReader {
         this.properties = properties;
     }
 
+    /**
+     * getFile 获取文件
+     * @param file 传入文件
+     * @param fileList 生成的文件列表
+     **/
     private void getFile(File file, List<File> fileList) {
         if (file.exists()) {
             if (file.isFile()) {
@@ -70,8 +75,10 @@ public class DocReader {
     }
 
     /**
-     * 读取文件
-     */
+     * readFile 读取单个文件
+     * @param file 文件
+     * @return 内容
+     **/
     private String readFile(File file) {
         // 此处设置编码，解决乱码问题
         try (BufferedReader reader =
@@ -90,6 +97,9 @@ public class DocReader {
         return "";
     }
 
+    /**
+     * commonReader 公共读入方法
+     **/
     private void commonReader() {
         docHandler.addSuperModel(view);
         docHandler.addURL(view);
@@ -98,8 +108,9 @@ public class DocReader {
     }
 
     /**
-     * 批量读取文件
-     */
+     * multiReader 多文件读入方法
+     * @return 前端渲染对象
+     **/
     public View multiReader() {
         if (viewCache != null) {
             return viewCache;
@@ -118,7 +129,9 @@ public class DocReader {
     }
 
     /**
-     * 读取通过插件生成的文件
+     * multiReader 多匹配后字符串渲染方法
+     * @param str 匹配后的字符串
+     * @return 前端渲染对象
      **/
     public View multiReader(String str) {
         if (viewCache != null) {
@@ -141,7 +154,8 @@ public class DocReader {
     }
 
     /**
-     * 单文件渲染
+     * singleReader 单匹配后字符串渲染方法
+     * @param str 传入匹配后的字符串
      **/
     private void singleReader(String str) {
         String[] split = str.split(Constant.MATCH_SPLIT);
@@ -155,7 +169,11 @@ public class DocReader {
         }
     }
 
-    public void singleReader(File file) {
+    /**
+     * singleReader 单文件读入方法
+     * @param file 文件
+     **/
+    private void singleReader(File file) {
         try {
             // 获取文件名称
             String fileName = file.getName();
@@ -190,9 +208,10 @@ public class DocReader {
     }
 
     /**
-     * 将所有文件构造出映射关系
-     */
-    public void pathMapper(List<File> fileList) {
+     * pathMapper 路径映射生成方法
+     * @param fileList 文件列表
+     **/
+    private void pathMapper(List<File> fileList) {
         fileList.forEach(file -> {
             NamePack namePack = path2Pack(file.getPath());
             Constant.PATH_MAP.put(namePack.getName(), namePack.getPackPath());
@@ -200,8 +219,10 @@ public class DocReader {
     }
 
     /**
-     * 将文件路径转化为类名:包路径的映射
-     */
+     * path2Pack 将文件路径转化为类名:包路径的映射
+     * @param path 路径
+     * @return 类名:包路径的映射
+     **/
     private NamePack path2Pack(String path) {
         String temp;
         if (systemConfiguration.isWindows()) {

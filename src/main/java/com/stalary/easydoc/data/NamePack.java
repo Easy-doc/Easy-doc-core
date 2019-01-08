@@ -10,10 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @model NamePack
- * @description 类和包的映射
- * @field name 类名
- * @field packPath 包路径
+ * NamePack
  * @author lirongqian
  * @since 2018/10/06
  */

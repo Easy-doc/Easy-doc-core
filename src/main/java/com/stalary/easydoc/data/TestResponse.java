@@ -10,12 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * @model TestResponse
- * @description 压力测试返回对象
- * @field slowTime 最慢返回时间
- * @field fastTime 最快返回时间
- * @field avgTime 平均返回时间
- * @field qps qps
+ * TestResponse
  * @author lirongqian
  * @since 2018/10/02
  */

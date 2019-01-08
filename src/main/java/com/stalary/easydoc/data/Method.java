@@ -14,16 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @model Method
- * @description 方法
- * @field path 路径
- * @field type 请求类型(get,post,put,delete...)
- * @field description 方法介绍
- * @field paramList 参数map，key代表参数名称，value默认为""
- * @field responseList 返回值的code，描述，参数
- * @field throwsMap 可能抛出的异常
- * @field body post方法中的body
- * @field deprecated 代表方法是否已经被弃置
+ * Method
  * @author lirongqian
  * @since 2018/09/25
  */

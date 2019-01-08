@@ -12,9 +12,7 @@ import lombok.NoArgsConstructor;
 import java.util.Map;
 
 /**
- * @model TestBody
- * @field params 参数
- * @field body post方法的body
+ * TestBody
  * @author lirongqian
  * @since 2018/10/08
  */

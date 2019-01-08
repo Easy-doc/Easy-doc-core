@@ -27,12 +27,21 @@ public class DocRender {
     ReflectUtils reflectUtils;
 
     /**
-     * 渲染controller，method，model，部分字段通过反射进行读取
-     */
+     * render 渲染controller，method，model，部分字段通过反射进行读取
+     *
+     * @param controller   controller渲染对象
+     * @param map          辅助操作map
+     * @param paramList    参数列表
+     * @param fieldList    model字段列表
+     * @param responseList 返回列表
+     * @param throwsMap    异常map
+     * @param view         前端渲染对象
+     * @param model        model渲染对象
+     **/
     public void render(Controller controller, Map<String, String> map,
-                List<Param> paramList, List<Param> fieldList,
-                List<Response> responseList, Map<String, String> throwsMap,
-                View view, Model model) {
+                       List<Param> paramList, List<Param> fieldList,
+                       List<Response> responseList, Map<String, String> throwsMap,
+                       View view, Model model) {
         // 填充controller，method，model
         if (map.size() > 0) {
             if (map.containsKey(Constant.CONTROLLER)) {
@@ -66,8 +75,12 @@ public class DocRender {
     }
 
     /**
-     * 渲染controller，因为需要继续被使用，所以不能使用Builder
-     */
+     * renderController
+     *
+     * @param controller controller渲染对象
+     * @param map        辅助map
+     * @param view       前端渲染对象
+     **/
     private void renderController(Controller controller, Map<String, String> map, View view) {
         controller.setAuthor(map.getOrDefault(Constant.AUTHOR, ""));
         controller.setDescription(map.getOrDefault(Constant.DESCRIPTION, ""));
@@ -78,14 +91,20 @@ public class DocRender {
     }
 
     /**
-     * 渲染method，需要对param进行渲染
-     */
+     * renderMethod
+     *
+     * @param controller   controller渲染对象
+     * @param map          辅助map
+     * @param paramList    参数列表
+     * @param responseList 返回列表
+     * @param throwsMap    异常map
+     * @param body         model渲染对象
+     **/
     private void renderMethod(Controller controller, Map<String, String> map,
                               List<Param> paramList, List<Response> responseList,
                               Map<String, String> throwsMap, Model body) {
         renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
         // data渲染要放在最后
-//        renderResponseList(responseList);
         Method method = new Method().toBuilder()
                 .description(map.getOrDefault(Constant.DESCRIPTION, ""))
                 .path(map.getOrDefault(Constant.PATH, ""))
@@ -99,23 +118,13 @@ public class DocRender {
         controller.getMethodList().add(method);
     }
 
-    public void renderResponseList(List<Response> responseList) {
-        responseList.forEach(response -> {
-            for (Field field : response.getFieldList()) {
-                if (Constant.PATH_MAP.containsKey(field.getName())) {
-                    try {
-                        field.setData(reflectUtils.path2Class(field.getName()).newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
-
     /**
-     * 渲染model，需要渲染field，并且存入body
-     */
+     * renderModel 渲染model
+     * @param model     model渲染对象
+     * @param map       辅助map
+     * @param fieldList 参数列表
+     * @param view      前端渲染对象
+     **/
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
         renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
@@ -128,7 +137,7 @@ public class DocRender {
         view.getModelList().add(model);
         // 渲染body
         List<Controller> controllerList = view.getControllerList();
-        if (controllerList.size() > 0) {
+        if (!controllerList.isEmpty()) {
             for (Controller controller : controllerList) {
                 List<Method> methodList = controller.getMethodList();
                 for (Method method : methodList) {
@@ -146,8 +155,11 @@ public class DocRender {
     }
 
     /**
-     * 渲染param
-     */
+     * renderParamList 渲染参数列表
+     * @param controller controller渲染对象
+     * @param method     方法名称
+     * @param paramList  参数列表
+     **/
     private void renderParamList(String controller, String method, List<Param> paramList) {
         Map<String, Param> params = reflectUtils.getParams(controller, method);
         paramList.forEach(param -> {
@@ -160,9 +172,10 @@ public class DocRender {
     }
 
     /**
-     * 将java类型转化为js类型
-     */
-    // todo:解决嵌套问题
+     * trans2JS 将java类型转化为js类型
+     * @param type java类型
+     * @return js类型
+     **/
     private String trans2JS(String type) {
         if (org.springframework.util.StringUtils.isEmpty(type)) {
             return "";
@@ -194,8 +207,10 @@ public class DocRender {
     }
 
     /**
-     * 渲染field
-     */
+     * renderModelField 渲染field
+     * @param modelName model名称
+     * @param fieldList model中字段列表
+     **/
     private void renderModelField(String modelName, List<Param> fieldList) {
         Map<String, String> fieldMap = reflectUtils.getField(modelName);
         fieldList.forEach(field -> field.setType(trans2JS(fieldMap.getOrDefault(field.getName(), ""))));
