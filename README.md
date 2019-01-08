@@ -14,49 +14,16 @@
 # 引入依赖方法
 使用maven引入
 ```xml
-<repositories>
-    <repository>
-	<id>oss</id>
-	<name>oss</name>
-	<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-    </repository>
-    <repository>
-        <id>aliyun-repository</id>
-        <name>aliyun repository</name>
-        <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
-    </repository>
-</repositories>
-
 <dependency>
     <groupId>com.stalary</groupId>
     <artifactId>easy-doc</artifactId>
-    <version>version</version>
+    <version>${version}</version>
 </dependency>
 ```
 使用gradle引入
 ```gradle
-buildscript {
-  repositories {
-        maven {
-            url 'http://maven.aliyun.com/nexus/content/groups/public/'
-        }
-        mavenCentral()
-        maven {
-            url 'https://oss.sonatype.org/content/repositories/releases/'
-        }
-  }
-}
-repositories {
-    maven {
-        url 'http://maven.aliyun.com/nexus/content/groups/public/'
-    }
-    mavenCentral()
-    maven {
-        url 'https://oss.sonatype.org/content/repositories/snapshots/'
-    }
-}
 dependencies {
-  implementation('com.stalary:easy-doc:version')	
+  implementation('com.stalary:easy-doc:${version}')	
 }
 ```
 
