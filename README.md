@@ -64,6 +64,28 @@ com:
 @model | 实体标识
 @field | 实体的参数
 
+## controller
+/**
+ * TestController // 控制器名称
+ *
+ * @author lirongqian // 作者名称
+ */
+ 
+ ## method
+ /**
+     * @method getPreview 获取错题本的题目预览列表 // 方法名和解释
+     * @param categoryId 分类id // 字段名和解释
+     * @return CategoryAndCount 返回对象 // 返回值
+     **/
+ 
+ ## data
+ /**
+ * @model CategoryAndCount // 类名
+ * @description 分类及对应数量 // 类描述
+ * @field categoryId 科目id // 类字段和描述
+ **/
+ 
+
 使用idea可以设置live template，具体设置如下
 Preferences -> Editor -> Live Templates -> 创建Template group -> 创建LiveTemplate -> 设置自己想要的快捷键，在下方define勾选java
 
