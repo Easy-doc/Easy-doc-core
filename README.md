@@ -36,15 +36,15 @@ dependencies {
 
 生成一份过滤后的源码文件
 
-
+yml配置
 ```yml
 com:
   stalary:
     easydoc:
-      name: swagger demo # 项目名称
+      name: easydoc demo # 项目名称
       contact: stalary@613.com # 项目联系人
-      description: swagger测试项目 # 项目描述
-      path: com.stalary.swagger # 解析的包路径(包括data和controller的包)
+      description: easydoc测试项目 # 项目描述
+      path: com.stalary.easydoc # 解析的包路径(包括data和controller的包)
       open: true # 是否开启
       source: true # 是否读取源码,false则为读取resources中的easydoc.txt
 ```
