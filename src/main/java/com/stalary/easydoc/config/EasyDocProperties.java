@@ -35,4 +35,20 @@ public class EasyDocProperties {
 
     /** 是否使用源文件解析，默认使用 **/
     private boolean source = true;
+
+    /** 是否开启权限验证，默认关闭 **/
+    private boolean auth = false;
+
+    /** 权限配置 **/
+    private Auth authConfig;
+
+    @Data
+    public static class Auth {
+
+        /** 账号,默认为admin **/
+        private String account = "admin";
+
+        /** 密码,默认为admin **/
+        private String password = "admin";
+    }
 }

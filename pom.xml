@@ -5,7 +5,7 @@
 
     <groupId>com.stalary</groupId>
     <artifactId>easy-doc</artifactId>
-    <version>0.1.5</version>
+    <version>0.1.7</version>
     <packaging>jar</packaging>
     <licenses>
         <license>
@@ -35,6 +35,7 @@
         <artifactId>oss-parent</artifactId>
         <version>7</version>
     </parent>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>

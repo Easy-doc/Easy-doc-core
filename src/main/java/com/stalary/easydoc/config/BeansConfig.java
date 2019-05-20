@@ -51,14 +51,15 @@ public class BeansConfig {
     }
 
     @Bean
-    public ResourceController resourceController() {
-        return new ResourceController();
+    public ResourceController resourceController(EasyDocProperties properties) {
+        return new ResourceController(properties);
     }
 
     @Bean
     public IpConfiguration ipConfiguration() {
         return new IpConfiguration();
     }
+
     @Bean
     public SystemConfiguration systemConfiguration(){
         return new SystemConfiguration();
