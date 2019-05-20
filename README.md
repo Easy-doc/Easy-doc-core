@@ -2,7 +2,7 @@
 # Easy-Doc
 简单易用的java接口文档生成，基于javadoc生成接口文档，对代码0侵入。
 
-提供接口文档展示，调用测试，压力测试，mock数据(开发中)等功能，目前已上传测试版本，可以使用
+提供接口文档展示，调用测试，压力测试，mock数据(开发中)等功能，目前已上传正式版本，可以使用，最新版本0.1.6
 
 # 原理
 - 基于反射和正则表达式实现，依赖于spring，并且需要对源文件进行扫描。
@@ -36,15 +36,15 @@ dependencies {
 
 生成一份过滤后的源码文件
 
-
+yml配置
 ```yml
 com:
   stalary:
     easydoc:
-      name: swagger demo # 项目名称
+      name: easydoc demo # 项目名称
       contact: stalary@613.com # 项目联系人
-      description: swagger测试项目 # 项目描述
-      path: com.stalary.swagger # 解析的包路径(包括data和controller的包)
+      description: easydoc测试项目 # 项目描述
+      path: com.stalary.easydoc # 解析的包路径(包括data和controller的包)
       open: true # 是否开启
       source: true # 是否读取源码,false则为读取resources中的easydoc.txt
 ```
@@ -63,6 +63,28 @@ com:
 @param | 参数名
 @model | 实体标识
 @field | 实体的参数
+
+## controller
+/**
+ * TestController // 控制器名称
+ *
+ * @author lirongqian // 作者名称
+ */
+ 
+ ## method
+ /**
+     * @method getPreview 获取错题本的题目预览列表 // 方法名和解释
+     * @param categoryId 分类id // 字段名和解释
+     * @return CategoryAndCount 返回对象 // 返回值
+     **/
+ 
+ ## data
+ /**
+ * @model CategoryAndCount // 类名
+ * @description 分类及对应数量 // 类描述
+ * @field categoryId 科目id // 类字段和描述
+ **/
+ 
 
 使用idea可以设置live template，具体设置如下
 Preferences -> Editor -> Live Templates -> 创建Template group -> 创建LiveTemplate -> 设置自己想要的快捷键，在下方define勾选java
