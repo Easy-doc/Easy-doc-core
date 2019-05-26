@@ -4,6 +4,15 @@
 
 提供接口文档展示，调用测试，压力测试，mock数据(开发中)等功能，目前已上传正式版本，可以使用，最新版本0.1.6
 
+# 版本特性
+## 1.0.0
+第一个线上可用版本，增加了以下功能
+- 登录校验
+- 可以通过域名直接切换到其他项目的接口文档
+
+## 0.1.5
+- 修复了设置context-path时无法正常使用的bug
+
 # 原理
 - 基于反射和正则表达式实现，依赖于spring，并且需要对源文件进行扫描。
 - 核心扫描方法为DocReader中的singleReader
@@ -45,8 +54,9 @@ com:
       contact: stalary@613.com # 项目联系人
       description: easydoc测试项目 # 项目描述
       path: com.stalary.easydoc # 解析的包路径(包括data和controller的包)
-      open: true # 是否开启
+      open: true # 是否开启文档功能
       source: true # 是否读取源码,false则为读取resources中的easydoc.txt
+      auth: false # 是否开启登录验证，默认为false
 ```
 
 # 注释书写规则
