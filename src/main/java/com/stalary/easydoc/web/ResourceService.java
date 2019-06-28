@@ -60,7 +60,7 @@ public class ResourceService {
                     }
                     return docReader.multiReader(sb.toString());
                 } catch (Exception e) {
-                    log.warn("multiReader readTxt error", e);
+                    log.warn("easy-doc multiReader readTxt error", e);
                 }
             }
         }
@@ -119,7 +119,7 @@ public class ResourceService {
             }
             return JsonResult.ok(response);
         } catch (Exception e) {
-            log.warn("cmd error!", e);
+            log.warn("easy-doc cmd error!", e);
         } finally {
             if (file.exists()) {
                 file.delete();

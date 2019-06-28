@@ -145,7 +145,7 @@ public class ReflectUtils {
                 return new Model().toBuilder().name(finalName).build();
             }
         } catch (Exception e) {
-            log.warn("getBody error!", e);
+            log.warn("easy-doc getBody error!", e);
         }
         return null;
     }

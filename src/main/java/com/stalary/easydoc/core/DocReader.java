@@ -56,13 +56,25 @@ public class DocReader {
 
     /**
      * getFile 获取文件
-     * @param file 传入文件
+     *
+     * @param file     传入文件
      * @param fileList 生成的文件列表
      **/
     private void getFile(File file, List<File> fileList) {
         if (file.exists()) {
             if (file.isFile()) {
-                fileList.add(file);
+                // 获取去掉后缀的文件名
+                String name = file.getName().split("\\.")[0];
+                // 排除掉不需要的文件
+                if (!properties.getExcludeFile().contains(name)) {
+                    if (!properties.getIncludeFile().isEmpty()) {
+                        if (properties.getIncludeFile().contains(name)) {
+                            fileList.add(file);
+                        }
+                    } else {
+                        fileList.add(file);
+                    }
+                }
             } else if (file.isDirectory()) {
                 File[] files = file.listFiles();
                 if (files != null) {
@@ -76,6 +88,7 @@ public class DocReader {
 
     /**
      * readFile 读取单个文件
+     *
      * @param file 文件
      * @return 内容
      **/
@@ -92,7 +105,7 @@ public class DocReader {
             }
             return sb.toString();
         } catch (Exception e) {
-            log.warn("readFile error!", e);
+            log.warn("easy-doc readFile error!", e);
         }
         return "";
     }
@@ -109,6 +122,7 @@ public class DocReader {
 
     /**
      * multiReader 多文件读入方法
+     *
      * @return 前端渲染对象
      **/
     public View multiReader() {
@@ -130,6 +144,7 @@ public class DocReader {
 
     /**
      * multiReader 多匹配后字符串渲染方法
+     *
      * @param str 匹配后的字符串
      * @return 前端渲染对象
      **/
@@ -146,7 +161,7 @@ public class DocReader {
             try {
                 singleReader(temp);
             } catch (Exception e) {
-                log.warn("singleReader error file: " + temp);
+                log.warn("easy-doc singleReader error fileName={}, info=", temp, e);
             }
         }
         commonReader();
@@ -155,6 +170,7 @@ public class DocReader {
 
     /**
      * singleReader 单匹配后字符串渲染方法
+     *
      * @param str 传入匹配后的字符串
      **/
     private void singleReader(String str) {
@@ -171,12 +187,13 @@ public class DocReader {
 
     /**
      * singleReader 单文件读入方法
+     *
      * @param file 文件
      **/
     private void singleReader(File file) {
+        // 获取文件名称
+        String fileName = file.getName();
         try {
-            // 获取文件名称
-            String fileName = file.getName();
             String name = fileName.substring(0, fileName.indexOf("."));
             Controller controller = new Controller();
             Model model = new Model();
@@ -185,30 +202,25 @@ public class DocReader {
             String regex = "\\/\\*(\\s|.)*?\\*\\/";
             Matcher matcher = RegularExpressionUtils.createMatcherWithTimeout(str, regex, 200);
             while (matcher.find()) {
-                String temp = "";
-                try {
-                    // 1. 去除所有单行注释
-                    // 2. 匹配块级注释
-                    // 3. 合并多个空格
-                    temp = matcher
-                            .group()
-                            .replaceAll("\\/\\*\\*", "")
-                            .replaceAll("\\*\\/", "")
-                            .replaceAll("\\*", "")
-                            .replaceAll(" +", " ");
-                    docHandler.handle(controller, model, temp, name, view);
-                } catch (Exception e) {
-                    log.warn("matcher error, please check it. skip..." + "\n" + name + " : " + temp);
-                    log.warn("error: " + e);
-                }
+                // 1. 去除所有单行注释
+                // 2. 匹配块级注释
+                // 3. 合并多个空格
+                String temp = matcher
+                        .group()
+                        .replaceAll("\\/\\*\\*", "")
+                        .replaceAll("\\*\\/", "")
+                        .replaceAll("\\*", "")
+                        .replaceAll(" +", " ");
+                docHandler.handle(controller, model, temp, name, view);
             }
         } catch (Exception e) {
-            log.warn("singleReader error!", e);
+            log.warn("easy-doc singleReader error! fileName={}, info={}", fileName, e.getMessage());
         }
     }
 
     /**
      * pathMapper 路径映射生成方法
+     *
      * @param fileList 文件列表
      **/
     private void pathMapper(List<File> fileList) {
@@ -220,6 +232,7 @@ public class DocReader {
 
     /**
      * path2Pack 将文件路径转化为类名:包路径的映射
+     *
      * @param path 路径
      * @return 类名:包路径的映射
      **/

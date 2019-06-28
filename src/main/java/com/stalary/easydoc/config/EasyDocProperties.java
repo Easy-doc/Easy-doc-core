@@ -8,6 +8,9 @@ package com.stalary.easydoc.config;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * EasyDocProperties
  *
@@ -20,6 +23,12 @@ public class EasyDocProperties {
 
     /** 需要扫描的文件路径 **/
     private String path;
+
+    /** 不包含的文件名称 **/
+    private List<String> excludeFile = new ArrayList<>();
+
+    /** 包含的文件名称(默认指定路径下都包含) **/
+    private List<String> includeFile = new ArrayList<>();
 
     /** 项目名称 **/
     private String name;
