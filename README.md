@@ -60,7 +60,17 @@ com:
       path: com.stalary.easydoc # 解析的包路径(包括data和controller的包)
       open: true # 是否开启文档功能
       source: true # 是否读取源码,false则为读取resources中的easydoc.txt
-      auth: false # 是否开启登录验证，默认为false
+      auth: true # 是否开启登录验证，默认为false
+      auth-config:
+        - account: stalary # 账号
+        - password: 123456 # 密码
+      include-file: # 指定路径下包含的文件
+        - a
+        - b
+        - c
+      exclude-file: # 指定路径下排除的文件
+        - a
+        - b
 ```
 
 # 注释书写规则
