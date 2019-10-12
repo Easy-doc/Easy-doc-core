@@ -9,21 +9,24 @@ import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.config.SystemConfiguration;
-import com.stalary.easydoc.data.*;
+import com.stalary.easydoc.data.Constant;
+import com.stalary.easydoc.data.Controller;
+import com.stalary.easydoc.data.Model;
+import com.stalary.easydoc.data.NamePack;
+import com.stalary.easydoc.data.View;
 import com.stalary.easydoc.web.RegularExpressionUtils;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * DocReader
@@ -95,8 +98,8 @@ public class DocReader {
     private String readFile(File file) {
         // 此处设置编码，解决乱码问题
         try (BufferedReader reader =
-                     new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                             Charset.forName("UTF-8")))) {
+                 new BufferedReader(new InputStreamReader(new FileInputStream(file),
+                     StandardCharsets.UTF_8))) {
             StringBuilder sb = new StringBuilder();
             String s = reader.readLine();
             while (s != null) {
@@ -114,7 +117,7 @@ public class DocReader {
      * commonReader 公共读入方法
      **/
     private void commonReader() {
-        docHandler.addSuperModel(view);
+        docHandler.addSuperAndNestModel(view);
         docHandler.addURL(view);
         // 缓存
         viewCache = view;
@@ -194,7 +197,7 @@ public class DocReader {
         // 获取文件名称
         String fileName = file.getName();
         try {
-            String name = fileName.substring(0, fileName.indexOf("."));
+            String name = fileName.substring(0, fileName.indexOf(Constant.PACKAGE_SPLIT));
             Controller controller = new Controller();
             Model model = new Model();
             String str = readFile(file);
@@ -206,11 +209,11 @@ public class DocReader {
                 // 2. 匹配块级注释
                 // 3. 合并多个空格
                 String temp = matcher
-                        .group()
-                        .replaceAll("\\/\\*\\*", "")
-                        .replaceAll("\\*\\/", "")
-                        .replaceAll("\\*", "")
-                        .replaceAll(" +", " ");
+                    .group()
+                    .replaceAll("\\/\\*\\*", "")
+                    .replaceAll("\\*\\/", "")
+                    .replaceAll("\\*", "")
+                    .replaceAll(" +", " ");
                 docHandler.handle(controller, model, temp, name, view);
             }
         } catch (Exception e) {
@@ -244,8 +247,8 @@ public class DocReader {
             temp = path.replaceAll("/", ".");
         }
         String packPath = temp.substring(temp.indexOf(properties.getPath()));
-        packPath = packPath.substring(0, packPath.lastIndexOf("."));
-        return new NamePack(packPath.substring(packPath.lastIndexOf(".") + 1), packPath);
+        packPath = packPath.substring(0, packPath.lastIndexOf(Constant.PACKAGE_SPLIT));
+        return new NamePack(packPath.substring(packPath.lastIndexOf(Constant.PACKAGE_SPLIT) + 1), packPath);
     }
 
 }

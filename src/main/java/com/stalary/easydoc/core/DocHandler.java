@@ -5,13 +5,24 @@
  */
 package com.stalary.easydoc.core;
 
-import com.stalary.easydoc.data.*;
+import com.stalary.easydoc.data.Constant;
+import com.stalary.easydoc.data.Controller;
+import com.stalary.easydoc.data.Field;
+import com.stalary.easydoc.data.Model;
+import com.stalary.easydoc.data.Param;
+import com.stalary.easydoc.data.Response;
+import com.stalary.easydoc.data.View;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import javafx.util.Pair;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * DocHandler
@@ -140,7 +151,7 @@ public class DocHandler {
      * addSuperModel 添加model的父类
      * @param view 前端渲染对象
      **/
-    public void addSuperModel(View view) {
+    void addSuperAndNestModel(View view) {
         Map<String, Model> modelMap = view.getModelList().stream().collect(Collectors.toMap(Model::getName, e -> e));
         // 填充父类对象
         view.getModelList().forEach(model -> {
@@ -152,6 +163,8 @@ public class DocHandler {
                 }
             }
         });
+        // 填充嵌套对象
+        view.getModelList().forEach(model -> fillNestModel(model, modelMap));
         // 填充responseList
         view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> method.getResponseList().forEach(response -> response.getFieldList().forEach(field -> {
             field.setData(modelMap.get(field.getName()));
@@ -159,10 +172,27 @@ public class DocHandler {
     }
 
     /**
+     * fillNestModel 填充嵌套对象
+     * @param model 填充对象
+     * @param modelMap 对象临时map
+     **/
+    private void fillNestModel(Model model, Map<String, Model> modelMap) {
+        Set<Pair<String, String>> nestNameList = reflectUtils.getNest(model.getName());
+        if (!nestNameList.isEmpty()) {
+            for (Pair<String, String> nestPair : nestNameList) {
+                Model nestModel = modelMap.get(nestPair.getKey());
+                if (nestModel != null) {
+                    model.getNestMap().put(nestPair.getValue(), nestModel);
+                }
+            }
+        }
+    }
+
+    /**
      * addURL 添加接口映射
      * @param view 前端渲染对象
      **/
-    public void addURL(View view) {
+    void addURL(View view) {
         view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> {
             Constant.URL_LIST.add(controller.getPath() + method.getPath());
         }));

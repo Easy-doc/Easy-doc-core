@@ -70,4 +70,6 @@ public class Constant {
 
     public static final String PATH_SPLIT = ",,,";
 
+    public static final String PACKAGE_SPLIT = ".";
+
 }

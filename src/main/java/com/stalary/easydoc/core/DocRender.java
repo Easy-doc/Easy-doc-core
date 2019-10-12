@@ -1,11 +1,12 @@
 /**
  * @(#)DocRender.java, 2018-11-13.
- *
+ * <p>
  * Copyright 2018 Stalary.
  */
 package com.stalary.easydoc.core;
 
 import com.stalary.easydoc.data.*;
+import java.util.HashMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,9 +40,9 @@ public class DocRender {
      * @param model        model渲染对象
      **/
     public void render(Controller controller, Map<String, String> map,
-                       List<Param> paramList, List<Param> fieldList,
-                       List<Response> responseList, Map<String, String> throwsMap,
-                       View view, Model model) {
+        List<Param> paramList, List<Param> fieldList,
+        List<Response> responseList, Map<String, String> throwsMap,
+        View view, Model model) {
         // 填充controller，method，model
         if (map.size() > 0) {
             if (map.containsKey(Constant.CONTROLLER)) {
@@ -101,20 +102,20 @@ public class DocRender {
      * @param body         model渲染对象
      **/
     private void renderMethod(Controller controller, Map<String, String> map,
-                              List<Param> paramList, List<Response> responseList,
-                              Map<String, String> throwsMap, Model body) {
+        List<Param> paramList, List<Response> responseList,
+        Map<String, String> throwsMap, Model body) {
         renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
         // data渲染要放在最后
         Method method = new Method().toBuilder()
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .path(map.getOrDefault(Constant.PATH, ""))
-                .type(map.getOrDefault(Constant.TYPE, ""))
-                .body(body)
-                .paramList(paramList)
-                .responseList(responseList)
-                .throwsMap(throwsMap)
-                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
-                .build();
+            .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+            .path(map.getOrDefault(Constant.PATH, ""))
+            .type(map.getOrDefault(Constant.TYPE, ""))
+            .body(body)
+            .paramList(paramList)
+            .responseList(responseList)
+            .throwsMap(throwsMap)
+            .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
+            .build();
         controller.getMethodList().add(method);
     }
 
@@ -128,12 +129,13 @@ public class DocRender {
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
         renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
-                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-                .name(map.getOrDefault(Constant.MODEL, ""))
-                .author(map.getOrDefault(Constant.AUTHOR, ""))
-                .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
-                .fieldList(fieldList)
-                .build();
+            .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+            .name(map.getOrDefault(Constant.MODEL, ""))
+            .author(map.getOrDefault(Constant.AUTHOR, ""))
+            .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
+            .fieldList(fieldList)
+            .nestMap(new HashMap<>())
+            .build();
         view.getModelList().add(model);
         // 渲染body
         List<Controller> controllerList = view.getControllerList();

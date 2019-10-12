@@ -9,6 +9,21 @@ import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Model;
 import com.stalary.easydoc.data.Param;
 import com.stalary.easydoc.data.View;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Parameter;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
@@ -20,10 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
-
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ReflectReader
@@ -37,6 +48,7 @@ public class ReflectUtils {
 
     /**
      * isController 判断是否为controller
+     *
      * @param name controller名称
      * @return true|false
      **/
@@ -47,6 +59,7 @@ public class ReflectUtils {
 
     /**
      * getControllerPath 获取controller中的路径
+     *
      * @param name controller名称
      * @return 路径
      **/
@@ -61,6 +74,7 @@ public class ReflectUtils {
 
     /**
      * getMethod 获取method
+     *
      * @param controllerName controller名称
      * @param methodName     方法名称
      * @return 方法
@@ -77,6 +91,7 @@ public class ReflectUtils {
 
     /**
      * getMethodMapping 获取RequestMapping
+     *
      * @param controllerName controller名称
      * @param methodName     方法名称
      * @return RequestMapping
@@ -87,6 +102,7 @@ public class ReflectUtils {
 
     /**
      * path2Class 将包路径转化为class
+     *
      * @param name 类名
      * @return 类
      **/
@@ -100,6 +116,7 @@ public class ReflectUtils {
 
     /**
      * getBodyParam 获取被@RequestBody注解的自定义参数
+     *
      * @param controllerName controller名称
      * @param methodName     方法名称
      * @return 参数
@@ -120,6 +137,7 @@ public class ReflectUtils {
 
     /**
      * getBody 获取Model
+     *
      * @param controllerName controller名称
      * @param methodName     方法名称
      * @param view           前端渲染对象
@@ -130,7 +148,7 @@ public class ReflectUtils {
             Parameter parameter = getBodyParam(controllerName, methodName);
             if (parameter != null) {
                 String name = parameter.getType().getName();
-                final String finalName = name.substring(name.lastIndexOf(".") + 1);
+                final String finalName = name.substring(name.lastIndexOf(Constant.PACKAGE_SPLIT) + 1);
                 AtomicReference<Model> finalModel = new AtomicReference<>();
                 view.getModelList().forEach(model -> {
                     if (model.getName().equals(finalName)) {
@@ -152,6 +170,7 @@ public class ReflectUtils {
 
     /**
      * isDeprecated 判断是否已经被弃用
+     *
      * @param className  类名
      * @param methodName 方法名
      * @return true|false
@@ -178,8 +197,9 @@ public class ReflectUtils {
 
     /**
      * getParams 获取method中的param
+     *
      * @param controllerName controller名称
-     * @param methodName 方法名
+     * @param methodName     方法名
      * @return 参数map
      **/
     Map<String, Param> getParams(String controllerName, String methodName) {
@@ -215,6 +235,7 @@ public class ReflectUtils {
 
     /**
      * getField 获取model中的field
+     *
      * @param modelName model名称
      * @return 字段map
      **/
@@ -230,10 +251,11 @@ public class ReflectUtils {
 
     /**
      * getSuper 获取父类名称
+     *
      * @param name 类名
      * @return 父类名
      **/
-    public String getSuper(String name) {
+    String getSuper(String name) {
         Class clazz = path2Class(name);
         Class superClazz = clazz.getSuperclass();
         String simpleName = superClazz.getSimpleName();
@@ -241,6 +263,39 @@ public class ReflectUtils {
             return null;
         }
         return simpleName;
+    }
+
+    /**
+     * @param name 类名
+     * @return 嵌套类名
+     * @method getNest 获取嵌套类名称
+     **/
+    Set<Pair<String, String>> getNest(String name) {
+        Class clazz = path2Class(name);
+        Field[] fields = clazz.getDeclaredFields();
+        Set<Pair<String, String>> ret = new HashSet<>();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            Class<? extends Field> fieldClass = field.getClass();
+            // 不存在classloader的为自定义类
+            if (fieldClass.getClassLoader() != null) {
+                ret.add(new Pair<>(fieldClass.getName(), field.getName()));
+            } else {
+                if (field.getType() == java.util.List.class || field.getType() == java.util.Map.class) {
+                    Type type = field.getGenericType();
+                    if (type instanceof ParameterizedType) {
+                        ParameterizedType pt = (ParameterizedType) type;
+                        if (pt.getActualTypeArguments()[0] instanceof Class) {
+                            Class<?> genericClass = (Class<?>) pt.getActualTypeArguments()[0];
+                            if (genericClass.getClassLoader() != null) {
+                                ret.add(new Pair<>(genericClass.getSimpleName(), field.getName()));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ret;
     }
 
 }

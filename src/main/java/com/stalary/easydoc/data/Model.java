@@ -5,12 +5,12 @@
  */
 package com.stalary.easydoc.data;
 
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 /**
  * Model
@@ -34,6 +34,9 @@ public class Model {
 
     /** 参数和对应的解释 **/
     private List<Param> fieldList;
+
+    /** 嵌套对象的解释 **/
+    private Map<String, Model> nestMap;
 
     /** 代表实体是否已经被弃置 **/
     @Builder.Default
