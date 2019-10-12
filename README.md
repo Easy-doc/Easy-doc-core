@@ -8,6 +8,9 @@
 ![home](home.png)
 
 # 版本特性
+## 1.2.0
+- 增加对嵌套类的支持
+
 ## 1.1.0
 - 增加了excludeFile和includeFile两个参数，可以指定排除文件或者选中的文件
 - 完善了报错信息
@@ -100,10 +103,10 @@ com:
  
  ## method
  /**
-     * @method getPreview 获取错题本的题目预览列表 // 方法名和解释
-     * @param categoryId 分类id // 字段名和解释
-     * @return CategoryAndCount 返回对象 // 返回值
-     **/
+ * @method getPreview 获取错题本的题目预览列表 // 方法名和解释
+ * @param categoryId 分类id // 字段名和解释
+ * @return CategoryAndCount 返回对象 // 返回值
+ **/
  
  ## data
  /**
