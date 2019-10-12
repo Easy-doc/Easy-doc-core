@@ -5,15 +5,20 @@
  */
 package com.stalary.easydoc.core;
 
-import com.stalary.easydoc.data.*;
-import java.util.HashMap;
+import com.stalary.easydoc.data.Constant;
+import com.stalary.easydoc.data.Controller;
+import com.stalary.easydoc.data.Method;
+import com.stalary.easydoc.data.Model;
+import com.stalary.easydoc.data.Param;
+import com.stalary.easydoc.data.Response;
+import com.stalary.easydoc.data.View;
+import java.util.List;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * DocRender
@@ -121,6 +126,7 @@ public class DocRender {
 
     /**
      * renderModel 渲染model
+     *
      * @param model     model渲染对象
      * @param map       辅助map
      * @param fieldList 参数列表
@@ -134,7 +140,6 @@ public class DocRender {
             .author(map.getOrDefault(Constant.AUTHOR, ""))
             .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
             .fieldList(fieldList)
-            .nestMap(new HashMap<>())
             .build();
         view.getModelList().add(model);
         // 渲染body
@@ -143,13 +148,9 @@ public class DocRender {
             for (Controller controller : controllerList) {
                 List<Method> methodList = controller.getMethodList();
                 for (Method method : methodList) {
-                    if (method.getBody() != null) {
-                        // 当body还未解析时，存入model
-                        if (model.getName().equals(method.getBody().getName())) {
-                            if (org.springframework.util.StringUtils.isEmpty(method.getBody().getDescription())) {
-                                method.setBody(model);
-                            }
-                        }
+                    // 当body还未解析时，存入model
+                    if (method.getBody() != null && model.getName().equals(method.getBody().getName()) && StringUtils.isEmpty(method.getBody().getDescription())) {
+                        method.setBody(model);
                     }
                 }
             }
@@ -158,6 +159,7 @@ public class DocRender {
 
     /**
      * renderParamList 渲染参数列表
+     *
      * @param controller controller渲染对象
      * @param method     方法名称
      * @param paramList  参数列表
@@ -175,15 +177,18 @@ public class DocRender {
 
     /**
      * trans2JS 将java类型转化为js类型
+     *
      * @param type java类型
      * @return js类型
      **/
     private String trans2JS(String type) {
-        if (org.springframework.util.StringUtils.isEmpty(type)) {
+        if (StringUtils.isEmpty(type)) {
             return "";
         }
         switch (type) {
             case "java.lang.String":
+            case "javax.servlet.http.HttpServletRequest":
+            case "javax.servlet.http.HttpServletResponse":
                 return "String";
             case "java.lang.Double":
             case "java.lang.Float":
@@ -200,9 +205,6 @@ public class DocRender {
                 return "Boolean";
             case "java.util.List":
                 return "List";
-            case "javax.servlet.http.HttpServletRequest":
-            case "javax.servlet.http.HttpServletResponse":
-                return "String";
             default:
                 return "Object";
         }
@@ -210,6 +212,7 @@ public class DocRender {
 
     /**
      * renderModelField 渲染field
+     *
      * @param modelName model名称
      * @param fieldList model中字段列表
      **/

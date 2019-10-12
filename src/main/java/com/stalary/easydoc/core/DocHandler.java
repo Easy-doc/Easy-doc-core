@@ -182,7 +182,13 @@ public class DocHandler {
             for (Pair<String, String> nestPair : nestNameList) {
                 Model nestModel = modelMap.get(nestPair.getKey());
                 if (nestModel != null) {
-                    model.getNestMap().put(nestPair.getValue(), nestModel);
+                    for (Param param : model.getFieldList()) {
+                        if (nestPair.getValue().equals(param.getName())) {
+                            param.setNestModel(nestModel);
+                        }
+                    }
+                    // 更新modelMap
+                    modelMap.put(model.getName(), model);
                 }
             }
         }

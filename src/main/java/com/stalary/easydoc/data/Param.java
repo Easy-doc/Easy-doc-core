@@ -30,6 +30,9 @@ public class Param {
     /** 默认值 **/
     private String defaultValue;
 
+    /** 嵌套对象 **/
+    private Model nestModel;
+
     public Param(String name, String description) {
         this.name = name;
         this.description = description;
