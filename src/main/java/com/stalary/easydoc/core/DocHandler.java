@@ -181,7 +181,8 @@ public class DocHandler {
         if (!nestNameList.isEmpty()) {
             for (Pair<String, String> nestPair : nestNameList) {
                 Model nestModel = modelMap.get(nestPair.getKey());
-                if (nestModel != null) {
+                // 类中嵌套自己的不进行填充，防止死循环
+                if (nestModel != null && !model.getName().equals(nestModel.getName())) {
                     for (Param param : model.getFieldList()) {
                         if (nestPair.getValue().equals(param.getName())) {
                             param.setNestModel(nestModel);
