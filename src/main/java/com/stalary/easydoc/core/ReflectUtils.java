@@ -276,10 +276,9 @@ public class ReflectUtils {
         Set<Pair<String, String>> ret = new HashSet<>();
         for (Field field : fields) {
             field.setAccessible(true);
-            Class<? extends Field> fieldClass = field.getClass();
             // 不存在classloader的为自定义类
-            if (fieldClass.getClassLoader() != null) {
-                ret.add(new Pair<>(fieldClass.getName(), field.getName()));
+            if (field.getType().getClassLoader() != null) {
+                ret.add(new Pair<>(field.getType().getSimpleName(), field.getName()));
             } else {
                 if (field.getType() == java.util.List.class || field.getType() == java.util.Map.class) {
                     Type type = field.getGenericType();
