@@ -23,9 +23,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
-import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -278,7 +278,7 @@ public class ReflectUtils {
             field.setAccessible(true);
             // 不存在classloader的为自定义类
             if (field.getType().getClassLoader() != null) {
-                ret.add(new Pair<>(field.getType().getSimpleName(), field.getName()));
+                ret.add(Pair.of(field.getType().getSimpleName(), field.getName()));
             } else {
                 if (field.getType() == java.util.List.class || field.getType() == java.util.Map.class) {
                     Type type = field.getGenericType();
@@ -287,7 +287,7 @@ public class ReflectUtils {
                         if (pt.getActualTypeArguments()[0] instanceof Class) {
                             Class<?> genericClass = (Class<?>) pt.getActualTypeArguments()[0];
                             if (genericClass.getClassLoader() != null) {
-                                ret.add(new Pair<>(genericClass.getSimpleName(), field.getName()));
+                                ret.add(Pair.of(genericClass.getSimpleName(), field.getName()));
                             }
                         }
                     }
