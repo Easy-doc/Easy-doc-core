@@ -73,11 +73,11 @@ com:
       auth-config:
         - account: stalary # 账号
         - password: 123456 # 密码
-      include-file: # 指定路径下包含的文件
+      include-file: # 指定路径下包含的文件，如果source设置为false，需要从插件中配置
         - a
         - b
         - c
-      exclude-file: # 指定路径下排除的文件
+      exclude-file: # 指定路径下排除的文件，如果source设置为false，需要从插件中配置
         - a
         - b
 ```
