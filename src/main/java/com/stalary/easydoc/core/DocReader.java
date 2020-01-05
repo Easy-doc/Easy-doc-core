@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -141,8 +142,24 @@ public class DocReader {
         for (File aFileList : fileList) {
             singleReader(aFileList);
         }
+        // 最后添加父类和接口映射
         commonReader();
+        // 按照名词对接口和model排序
+        sortByName(view);
         return view;
+    }
+
+    /**
+     * sortByName 根据名称排序
+     * @param view 前端渲染对象
+     **/
+    private void sortByName(View view) {
+        if (view.getControllerList() != null) {
+            view.getControllerList().sort(Comparator.comparing(Controller::getName));
+        }
+        if (view.getModelList() != null) {
+            view.getModelList().sort(Comparator.comparing(Model::getName));
+        }
     }
 
     /**
