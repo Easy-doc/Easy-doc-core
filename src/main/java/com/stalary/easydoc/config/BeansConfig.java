@@ -9,8 +9,8 @@ import com.stalary.easydoc.core.DocHandler;
 import com.stalary.easydoc.core.DocReader;
 import com.stalary.easydoc.core.DocRender;
 import com.stalary.easydoc.core.ReflectUtils;
-import com.stalary.easydoc.web.ResourceController;
-import com.stalary.easydoc.web.ResourceService;
+import com.stalary.easydoc.endpoint.ResourceController;
+import com.stalary.easydoc.service.ResourceService;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,12 +56,7 @@ public class BeansConfig {
     }
 
     @Bean
-    public IpConfiguration ipConfiguration() {
-        return new IpConfiguration();
-    }
-
-    @Bean
-    public SystemConfiguration systemConfiguration(){
+    public SystemConfiguration systemConfiguration() {
         return new SystemConfiguration();
     }
 }

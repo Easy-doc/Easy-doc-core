@@ -1,4 +1,4 @@
-/**
+/*
  * @(#)ReflectReader.java, 2018-09-28.
  * <p>
  * Copyright 2018 Stalary.
@@ -9,20 +9,6 @@ import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Model;
 import com.stalary.easydoc.data.Param;
 import com.stalary.easydoc.data.View;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,6 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
+
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ReflectReader
@@ -52,7 +42,7 @@ public class ReflectUtils {
      * @param name controller名称
      * @return true|false
      **/
-    boolean isController(String name) {
+    static boolean isController(String name) {
         Class clazz = path2Class(name);
         return AnnotatedElementUtils.hasAnnotation(clazz, Controller.class);
     }
@@ -63,7 +53,7 @@ public class ReflectUtils {
      * @param name controller名称
      * @return 路径
      **/
-    String getControllerPath(String name) {
+    static String getControllerPath(String name) {
         Class clazz = path2Class(name);
         RequestMapping annotation = AnnotationUtils.findAnnotation(clazz, RequestMapping.class);
         if (annotation != null) {
@@ -79,7 +69,7 @@ public class ReflectUtils {
      * @param methodName     方法名称
      * @return 方法
      **/
-    private Method getMethod(String controllerName, String methodName) {
+    private static Method getMethod(String controllerName, String methodName) {
         Class clazz = path2Class(controllerName);
         for (Method method : clazz.getDeclaredMethods()) {
             if (method.getName().equals(methodName)) {
@@ -96,7 +86,7 @@ public class ReflectUtils {
      * @param methodName     方法名称
      * @return RequestMapping
      **/
-    RequestMapping getMethodMapping(String controllerName, String methodName) {
+    static RequestMapping getMethodMapping(String controllerName, String methodName) {
         return AnnotatedElementUtils.findMergedAnnotation(getMethod(controllerName, methodName), RequestMapping.class);
     }
 
@@ -106,7 +96,7 @@ public class ReflectUtils {
      * @param name 类名
      * @return 类
      **/
-    private Class path2Class(String name) {
+    private static Class path2Class(String name) {
         try {
             return Class.forName(Constant.PATH_MAP.get(name));
         } catch (Exception e) {
@@ -121,7 +111,7 @@ public class ReflectUtils {
      * @param methodName     方法名称
      * @return 参数
      **/
-    private Parameter getBodyParam(String controllerName, String methodName) {
+    private static Parameter getBodyParam(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
         Parameter[] parameters = method.getParameters();
         for (Parameter parameter : parameters) {
@@ -143,7 +133,7 @@ public class ReflectUtils {
      * @param view           前端渲染对象
      * @return Model对象
      **/
-    Model getBody(String controllerName, String methodName, View view) {
+    static Model getBody(String controllerName, String methodName, View view) {
         try {
             Parameter parameter = getBodyParam(controllerName, methodName);
             if (parameter != null) {
@@ -175,7 +165,7 @@ public class ReflectUtils {
      * @param methodName 方法名
      * @return true|false
      **/
-    boolean isDeprecated(String className, String methodName) {
+    static boolean isDeprecated(String className, String methodName) {
         Class clazz = path2Class(className);
         if (StringUtils.isEmpty(className)) {
             return false;
@@ -202,7 +192,7 @@ public class ReflectUtils {
      * @param methodName     方法名
      * @return 参数map
      **/
-    Map<String, Param> getParams(String controllerName, String methodName) {
+    static Map<String, Param> getParams(String controllerName, String methodName) {
         Method method = getMethod(controllerName, methodName);
         LocalVariableTableParameterNameDiscoverer discoverer = new LocalVariableTableParameterNameDiscoverer();
         Map<String, Param> result = new HashMap<>();
@@ -239,7 +229,7 @@ public class ReflectUtils {
      * @param modelName model名称
      * @return 字段map
      **/
-    Map<String, String> getField(String modelName) {
+    static Map<String, String> getField(String modelName) {
         Class clazz = path2Class(modelName);
         Map<String, String> result = new HashMap<>();
         Field[] fields = clazz.getDeclaredFields();
@@ -255,7 +245,7 @@ public class ReflectUtils {
      * @param name 类名
      * @return 父类名
      **/
-    String getSuper(String name) {
+    static String getSuper(String name) {
         Class clazz = path2Class(name);
         Class superClazz = clazz.getSuperclass();
         String simpleName = superClazz.getSimpleName();
@@ -270,7 +260,7 @@ public class ReflectUtils {
      * @return 嵌套类名
      * @method getNest 获取嵌套类名称
      **/
-    Set<Pair<String, String>> getNest(String name) {
+    static Set<Pair<String, String>> getNest(String name) {
         Class clazz = path2Class(name);
         Field[] fields = clazz.getDeclaredFields();
         Set<Pair<String, String>> ret = new HashSet<>();

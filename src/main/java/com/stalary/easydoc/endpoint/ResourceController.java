@@ -3,17 +3,20 @@
  * <p>
  * Copyright 2018 Stalary.
  */
-package com.stalary.easydoc.web;
+package com.stalary.easydoc.endpoint;
 
 import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.config.EasyDocProperties;
-import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.JsonResult;
-import com.stalary.easydoc.data.TestBody;
+import com.stalary.easydoc.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * ResourceController
@@ -49,32 +52,6 @@ public class ResourceController {
             }
         }
         return JsonResult.ok(resourceService.read());
-    }
-
-    @GetMapping("/list")
-    public JSONObject list() {
-        return JsonResult.ok(Constant.URL_LIST);
-    }
-
-    /**
-     * pressureTest 压力测试
-     * @param n      请求数量
-     * @param c      并发数量
-     * @param cookie cookie
-     * @param isGet  是否为get，默认true
-     * @param url    请求地址
-     * @param body   参数
-     * @return TestResponse 时间统计对象
-     */
-    @PostMapping("/pressureTest")
-    public JSONObject pressureTest(
-            @RequestParam String url,
-            @RequestParam(required = false, defaultValue = "1") int n,
-            @RequestParam(required = false, defaultValue = "1") Integer c,
-            @RequestParam(required = false, defaultValue = "") String cookie,
-            @RequestParam(required = false, defaultValue = "true") boolean isGet,
-            @RequestBody TestBody body) {
-        return resourceService.abTest(n, c, cookie, url, body, isGet);
     }
 
 }

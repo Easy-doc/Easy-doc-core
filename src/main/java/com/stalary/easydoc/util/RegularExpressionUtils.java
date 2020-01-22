@@ -1,9 +1,9 @@
-/**
+/*
  * @(#)RegularExpressionUtils.java, 2018-11-28.
  *
  * Copyright 2018 Stalary.
  */
-package com.stalary.easydoc.web;
+package com.stalary.easydoc.util;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

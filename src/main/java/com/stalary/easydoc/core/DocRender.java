@@ -5,20 +5,15 @@
  */
 package com.stalary.easydoc.core;
 
-import com.stalary.easydoc.data.Constant;
-import com.stalary.easydoc.data.Controller;
-import com.stalary.easydoc.data.Method;
-import com.stalary.easydoc.data.Model;
-import com.stalary.easydoc.data.Param;
-import com.stalary.easydoc.data.Response;
-import com.stalary.easydoc.data.View;
-import java.util.List;
-import java.util.Map;
+import com.stalary.easydoc.data.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * DocRender
@@ -138,7 +133,7 @@ public class DocRender {
             .description(map.getOrDefault(Constant.DESCRIPTION, ""))
             .name(map.getOrDefault(Constant.MODEL, ""))
             .author(map.getOrDefault(Constant.AUTHOR, ""))
-            .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
+            .deprecated(Boolean.parseBoolean(map.getOrDefault(Constant.DEPRECATED, "")))
             .fieldList(fieldList)
             .build();
         view.getModelList().add(model);
