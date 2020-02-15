@@ -81,9 +81,6 @@ public class EasyDocProperties extends BaseProperties {
 
         /** 服务是否开启了权限认证 **/
         private boolean auth = false;
-
-        /** 服务权限配置 **/
-        private Auth authConfig;
     }
 
 }

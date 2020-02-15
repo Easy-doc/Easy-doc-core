@@ -65,7 +65,8 @@ public class DocHandler {
             }
         }
         if (merge) {
-            List<String> filterList = Arrays.stream(split).filter(d -> !d.equals(Constant.BLANK_REPLACE)).collect(Collectors.toList());
+            List<String> filterList =
+                    Arrays.stream(split).filter(d -> !d.equals(Constant.BLANK_REPLACE)).collect(Collectors.toList());
             split = filterList.toArray(new String[]{});
         }
         int len = split.length;
@@ -99,7 +100,8 @@ public class DocHandler {
                                     result.put(t, split[i + 1]);
                                     responseList.add(new Response(0, "成功", result));
                                 } else {
-                                    responseList.get(responseList.size() - 1).getFieldList().add(new Field(t, split[i + 1]));
+                                    responseList.get(responseList.size() - 1).getFieldList().add(new Model(t,
+                                            split[i + 1]));
                                 }
                             }
                             i++;
@@ -139,7 +141,7 @@ public class DocHandler {
      * @param view 前端渲染对象
      **/
     void addSuperAndNestModel(View view) {
-        Map<String, Model> modelMap = view.getModelList().stream().collect(Collectors.toMap(Model::getName, e -> e));
+        Map<String, Model> modelMap = view.getModelList().stream().collect(Collectors.toMap(Model::getName, e -> e, (v1, v2) -> v1));
         // 填充父类对象
         view.getModelList().forEach(model -> {
             String superName = ReflectUtils.getSuper(model.getName());
@@ -153,9 +155,15 @@ public class DocHandler {
         // 填充嵌套对象
         view.getModelList().forEach(model -> fillNestModel(model, modelMap));
         // 填充responseList
-        view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> method.getResponseList().forEach(response -> response.getFieldList().forEach(field -> {
-            field.setData(modelMap.get(field.getName()));
-        }))));
+        view.getControllerList().forEach(controller ->
+                controller.getMethodList().forEach(method ->
+                        method.getResponseList().forEach(response ->
+                                response.getFieldList().forEach(field -> {
+                                    Model model = modelMap.get(field.getName());
+                                    if (model != null) {
+                                        field.setFieldList(model.getFieldList());
+                                    }
+                                }))));
     }
 
     /**
@@ -173,7 +181,7 @@ public class DocHandler {
                 if (nestModel != null && !model.getName().equals(nestModel.getName())) {
                     for (Param param : model.getFieldList()) {
                         if (nestPair.getValue().equals(param.getName())) {
-                            param.setNestModel(nestModel);
+                            param.setFieldList(nestModel.getFieldList());
                         }
                     }
                     // 更新modelMap

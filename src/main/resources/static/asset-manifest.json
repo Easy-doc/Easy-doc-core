@@ -1,7 +1,15 @@
 {
-  "main.css": "static/css/main.66f02742.css",
-  "main.css.map": "static/css/main.66f02742.css.map",
-  "main.js": "static/js/main.93b4e89b.js",
-  "main.js.map": "static/js/main.93b4e89b.js.map",
-  "static/media/Easy-Doc.png": "static/media/Easy-Doc.46d832c9.png"
+  "/vendors.css": "./vendors.695b45be.chunk.css",
+  "/vendors.js": "./vendors.8a83bc2d.async.js",
+  "/layouts__BasicLayout.js": "./layouts__BasicLayout.d1344110.async.js",
+  "/p__404.js": "./p__404.328916c6.async.js",
+  "/p__GlobalParam.css": "./p__GlobalParam.4a1e9e37.chunk.css",
+  "/p__GlobalParam.js": "./p__GlobalParam.ea1653f2.async.js",
+  "/p__OverView.css": "./p__OverView.81f47f89.chunk.css",
+  "/p__OverView.js": "./p__OverView.8b9da999.async.js",
+  "/umi.css": "./umi.6c090f94.css",
+  "/umi.js": "./umi.31355e2d.js",
+  "/easy-doc.html": "./easy-doc.html",
+  "/favicon.png": "./favicon.png",
+  "/globalParam.html": "./globalParam.html"
 }

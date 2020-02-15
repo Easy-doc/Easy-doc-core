@@ -5,11 +5,12 @@
  */
 package com.stalary.easydoc.data;
 
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 /**
  * Model
@@ -37,4 +38,9 @@ public class Model {
     /** 代表实体是否已经被弃置 **/
     @Builder.Default
     private boolean deprecated = false;
+
+    public Model(String name, String description) {
+        this.name = name;
+        this.description = description;
+    }
 }

@@ -12,9 +12,6 @@ com:
           name: service1 # 子服务名称
           url: http://service1 # 子服务地址
           auth: true # 是否有权限验证,默认为false
-          auth-config:
-            username: test # 账号
-            password: test123 # 密码
         service-list[1]:
           name: service2
           url: http://service2

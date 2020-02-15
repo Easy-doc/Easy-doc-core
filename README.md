@@ -1,4 +1,4 @@
-![logo](logo.png)
+![logo](img/logo.png)
 
 ## 项目介绍
 - 简单易用的 Java 接口文档生成器，基于 JavaDoc 风格的注释生成接口文档，对代码 0 侵入。
@@ -10,11 +10,11 @@
 - 通过 service_ip:port/easy-doc.html 的方式访问
 - 通过 service_url/easy-doc.html 的方式访问
 
-## 网关效果图
-![gateway](home.png)
+## 网关模式效果图
+![gateway](img/网关模式.png)
 
-## 服务效果图
-![service](home.png)
+## 服务模式效果图
+![service](img/服务模式.png)
 
 ## 设计思路
 [设计思路文档](doc/design.md)
