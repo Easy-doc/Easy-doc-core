@@ -27,7 +27,7 @@ public class Response {
     private String description;
 
     /** 返回的参数 **/
-    private List<Field> fieldList = new ArrayList<>();
+    private List<Model> fieldList = new ArrayList<>();
 
     public Response(int code, String description) {
         this.code = code;
@@ -37,7 +37,7 @@ public class Response {
     public Response(int code, String description, Map<String, String> fieldMap) {
         this.code = code;
         this.description = description;
-        fieldMap.forEach((k, v) -> fieldList.add(new Field(k, v)));
+        fieldMap.forEach((k, v) -> fieldList.add(new Model(k, v)));
     }
 
     public Response() {

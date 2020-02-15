@@ -1,48 +1,36 @@
-![logo](logo.png)
+![logo](img/logo.png)
 
-# Easy-Doc
-简单易用的java接口文档生成，基于javadoc生成接口文档，对代码0侵入。
+## 项目介绍
+- 简单易用的 Java 接口文档生成器，基于 JavaDoc 风格的注释生成接口文档，对代码 0 侵入。
+- 提供接口展示,对象展示,调用测试,全局参数配置等功能，目前最新稳定版本1.3.0，可以通过 maven 或者 gradle 直接使用
+- 支持网关和服务模式,通过配置文件决定
+- 支持通过 url 分享指定接口或者对象
 
-提供接口文档展示，调用测试，压力测试，mock数据(开发中)等功能，目前已上传正式版本，可以使用，最新版本1.1.0
+## 使用方式
+- 通过 service_ip:port/easy-doc.html 的方式访问
+- 通过 service_url/easy-doc.html 的方式访问
 
-![home](home.png)
+## 网关模式效果图
+![gateway](img/网关模式.png)
 
-# 版本特性
-## 1.2.6
-- 修复前端model路由无法自动跳转的bug
-- 增加对接口和model的按名称排序
+## 服务模式效果图
+![service](img/服务模式.png)
 
-## 1.2.5
-- 修复一些bug
-- 前端增加路由，可以分享对应的接口
+## 接口详情效果图
+![controller](img/接口详情.png)
 
-## 1.2.1
-- bugfix: 修复对普通嵌套类支持有问题的bug
+## 对象列表效果图
+![model](img/对象列表.png)
 
-## 1.2.0
-- 增加对嵌套类的支持
+## 全局参数效果图
+![global](img/全局参数.png)
 
-## 1.1.0
-- 增加了excludeFile和includeFile两个参数，可以指定排除文件或者选中的文件
-- 完善了报错信息
+## 设计思路
+[设计思路文档](doc/design.md)
 
-## 1.0.0
-第一个线上可用版本，增加了以下功能
-- 登录校验
-- 可以通过域名直接切换到其他项目的接口文档
-
-## 0.1.5
-- 修复了设置context-path时无法正常使用的bug
-
-# 原理
-- 基于反射和正则表达式实现，依赖于spring，并且需要对源文件进行扫描。
-- 核心扫描方法为DocReader中的singleReader
-- 核心渲染方法为DocRender
-- 所有反射相关的操作都位于ReflectUtils
-- jar包生成接口文档需要使用插件处理 
-
-# 引入依赖方法
-使用maven引入
+## 引入依赖方法
+- [远程仓库地址](https://mvnrepository.com/artifact/com.stalary/easy-doc)
+- 使用maven引入
 ```xml
 <dependency>
     <groupId>com.stalary</groupId>
@@ -50,114 +38,26 @@
     <version>${version}</version>
 </dependency>
 ```
-使用gradle引入
-```gradle
+- 使用gradle引入
+```groovy
 dependencies {
   implementation('com.stalary:easy-doc:${version}')	
 }
 ```
 
-# 初始化配置
-如果source设置为false
+## 配置方式
+- [网关配置](doc/gateway.md)
+- [服务配置](doc/service.md)
 
-使用maven需要[easydoc-maven-plugin](https://github.com/Easy-doc/easydoc-maven-plugin)
+## 注释书写规则
+[规则介绍](doc/rule.md)
 
-使用gradle需要[easydoc-gradle-plugin](https://github.com/Easy-doc/easydoc-gradle-plugin)
+## 版本特性
+[特性更新文档](doc/feature.md)
 
-生成一份过滤后的源码文件
+## Bug/Feature 提交
+- Issues
+- Email: stalary@163.com
 
-yml配置
-```yml
-com:
-  stalary:
-    easydoc:
-      name: easydoc demo # 项目名称
-      contact: stalary@613.com # 项目联系人
-      description: easydoc测试项目 # 项目描述
-      path: com.stalary.easydoc # 解析的包路径(包括data和controller的包)
-      open: true # 是否开启文档功能
-      source: true # 是否读取源码,false则为读取resources中的easydoc.txt
-      auth: true # 是否开启登录验证，默认为false
-      auth-config:
-        - account: stalary # 账号
-        - password: 123456 # 密码
-      include-file: # 指定路径下包含的文件，如果source设置为false，需要从插件中配置
-        - a
-        - b
-        - c
-      exclude-file: # 指定路径下排除的文件，如果source设置为false，需要从插件中配置
-        - a
-        - b
-```
-
-# 注释书写规则
-
-> demo具体可以查看ResourceController|TestBody|TestResponse等
-
-注释名 | 解释
---- | ---
-@method | 方法名   
-@description | 类/方法/实体描述
-@author | 类作者
-@throws | 抛出的异常
-@return | 方法返回值，第一行为code 介绍，后面为对应code的每个参数的含义
-@param | 参数名
-@model | 实体标识
-@field | 实体的参数
-
-## controller
-/**
- * TestController // 控制器名称
- *
- * @author lirongqian // 作者名称
- */
- 
- ## method
- /**
- * @method getPreview 获取错题本的题目预览列表 // 方法名和解释
- * @param categoryId 分类id // 字段名和解释
- * @return CategoryAndCount 返回对象 // 返回值
- **/
- 
- ## data
- /**
- * @model CategoryAndCount // 类名
- * @description 分类及对应数量 // 类描述
- * @field categoryId 科目id // 类字段和描述
- **/
- 
-
-使用idea可以设置live template，具体设置如下
-Preferences -> Editor -> Live Templates -> 创建Template group -> 创建LiveTemplate -> 设置自己想要的快捷键，在下方define勾选java
-
-method模版设置：
-```
-**
- * @method $name$
-$param$
- * @return
- **/
-```
-然后点击Edit Variables设置上述参数
-name为methodName()
-
-param为groovy脚本：groovyScript("if(\"${_1}\".length() == 2) {return '';} else {def result=''; def params=\"${_1}\".replaceAll('[\\\\[|\\\\]|\\\\s]', '').split(',').toList();for(i = 0; i < params.size(); i++) {if(i<(params.size()-1)){result+=' * @param ' + params[i] + ' ' + '\\n'}else{result+=' * @param ' + params[i] + ' '}}; return result;}", methodParameters());
-
-model模版设置:
-```
-**
- * @model $name$
- * @description
- **/
-```
-
-类注释从File and Code Templates设置
-```
-#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME};#end
-#parse("Class Header.java")
-public class ${NAME} {
-}
-```
-
-# 分享接口/model
-直接点击到要分享的对应位置，将path分享，下次进入自动跳入对应位置，在1.2.6版本开始支持
+## 参与贡献
+- Pull Request

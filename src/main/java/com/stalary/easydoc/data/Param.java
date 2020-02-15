@@ -7,6 +7,8 @@ package com.stalary.easydoc.data;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Param
  * @author lirongqian
@@ -31,7 +33,7 @@ public class Param {
     private String defaultValue;
 
     /** 嵌套对象 **/
-    private Model nestModel;
+    private List<Param> fieldList;
 
     public Param(String name, String description) {
         this.name = name;

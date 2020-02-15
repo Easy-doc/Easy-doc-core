@@ -40,10 +40,6 @@ public class Constant {
 
     public static final String TYPE = "type";
 
-    public static final String SPLIT = ":";
-
-    public static final String HTTP = "http://";
-
     public static final String WINDOWS = "win";
 
     public static final String JAVA = "/src/main/java/";
@@ -72,4 +68,11 @@ public class Constant {
 
     public static final String PACKAGE_SPLIT = ".";
 
+    public static final String DOC_SIGN = "@";
+
+    public static final String BLANK = " ";
+
+    public static final String EMPTY_STR = "";
+
+    public static final String BLANK_REPLACE = "-";
 }

@@ -5,7 +5,7 @@
 
     <groupId>com.stalary</groupId>
     <artifactId>easy-doc</artifactId>
-    <version>1.2.6</version>
+    <version>1.3.0</version>
     <packaging>jar</packaging>
     <licenses>
         <license>
@@ -27,6 +27,10 @@
             <organization>stalary</organization>
         </developer>
     </developers>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/Easy-doc/Easy-doc-core/issues</url>
+    </issueManagement>
     <name>easy-doc</name>
     <description>easy doc</description>
 
@@ -40,43 +44,38 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
+        <spring-boot.version>2.1.3.RELEASE</spring-boot.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.0.6.RELEASE</version>
+            <artifactId>spring-boot-starter</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
-            <version>2.0.6.RELEASE</version>
+            <artifactId>spring-boot-starter-web</artifactId>
+            <version>${spring-boot.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
-            <version>2.0.6.RELEASE</version>
+            <version>${spring-boot.version}</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.16.22</version>
+            <version>1.18.2</version>
             <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>2.0.6.RELEASE</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.49</version>
+            <version>1.2.60</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -96,7 +95,6 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
-            <!-- 测试使用 -->
             <!--<plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
