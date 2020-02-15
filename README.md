@@ -16,6 +16,15 @@
 ## 服务模式效果图
 ![service](img/服务模式.png)
 
+## 接口详情效果图
+![controller](img/接口详情.png)
+
+## 对象列表效果图
+![model](img/对象列表.png)
+
+## 全局参数效果图
+![global](img/全局参数.png)
+
 ## 设计思路
 [设计思路文档](doc/design.md)
 
