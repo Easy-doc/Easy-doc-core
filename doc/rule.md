@@ -21,7 +21,7 @@
  /**
  * @method getMethod 获取数据接口 // 方法名和解释
  * @param testId 测试id // 字段名和解释
- * @return TestModel 测试返回对象 // 返回值和返回值名称(默认为code=0)
+ * @return TestModel 测试返回对象@link:url // 返回值和返回值名称(默认为code=0),使用@link可以实现点击跳转
  * @return -1 失败 // 返回的code值和对应的解释
  **/
  
