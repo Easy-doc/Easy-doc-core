@@ -7,7 +7,6 @@ package com.stalary.easydoc.core;
 
 import com.stalary.easydoc.data.*;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,9 +23,6 @@ import java.util.Map;
 @Component
 public class DocRender {
 
-    @Autowired
-    ReflectUtils reflectUtils;
-
     /**
      * render 渲染controller，method，model，部分字段通过反射进行读取
      *
@@ -40,17 +36,18 @@ public class DocRender {
      * @param model        model渲染对象
      **/
     public void render(Controller controller, Map<String, String> map,
-        List<Param> paramList, List<Param> fieldList,
-        List<Response> responseList, Map<String, String> throwsMap,
-        View view, Model model) {
+                       List<Param> paramList, List<Param> fieldList,
+                       List<Response> responseList, Map<String, String> throwsMap,
+                       View view, Model model) {
         // 填充controller，method，model
         if (map.size() > 0) {
             if (map.containsKey(Constant.CONTROLLER)) {
-                map.put(Constant.PATH, reflectUtils.getControllerPath(map.get(Constant.CONTROLLER)));
-                map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(map.get(Constant.CONTROLLER), "")));
+                map.put(Constant.PATH, ReflectUtils.getControllerPath(map.get(Constant.CONTROLLER)));
+                map.put(Constant.DEPRECATED, String.valueOf(ReflectUtils.isDeprecated(map.get(Constant.CONTROLLER),
+                        "")));
                 renderController(controller, map, view);
             } else if (map.containsKey(Constant.METHOD)) {
-                RequestMapping mapping = reflectUtils.getMethodMapping(controller.getName(), map.get(Constant.METHOD));
+                RequestMapping mapping = ReflectUtils.getMethodMapping(controller.getName(), map.get(Constant.METHOD));
                 if (mapping != null) {
                     if (mapping.value().length != 0) {
                         map.put(Constant.PATH, mapping.value()[0]);
@@ -66,10 +63,12 @@ public class DocRender {
                     }
                 }
                 map.put(Constant.DESCRIPTION, map.get(map.get(Constant.METHOD)));
-                map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(controller.getName(), map.get(Constant.METHOD))));
-                renderMethod(controller, map, paramList, responseList, throwsMap, reflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
+                map.put(Constant.DEPRECATED, String.valueOf(ReflectUtils.isDeprecated(controller.getName(),
+                        map.get(Constant.METHOD))));
+                renderMethod(controller, map, paramList, responseList, throwsMap,
+                        ReflectUtils.getBody(controller.getName(), map.get(Constant.METHOD), view));
             } else if (map.containsKey(Constant.MODEL)) {
-                map.put(Constant.DEPRECATED, String.valueOf(reflectUtils.isDeprecated(map.get(Constant.MODEL), "")));
+                map.put(Constant.DEPRECATED, String.valueOf(ReflectUtils.isDeprecated(map.get(Constant.MODEL), "")));
                 renderModel(model, map, fieldList, view);
             }
         }
@@ -87,7 +86,7 @@ public class DocRender {
         controller.setDescription(map.getOrDefault(Constant.DESCRIPTION, ""));
         controller.setName(map.getOrDefault(Constant.CONTROLLER, ""));
         controller.setPath(map.getOrDefault(Constant.PATH, ""));
-        controller.setDeprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")));
+        controller.setDeprecated(Boolean.parseBoolean(map.getOrDefault(Constant.DEPRECATED, "")));
         view.getControllerList().add(controller);
     }
 
@@ -102,20 +101,20 @@ public class DocRender {
      * @param body         model渲染对象
      **/
     private void renderMethod(Controller controller, Map<String, String> map,
-        List<Param> paramList, List<Response> responseList,
-        Map<String, String> throwsMap, Model body) {
+                              List<Param> paramList, List<Response> responseList,
+                              Map<String, String> throwsMap, Model body) {
         renderParamList(controller.getName(), map.getOrDefault(Constant.METHOD, ""), paramList);
         // data渲染要放在最后
         Method method = new Method().toBuilder()
-            .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-            .path(map.getOrDefault(Constant.PATH, ""))
-            .type(map.getOrDefault(Constant.TYPE, ""))
-            .body(body)
-            .paramList(paramList)
-            .responseList(responseList)
-            .throwsMap(throwsMap)
-            .deprecated(Boolean.valueOf(map.getOrDefault(Constant.DEPRECATED, "")))
-            .build();
+                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+                .path(map.getOrDefault(Constant.PATH, ""))
+                .type(map.getOrDefault(Constant.TYPE, ""))
+                .body(body)
+                .paramList(paramList)
+                .responseList(responseList)
+                .throwsMap(throwsMap)
+                .deprecated(Boolean.parseBoolean(map.getOrDefault(Constant.DEPRECATED, "")))
+                .build();
         controller.getMethodList().add(method);
     }
 
@@ -130,12 +129,12 @@ public class DocRender {
     private void renderModel(Model model, Map<String, String> map, List<Param> fieldList, View view) {
         renderModelField(map.getOrDefault(Constant.MODEL, ""), fieldList);
         model = model.toBuilder()
-            .description(map.getOrDefault(Constant.DESCRIPTION, ""))
-            .name(map.getOrDefault(Constant.MODEL, ""))
-            .author(map.getOrDefault(Constant.AUTHOR, ""))
-            .deprecated(Boolean.parseBoolean(map.getOrDefault(Constant.DEPRECATED, "")))
-            .fieldList(fieldList)
-            .build();
+                .description(map.getOrDefault(Constant.DESCRIPTION, ""))
+                .name(map.getOrDefault(Constant.MODEL, ""))
+                .author(map.getOrDefault(Constant.AUTHOR, ""))
+                .deprecated(Boolean.parseBoolean(map.getOrDefault(Constant.DEPRECATED, "")))
+                .fieldList(fieldList)
+                .build();
         view.getModelList().add(model);
         // 渲染body
         List<Controller> controllerList = view.getControllerList();
@@ -160,10 +159,10 @@ public class DocRender {
      * @param paramList  参数列表
      **/
     private void renderParamList(String controller, String method, List<Param> paramList) {
-        Map<String, Param> params = reflectUtils.getParams(controller, method);
+        Map<String, Param> params = ReflectUtils.getParams(controller, method);
         paramList.forEach(param -> {
             Param temp = params.get(param.getName());
-            param.setType(trans2JS(temp.getType()));
+            param.setType(trans2Js(temp.getType()));
             param.setRequired(temp.isRequired());
             param.setDefaultValue(temp.getDefaultValue());
         });
@@ -171,12 +170,12 @@ public class DocRender {
     }
 
     /**
-     * trans2JS 将java类型转化为js类型
+     * trans2Js 将java类型转化为js类型
      *
      * @param type java类型
      * @return js类型
      **/
-    private String trans2JS(String type) {
+    private String trans2Js(String type) {
         if (StringUtils.isEmpty(type)) {
             return "";
         }
@@ -200,6 +199,10 @@ public class DocRender {
                 return "Boolean";
             case "java.util.List":
                 return "List";
+            case "java.sql.Timestamp":
+                return "Timestamp";
+            case "java.util.Date":
+                return "Date";
             default:
                 return "Object";
         }
@@ -212,8 +215,8 @@ public class DocRender {
      * @param fieldList model中字段列表
      **/
     private void renderModelField(String modelName, List<Param> fieldList) {
-        Map<String, String> fieldMap = reflectUtils.getField(modelName);
-        fieldList.forEach(field -> field.setType(trans2JS(fieldMap.getOrDefault(field.getName(), ""))));
+        Map<String, String> fieldMap = ReflectUtils.getField(modelName);
+        fieldList.forEach(field -> field.setType(trans2Js(fieldMap.getOrDefault(field.getName(), ""))));
     }
 
 }

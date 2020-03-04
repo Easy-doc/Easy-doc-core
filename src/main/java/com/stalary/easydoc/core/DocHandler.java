@@ -192,11 +192,11 @@ public class DocHandler {
     }
 
     /**
-     * addURL 添加接口映射
+     * addUrl 添加接口映射
      *
      * @param view 前端渲染对象
      **/
-    void addURL(View view) {
+    void addUrl(View view) {
         view.getControllerList().forEach(controller -> controller.getMethodList().forEach(method -> {
             Constant.URL_LIST.add(controller.getPath() + method.getPath());
         }));

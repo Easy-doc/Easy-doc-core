@@ -113,7 +113,7 @@ public class DocReader {
      **/
     private void commonReader() {
         docHandler.addSuperAndNestModel(view);
-        docHandler.addURL(view);
+        docHandler.addUrl(view);
         // 缓存
         viewCache = view;
     }
