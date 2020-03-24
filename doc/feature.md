@@ -1,3 +1,6 @@
+## 1.3.4
+- 修复参数为body时，渲染出table，点击后controller路由错误的问题
+
 ## 1.3.3
 - 修复未使用model注释的类作为参数时页面报错的问题
 - 增加对Timestamp和Date的支持
