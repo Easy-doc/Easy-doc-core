@@ -285,7 +285,7 @@ public class DocReader {
     private NamePack path2Pack(String path) {
         String temp;
         if (systemConfiguration.isWindows()) {
-            temp = path.replace("\\\\", ".");
+            temp = path.replace("\\", ".");
         } else {
             temp = path.replace("/", ".");
         }
