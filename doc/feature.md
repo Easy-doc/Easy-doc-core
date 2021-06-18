@@ -1,3 +1,6 @@
+## 1.3.7
+- 支持识别return中的File以及request中的File
+
 ## 1.3.5
 - 修复windows路径解析错误的问题
 

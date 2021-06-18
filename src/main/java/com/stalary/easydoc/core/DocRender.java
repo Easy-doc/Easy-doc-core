@@ -6,6 +6,7 @@
 package com.stalary.easydoc.core;
 
 import com.stalary.easydoc.data.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +22,7 @@ import java.util.Map;
  * @since 2018/11/13
  */
 @Component
+@Slf4j
 public class DocRender {
 
     /**
@@ -203,6 +205,8 @@ public class DocRender {
                 return "Timestamp";
             case "java.util.Date":
                 return "Date";
+            case "org.springframework.web.multipart.MultipartFile":
+                return "File";
             default:
                 return "Object";
         }
