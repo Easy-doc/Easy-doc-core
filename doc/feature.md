@@ -1,3 +1,7 @@
+## 1.3.8
+- 升级springboot版本
+- 移除fastjson和cors配置
+
 ## 1.3.7
 - 支持识别return中的File以及request中的File
 

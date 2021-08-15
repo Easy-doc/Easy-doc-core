@@ -5,18 +5,18 @@
  */
 package com.stalary.easydoc.endpoint;
 
-import com.alibaba.fastjson.JSONObject;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.data.JsonResult;
 import com.stalary.easydoc.service.ResourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
  * ResourceController
@@ -27,7 +27,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(value = "/easy-doc")
 @Slf4j
-@CrossOrigin(allowCredentials = "true", allowedHeaders = "*", origins = "*")
 public class ResourceController {
 
     @Autowired
@@ -40,7 +39,7 @@ public class ResourceController {
     }
 
     @GetMapping("/resource")
-    public JSONObject getResource(
+    public Map<String, Object> getResource(
             @RequestParam(required = false, defaultValue = "") String account,
             @RequestParam(required = false, defaultValue = "") String password) {
         // 开启权限校验时校验账号密码

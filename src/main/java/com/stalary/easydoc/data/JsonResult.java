@@ -5,7 +5,8 @@
  */
 package com.stalary.easydoc.data;
 
-import com.alibaba.fastjson.JSONObject;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * JsonResult
@@ -15,25 +16,27 @@ import com.alibaba.fastjson.JSONObject;
  */
 public class JsonResult {
 
-    public static JSONObject ok() {
+    public static Map<String, Object> ok() {
         return ok(null);
     }
 
-    public static <T> JSONObject ok(T data) {
-        return new JSONObject()
-                .fluentPut("success", true)
-                .fluentPut("code", 0)
-                .fluentPut("data", data);
+    public static <T> Map<String, Object> ok(T data) {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("success", true);
+        ret.put("code", 0);
+        ret.put("data", data);
+        return ret;
     }
 
-    public static JSONObject failed() {
+    public static Map<String, Object> failed() {
         return failed(null);
     }
 
-    public static JSONObject failed(String msg) {
-        return new JSONObject()
-                .fluentPut("success", false)
-                .fluentPut("code", -1)
-                .fluentPut("msg", msg);
+    public static Map<String, Object> failed(String msg) {
+        Map<String, Object> ret = new HashMap<>();
+        ret.put("success", false);
+        ret.put("code", -1);
+        ret.put("msg", msg);
+        return ret;
     }
 }

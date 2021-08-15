@@ -5,11 +5,12 @@
  */
 package com.stalary.easydoc.core;
 
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
+
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.stalary.easydoc.config.EasyDocProperties;
 import com.stalary.easydoc.config.SystemConfiguration;
 import com.stalary.easydoc.data.*;
+import com.stalary.easydoc.util.JsonUtils;
 import com.stalary.easydoc.util.RegularExpressionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,8 +94,8 @@ public class DocReader {
     private String readFile(File file) {
         // 此处设置编码，解决乱码问题
         try (BufferedReader reader =
-                 new BufferedReader(new InputStreamReader(new FileInputStream(file),
-                     StandardCharsets.UTF_8))) {
+                     new BufferedReader(new InputStreamReader(new FileInputStream(file),
+                             StandardCharsets.UTF_8))) {
             StringBuilder sb = new StringBuilder();
             String s = reader.readLine();
             while (s != null) {
@@ -153,13 +154,13 @@ public class DocReader {
      **/
     private void calCount() {
         int totalMethod = (int) view.getControllerList()
-            .stream()
-            .mapToLong(c -> c.getMethodList().size())
-            .sum();
+                .stream()
+                .mapToLong(c -> c.getMethodList().size())
+                .sum();
         int deprecatedMethod = (int) view.getControllerList()
-            .stream()
-            .mapToLong(c -> c.getMethodList().stream().filter(Method::isDeprecated).count())
-            .sum();
+                .stream()
+                .mapToLong(c -> c.getMethodList().stream().filter(Method::isDeprecated).count())
+                .sum();
         int totalModel = view.getModelList().size();
         int deprecatedModel = (int) view.getModelList().stream().filter(Model::isDeprecated).count();
         view.setTotalMethod(totalMethod);
@@ -193,7 +194,7 @@ public class DocReader {
             return view;
         }
         String[] pathSplit = str.split(Constant.PATH_SPLIT);
-        Constant.PATH_MAP.putAll(JSONObject.parseObject(pathSplit[0], new TypeReference<Map<String, String>>() {
+        Constant.PATH_MAP.putAll(JsonUtils.parse(pathSplit[0], new TypeReference<Map<String, String>>() {
         }));
         String[] fileSplit = pathSplit[1].split(Constant.FILE_SPLIT);
         for (String temp : fileSplit) {
@@ -252,11 +253,11 @@ public class DocReader {
                 // 2. 匹配块级注释
                 // 3. 合并多个空格
                 String temp = matcher
-                    .group()
-                    .replaceAll("\\/\\*\\*", Constant.EMPTY_STR)
-                    .replaceAll("\\*\\/", Constant.EMPTY_STR)
-                    .replaceAll("\\*", Constant.EMPTY_STR)
-                    .replaceAll(" +", Constant.BLANK);
+                        .group()
+                        .replaceAll("\\/\\*\\*", Constant.EMPTY_STR)
+                        .replaceAll("\\*\\/", Constant.EMPTY_STR)
+                        .replaceAll("\\*", Constant.EMPTY_STR)
+                        .replaceAll(" +", Constant.BLANK);
                 docHandler.handle(controller, model, temp, name, view);
             }
         } catch (Exception e) {
