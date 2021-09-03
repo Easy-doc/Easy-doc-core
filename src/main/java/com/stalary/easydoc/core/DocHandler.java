@@ -6,6 +6,7 @@
 package com.stalary.easydoc.core;
 
 import com.stalary.easydoc.data.*;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
  * @since 2018/11/13
  */
 @Component
+@Slf4j
 public class DocHandler {
 
     @Autowired
@@ -73,9 +75,6 @@ public class DocHandler {
         if (name.equals(split[1]) && ReflectUtils.isController(name)) {
             map.put(Constant.CONTROLLER, split[1]);
         }
-        if (Constant.MODEL_TAG.equals(split[1]) && name.equals(split[2])) {
-            map.put(Constant.MODEL, split[2]);
-        }
         for (int i = 1; i < len; i++) {
             String t = split[i];
             // 匹配标识符
@@ -126,6 +125,14 @@ public class DocHandler {
                             i++;
                         }
                         break;
+                    case Constant.MODEL:
+                        // nested
+                        if (t.contains(".")) {
+                            model.setNestedName(t);
+                            t = t.split("\\.")[0];
+                        }
+                        map.put(cur, t);
+                        break;
                     default:
                         map.put(cur, t);
                         break;
@@ -141,7 +148,14 @@ public class DocHandler {
      * @param view 前端渲染对象
      **/
     void addSuperAndNestModel(View view) {
-        Map<String, Model> modelMap = view.getModelList().stream().collect(Collectors.toMap(Model::getName, e -> e, (v1, v2) -> v1));
+        Map<String, Model> modelMap = new HashMap<>();
+        view.getModelList().forEach(model -> {
+            if (StringUtils.isNotEmpty(model.getNestedName())) {
+                modelMap.put(model.getNestedName(), model);
+            } else {
+                modelMap.put(model.getName(), model);
+            }
+        });
         // 填充父类对象
         view.getModelList().forEach(model -> {
             String superName = ReflectUtils.getSuper(model.getName());
@@ -178,7 +192,9 @@ public class DocHandler {
             for (Pair<String, String> nestPair : nestNameList) {
                 Model nestModel = modelMap.get(nestPair.getKey());
                 // 类中嵌套自己的不进行填充，防止死循环
-                if (nestModel != null && !model.getName().equals(nestModel.getName())) {
+                if (nestModel != null &&
+                        ((StringUtils.isEmpty(nestModel.getNestedName()) && !nestModel.getName().equals(model.getName()))
+                                || StringUtils.isNotEmpty(nestModel.getNestedName()) && !nestModel.getNestedName().equals(model.getNestedName()))) {
                     for (Param param : model.getFieldList()) {
                         if (nestPair.getValue().equals(param.getName())) {
                             param.setFieldList(nestModel.getFieldList());
@@ -186,6 +202,16 @@ public class DocHandler {
                     }
                     // 更新modelMap
                     modelMap.put(model.getName(), model);
+                }
+                // nested
+                if (StringUtils.isNotEmpty(model.getNestedName())) {
+                    for (Param param : model.getFieldList()) {
+                        if (nestPair.getValue().equals(param.getName())) {
+                            // 填充类型
+                            param.setType(nestPair.getKey());
+                        }
+                    }
+                    model.setName(model.getNestedName());
                 }
             }
         }

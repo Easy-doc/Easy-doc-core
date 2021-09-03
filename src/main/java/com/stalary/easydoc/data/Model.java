@@ -26,6 +26,8 @@ public class Model {
     /** 名称 **/
     private String name;
 
+    private String nestedName;
+
     /** 作者 **/
     private String author;
 

@@ -9,20 +9,6 @@ import com.stalary.easydoc.data.Constant;
 import com.stalary.easydoc.data.Model;
 import com.stalary.easydoc.data.Param;
 import com.stalary.easydoc.data.View;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -35,6 +21,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ValueConstants;
+
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * ReflectReader
@@ -110,7 +100,7 @@ public class ReflectUtils {
         try {
             return Class.forName(Constant.PATH_MAP.get(name));
         } catch (Exception e) {
-            throw new NullPointerException("path2Class " + name + " error");
+            throw new NullPointerException("path2Class " + name + " error, " + "path=" + Constant.PATH_MAP.get(name));
         }
     }
 
@@ -180,7 +170,7 @@ public class ReflectUtils {
         if (StringUtils.isEmpty(className)) {
             return false;
         }
-        // 只传入controller代表判断controller
+        // 只传入类名代表判断类
         if (StringUtils.isEmpty(methodName)) {
             Deprecated annotation = AnnotationUtils.findAnnotation(clazz, Deprecated.class);
             return annotation != null;
@@ -272,13 +262,32 @@ public class ReflectUtils {
      **/
     static Set<Pair<String, String>> getNest(String name) {
         Class clazz = path2Class(name);
-        Field[] fields = clazz.getDeclaredFields();
+        Class[] declaredClasses = clazz.getDeclaredClasses();
         Set<Pair<String, String>> ret = new HashSet<>();
+        for (Class nestedClass : declaredClasses) {
+            Field[] fields = nestedClass.getDeclaredFields();
+            addField(fields, ret);
+        }
+        Field[] fields = clazz.getDeclaredFields();
+        addField(fields, ret);
+        return ret;
+    }
+
+    private static void addField(Field[] fields, Set<Pair<String, String>> ret) {
         for (Field field : fields) {
             field.setAccessible(true);
             // 不存在classloader的为自定义类
             if (field.getType().getClassLoader() != null) {
-                ret.add(Pair.of(field.getType().getSimpleName(), field.getName()));
+                String name = field.getType().getName();
+                // nested
+                if (name.contains("$")) {
+                    int i = name.lastIndexOf(".");
+                    String substring = name.substring(i + 1);
+                    name = substring.replace("$", ".");
+                } else {
+                    name = field.getType().getSimpleName();
+                }
+                ret.add(Pair.of(name, field.getName()));
             } else {
                 if (field.getType() == java.util.List.class || field.getType() == java.util.Map.class) {
                     Type type = field.getGenericType();
@@ -291,10 +300,11 @@ public class ReflectUtils {
                             }
                         }
                     }
+                } else {
+                    ret.add(Pair.of(field.getType().getSimpleName(), field.getName()));
                 }
             }
         }
-        return ret;
     }
 
 }
