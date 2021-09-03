@@ -99,12 +99,12 @@
     <distributionManagement>
 
         <repository>
-            <id>youdao-release</id>
-            <url>https://nexus3.corp.youdao.com/repository/maven-releases/</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/releases/</url>
         </repository>
 
         <snapshotRepository>
-            <id>youdao-snapshots</id>
+            <id>ossrh</id>
             <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
