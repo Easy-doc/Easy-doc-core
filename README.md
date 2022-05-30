@@ -45,6 +45,10 @@ dependencies {
 }
 ```
 
+## 打包插件引入
+- [maven](https://github.com/Easy-doc/easydoc-maven-plugin)
+- [gradle](https://github.com/Easy-doc/easydoc-gradle-plugin)
+
 ## 配置方式
 - [网关配置](doc/gateway.md)
 - [服务配置](doc/service.md)
